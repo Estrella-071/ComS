@@ -6,6 +6,20 @@ export const BookOpenIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+// FIX: Add CalculatorIcon to be used in NumberConverter component.
+export const CalculatorIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008Zm0 3h.008v.008H8.25v-.008Zm0 3h.008v.008H8.25v-.008Zm3-6h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm3-6h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm3-11.25a2.25 2.25 0 0 0-2.25-2.25h-9a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 6.75 21h9a2.25 2.25 0 0 0 2.25-2.25V6.75Z" />
+  </svg>
+);
+
+// FIX: Add TableCellsIcon to be used in KMapSolver component.
+export const TableCellsIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125v-13.5A1.125 1.125 0 0 1 3.375 3.75h17.25a1.125 1.125 0 0 1 1.125 1.125v13.5a1.125 1.125 0 0 1-1.125 1.125m-17.25 0h.008v.008H3.375v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm16.5 0h.008v.008h-.008v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.375 12h17.25m-17.25 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm16.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-12-8.25h9m-9 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm9 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+  </svg>
+);
+
 export const CpuChipIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 21v-1.5M15.75 3v1.5m0 16.5v-1.5m3.75-15H21m-18 0h1.5m15 3.75H21m-18 0h1.5m15 3.75H21m-18 0h1.5M12 6.75h.008v.008H12V6.75Zm-.008 3h.008v.008H11.992V9.75Zm.008 3h.008v.008H12v-.008Zm.008 3h.008v.008H12v-.008Zm-3-6h.008v.008H9V9.75Zm-.008 3h.008v.008H8.992v-.008Zm.008 3h.008v.008H9v-.008Zm.008 3h.008v.008H9v-.008Zm6-6h.008v.008H15V9.75Zm-.008 3h.008v.008H14.992v-.008Zm.008 3h.008v.008H15v-.008Zm.008 3h.008v.008H15v-.008ZM6.75 9.75h.008v.008H6.75V9.75Zm-.008 3h.008v.008H6.742v-.008Zm.008 3h.008v.008H6.75v-.008Zm.008 3h.008v.008H6.75v-.008Zm6-12h.008v.008H12.75V6.75Zm-.008 3h.008v.008h-.008V9.75Zm.008 3h.008v.008h-.008v-.008Zm.008 3h.008v.008h-.008v-.008Zm6-6h.008v.008h-.008V9.75Zm-.008 3h.008v.008h-.008v-.008Zm.008 3h.008v.008h-.008v-.008Zm.008 3h.008v.008h-.008v-.008Z" />

@@ -73,7 +73,7 @@ export const Glossary: React.FC = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full bg-[var(--bg-translucent)] backdrop-blur-xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] rounded-2xl px-4 py-3 text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent-solid)] outline-none transition-all"
                 />
-                 <div className="grid grid-cols-2 gap-4">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <select value={filterChapter} onChange={e => setFilterChapter(e.target.value)} className="w-full bg-[var(--bg-translucent)] backdrop-blur-xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] rounded-2xl px-4 py-3 text-[var(--text-secondary)] focus:ring-2 focus:ring-[var(--accent-solid)] outline-none transition-all appearance-none text-center">
                         {chapters.map(ch => <option key={ch} value={ch}>{ch === 'all' ? t('glossary_all_chapters') : `${t('chapter')} ${ch}${t('chapter_unit')}`}</option>)}
                     </select>
@@ -84,15 +84,14 @@ export const Glossary: React.FC = () => {
                 </div>
             </div>
             
-            <div className="space-y-10">
+            <div className="space-y-12">
                 {Object.entries(termsByCategory).length > 0 ? (
-                    // FIX: Explicitly type the destructured arguments from Object.entries to resolve the 'unknown' type error for terms.
                     Object.entries(termsByCategory).map(([category, terms]: [string, GlossaryTerm[]]) => (
                         <div key={category}>
                             <h2 className="text-xl font-bold text-[var(--accent-text)] border-b border-[var(--ui-border)] pb-2 mb-4">{category}</h2>
                             <div className="space-y-4">
                                 {terms.map(item => (
-                                    <div key={item.term} className="bg-[var(--bg-translucent)] backdrop-blur-xl p-4 rounded-2xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)]">
+                                    <div key={item.term} className="bg-[var(--bg-translucent)] backdrop-blur-xl p-5 rounded-2xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)]">
                                         <h3 className="text-lg font-semibold text-[var(--text-primary)]">{item.term} <span className="text-[var(--text-subtle)] font-normal">({item.chinese})</span></h3>
                                         <p className="text-[var(--text-secondary)] mt-2 leading-relaxed">{item.definition}</p>
                                     </div>

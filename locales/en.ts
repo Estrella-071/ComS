@@ -85,4 +85,8 @@ export const en = {
   problem_header: 'Problem',
   key_problem: 'Key Problem',
   options: 'Options',
+
+  // FIX: Add missing translation keys for tool components.
+  number_converter: 'Number Converter',
+  kmap_solver: 'K-Map Solver',
 };

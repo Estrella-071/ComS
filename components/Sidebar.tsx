@@ -21,7 +21,6 @@ const sidebarVariants = {
     closed: { x: '-100%' },
 };
 
-// FIX: Add `as const` to prevent TypeScript from widening the 'type' property to 'string'.
 const sidebarTransition = {
     type: 'spring',
     stiffness: 300,
@@ -180,7 +179,7 @@ const ChapterAccordion: React.FC<ChapterAccordionProps> = ({ chapter, problems, 
     return (
         <div>
             <div
-                className={`w-full flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150 cursor-pointer ${
+                className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-150 cursor-pointer ${
                     isChapterActive
                       ? 'bg-[var(--accent-bg)] text-[var(--accent-text)]'
                       : 'text-[var(--text-secondary)] hover:bg-[var(--ui-bg-hover)]'
@@ -295,7 +294,7 @@ interface NavItemProps {
 const NavItem: React.FC<NavItemProps> = ({ icon, label, active, onClick, badgeCount }) => (
   <button
     onClick={onClick}
-    className={`w-full flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150 ${
+    className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-150 ${
       active
         ? 'bg-[var(--accent-bg)] text-[var(--accent-text)]'
         : 'text-[var(--text-secondary)] hover:bg-[var(--ui-bg-hover)] hover:text-[var(--text-primary)]'

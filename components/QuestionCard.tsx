@@ -37,9 +37,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
   };
 
   return (
-    <div className="bg-[var(--bg-translucent)] backdrop-blur-xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] rounded-3xl p-6 sm:p-8 h-full overflow-y-auto">
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
+    <div className="bg-[var(--bg-translucent)] backdrop-blur-xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] rounded-3xl p-4 sm:p-8 h-full overflow-y-auto">
+      <div className="mb-4">
+        <div className="flex justify-between items-center mb-3">
           <p className="text-sm font-semibold bg-[var(--accent-bg)] text-[var(--accent-text)] px-3 py-1 rounded-full inline-block">
               {`${t('chapter')} ${problem.chapter}${t('chapter_unit')} - ${t('problem_header')} ${problem.number}`}
           </p>
@@ -69,7 +69,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
             </motion.button>
           </div>
         </div>
-        <div className="text-lg leading-relaxed text-[var(--text-secondary)]">
+        <div className="text-base sm:text-lg leading-relaxed text-[var(--text-secondary)]">
             <Tooltip content={problem.text_zh}>
                 <p className="border-b border-dashed border-slate-400 dark:border-slate-600 cursor-help inline">
                     <TextWithHighlights text={problem.text_en} />
@@ -78,7 +78,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {problem.options.map((option) => {
           const isSelected = userAnswer === option.key;
           const isCorrect = problem.answer === option.key;
@@ -97,7 +97,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
               key={option.key}
               onClick={() => onAnswerSelected(option.key)}
               disabled={hasAnswered}
-              className={`w-full flex items-center gap-4 px-4 py-5 rounded-xl border-2 text-left transition-all duration-200 ${stateStyles} ${!hasAnswered ? 'cursor-pointer' : 'cursor-default'}`}
+              className={`w-full flex items-center gap-4 px-4 py-3 sm:py-4 rounded-xl border-2 text-left transition-all duration-200 ${stateStyles} ${!hasAnswered ? 'cursor-pointer' : 'cursor-default'}`}
               whileHover={!hasAnswered ? { scale: 1.02 } : {}}
               whileTap={!hasAnswered ? { scale: 0.98 } : {}}
             >
@@ -124,7 +124,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
       </div>
       
        {hasAnswered && !shouldAutoShowExplanation && (
-        <div className="mt-6 pt-6 border-t border-[var(--ui-border)] text-center">
+        <div className="mt-4 pt-4 border-t border-[var(--ui-border)] text-center">
             <button
                 onClick={() => setShowManualExplanation(!showManualExplanation)}
                 className="bg-[var(--ui-bg)] text-[var(--text-secondary)] font-semibold px-5 py-2 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors"
@@ -143,7 +143,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className="overflow-hidden"
             >
-                <div className="mt-6 pt-6 border-t border-[var(--ui-border)]">
+                <div className="mt-4 pt-4 border-t border-[var(--ui-border)]">
                     <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{t('explanation')}</h3>
                     <div className="prose prose-slate dark:prose-invert max-w-none text-left prose-headings:font-semibold prose-p:leading-loose prose-p:text-[var(--text-secondary)] prose-li:text-[var(--text-secondary)]">
                         <ReactMarkdown

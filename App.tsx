@@ -48,7 +48,7 @@ const App: React.FC = () => {
   
   const getAnimationKey = () => {
     if (view.type === 'quiz') return `${view.type}-${view.title}`;
-    if (view.type === 'problem') return `${view.type}-${view.id}`;
+    if (view.type === 'problem') return 'problem';
     return view.type;
   }
 
@@ -159,10 +159,7 @@ const Overview: React.FC<{ setView: (view: View) => void }> = ({ setView }) => {
     }, [filteredProblems]);
 
     const handleProblemClick = (problemId: string) => {
-        const problemIndex = problems.findIndex(p => p.id === problemId);
-        if (problemIndex > -1) {
-            setView({ type: 'quiz', problems, title: t('all_questions'), startIndex: problemIndex });
-        }
+        setView({ type: 'problem', id: problemId });
     };
 
     const startShuffledQuiz = (selectedChapters: string[], count: number) => {
@@ -183,7 +180,7 @@ const Overview: React.FC<{ setView: (view: View) => void }> = ({ setView }) => {
         <div className="max-w-7xl mx-auto pt-8 lg:pt-0">
             <h1 className="text-4xl md:text-5xl font-bold leading-tight text-[var(--text-primary)] mb-6 text-center whitespace-pre-line">{t('app_name')}</h1>
             
-            <div className="lg:static sticky top-0 z-20 bg-[var(--bg-color)]/80 backdrop-blur-md -mx-4 sm:-mx-6 px-4 sm:px-6 pt-4 pb-4 mb-10">
+            <div className="lg:static sticky top-0 z-20 bg-[var(--bg-color)]/80 backdrop-blur-md -mx-4 sm:-mx-6 px-4 sm:px-6 py-6 mb-12">
                 <div className="max-w-2xl mx-auto">
                     <div className="relative">
                         <input 
@@ -198,11 +195,10 @@ const Overview: React.FC<{ setView: (view: View) => void }> = ({ setView }) => {
                 </div>
             </div>
 
-            {/* FIX: Explicitly type the destructured arguments from Object.entries to resolve the 'unknown' type error for chapterProblems. */}
             {Object.entries(problemsByChapter).map(([chapter, chapterProblems]: [string, Problem[]]) => (
-                <div key={chapter} className="mb-12">
-                    <h2 className="lg:static sticky top-[72px] z-10 bg-[var(--bg-color)]/80 backdrop-blur-md text-3xl font-bold text-[var(--text-secondary)] border-b-2 border-[var(--ui-border)] py-3 mb-6 -mx-4 sm:-mx-6 px-4 sm:px-6">{`${t('chapter')} ${chapter}${t('chapter_unit')}`}</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div key={chapter} className="mb-16">
+                    <h2 className="lg:static sticky top-[88px] z-10 bg-[var(--bg-color)]/80 backdrop-blur-md text-3xl font-bold text-[var(--text-secondary)] border-b-2 border-[var(--ui-border)] py-3 mb-6 -mx-4 sm:-mx-6 px-4 sm:px-6">{`${t('chapter')} ${chapter}${t('chapter_unit')}`}</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {chapterProblems.map(p => {
                             const correctOption = p.options.find(opt => opt.key === p.answer);
                             const isFlagged = flaggedProblems.includes(p.id);
@@ -213,7 +209,7 @@ const Overview: React.FC<{ setView: (view: View) => void }> = ({ setView }) => {
                                     whileHover={{ y: -5 }}
                                     whileTap={{ scale: 0.97 }}
                                     transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                                    className={`relative bg-[var(--bg-translucent)] backdrop-blur-xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] rounded-2xl p-4 text-left h-full flex flex-col transition-shadow ${isFlagged ? 'flagged-glow' : ''}`}
+                                    className={`relative bg-[var(--bg-translucent)] backdrop-blur-xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] rounded-2xl p-5 text-left h-full flex flex-col transition-shadow ${isFlagged ? 'flagged-glow' : ''}`}
                                 >
                                     <div className="flex justify-between items-center mb-2">
                                         <span className="text-sm font-semibold text-[var(--accent-text)]">{t('problem_header')} {p.number}</span>

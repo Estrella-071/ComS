@@ -85,4 +85,8 @@ export const zh = {
   problem_header: '問題',
   key_problem: '重點問題',
   options: '選項',
+
+  // FIX: Add missing translation keys for tool components.
+  number_converter: '數字系統轉換器',
+  kmap_solver: '卡諾圖化簡工具',
 };

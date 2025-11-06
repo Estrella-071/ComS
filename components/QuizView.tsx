@@ -25,7 +25,6 @@ export const QuizView: React.FC<QuizViewProps> = ({ problems, title, setView, st
   const { autoShowExplanation, setAutoShowExplanation, autoAdvance, setAutoAdvance } = useAppContext();
   
   const score = useMemo(() => {
-    // FIX: Explicitly type the accumulator 'count' to 'number' to resolve the 'unknown' type error.
     return Array.from(userAnswers).reduce((count: number, [id, answer]) => {
         const problem = problems.find(p => p.id === id);
         return problem && problem.answer === answer ? count + 1 : count;
@@ -118,11 +117,11 @@ export const QuizView: React.FC<QuizViewProps> = ({ problems, title, setView, st
 
   const variants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? '100%' : '-100%', opacity: 0
+      x: direction > 0 ? '50%' : '-50%', opacity: 0
     }),
     center: { zIndex: 1, x: 0, opacity: 1 },
     exit: (direction: number) => ({
-      zIndex: 0, x: direction < 0 ? '100%' : '-100%', opacity: 0
+      zIndex: 0, x: direction < 0 ? '50%' : '-50%', opacity: 0
     }),
   };
 
@@ -163,7 +162,6 @@ export const QuizView: React.FC<QuizViewProps> = ({ problems, title, setView, st
         transition: { staggerChildren: 0.15, delayChildren: 0.2 }
     }
   };
-  // FIX: Add `as const` to prevent TypeScript from widening the 'type' property to 'string'.
   const resultItemVariants = {
       hidden: { y: 20, opacity: 0 },
       visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } }
@@ -242,8 +240,8 @@ export const QuizView: React.FC<QuizViewProps> = ({ problems, title, setView, st
 
   return (
     <div className="max-w-4xl mx-auto h-full flex flex-col">
-      <div className="mb-4 flex-shrink-0">
-         <div className="w-full bg-[var(--ui-bg)] rounded-full h-1.5 mb-4">
+      <div className="mb-3 flex-shrink-0">
+         <div className="w-full bg-[var(--ui-bg)] rounded-full h-1.5 mb-3">
             <motion.div
                 className="bg-[var(--accent-solid)] h-1.5 rounded-full"
                 initial={{ width: `${((startIndex + 1) / problems.length) * 100}%` }}
@@ -253,11 +251,11 @@ export const QuizView: React.FC<QuizViewProps> = ({ problems, title, setView, st
          </div>
          <div className="flex flex-col md:flex-row justify-between md:items-center gap-2">
             <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">{title}</h1>
+                <h1 className="text-xl md:text-3xl font-bold text-[var(--text-primary)]">{title}</h1>
                 <p className="text-[var(--text-secondary)] text-sm mt-1">{`${t('question')} ${currentIndex + 1} ${t('of')} ${problems.length}`}</p>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 self-start md:self-center">
-              <label htmlFor="auto-show-explanation" className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] select-none cursor-pointer p-2 -m-2 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors">
+            <div className="flex flex-row flex-wrap justify-start md:justify-end gap-x-4 gap-y-1">
+              <label htmlFor="auto-show-explanation" className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[var(--text-secondary)] select-none cursor-pointer p-1 -m-1 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors">
                   <input
                       type="checkbox"
                       id="auto-show-explanation"
@@ -267,7 +265,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ problems, title, setView, st
                   />
                   {t('show_explanation_on_answer')}
               </label>
-              <label htmlFor="auto-advance" className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] select-none cursor-pointer p-2 -m-2 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors">
+              <label htmlFor="auto-advance" className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[var(--text-secondary)] select-none cursor-pointer p-1 -m-1 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors">
                   <input
                       type="checkbox"
                       id="auto-advance"
@@ -284,10 +282,10 @@ export const QuizView: React.FC<QuizViewProps> = ({ problems, title, setView, st
       <div className="flex-1 flex flex-col justify-center min-h-0 relative overflow-hidden">
         {/* Visual affordances for swiping on touch devices */}
         <div className="md:hidden absolute inset-y-0 left-0 flex items-center justify-center w-8 pointer-events-none z-10">
-          <ChevronLeftIcon className="w-6 h-6 text-[var(--text-subtle)] opacity-20" />
+          <ChevronLeftIcon className="w-6 h-6 text-[var(--text-subtle)] opacity-30" />
         </div>
         <div className="md:hidden absolute inset-y-0 right-0 flex items-center justify-center w-8 pointer-events-none z-10">
-          <ChevronRightIcon className="w-6 h-6 text-[var(--text-subtle)] opacity-20" />
+          <ChevronRightIcon className="w-6 h-6 text-[var(--text-subtle)] opacity-30" />
         </div>
         
         <AnimatePresence custom={direction} mode="wait">
@@ -298,16 +296,29 @@ export const QuizView: React.FC<QuizViewProps> = ({ problems, title, setView, st
                 initial="enter"
                 animate="center"
                 exit="exit"
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                transition={{ type: "spring", stiffness: 400, damping: 35 }}
                 className="w-full h-full"
                 drag={!isSidebarOpen ? 'x' : false}
+                dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.2}
                 dragMomentum={false}
                 onDragEnd={(e, { offset, velocity }) => {
-                    const swipeThreshold = 80;
-                    if (offset.x < -swipeThreshold || velocity.x < -350) {
+                    const swipeDistanceThreshold = 150;
+                    const swipeVerticalThreshold = 75;
+
+                    // Abort if swipe is more vertical than horizontal
+                    if (Math.abs(offset.y) > Math.abs(offset.x)) {
+                        return;
+                    }
+
+                    // Abort if vertical travel is beyond the tolerance
+                    if (Math.abs(offset.y) > swipeVerticalThreshold) {
+                        return;
+                    }
+
+                    if (offset.x < -swipeDistanceThreshold || velocity.x < -400) {
                         paginate(1);
-                    } else if (offset.x > swipeThreshold || velocity.x > 350) {
+                    } else if (offset.x > swipeDistanceThreshold || velocity.x > 400) {
                         paginate(-1);
                     }
                 }}

@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -7,11 +8,10 @@ import rehypeKatex from 'rehype-katex';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Problem } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
-import { useAppContext } from '../contexts/AppContext';
+import { useAppContext, addBilingualAnnotations } from '../contexts/AppContext';
 import { Tooltip } from './Tooltip';
 import { CheckIcon, XMarkIcon, StarIcon, StarSolidIcon } from './icons';
 import { TextWithHighlights } from './TextWithHighlights';
-import { glossaryData } from '../data/glossary';
 
 interface QuestionCardProps {
   problem: Problem;
@@ -20,37 +20,9 @@ interface QuestionCardProps {
   shouldAutoShowExplanation: boolean;
 }
 
-const zhToEnMap = glossaryData.reduce<Record<string, string>>((acc, term) => {
-    if (term.chinese) {
-        acc[term.chinese] = term.term;
-    }
-    return acc;
-}, {});
-
-const glossaryZhTerms = Object.keys(zhToEnMap).sort((a, b) => b.length - a.length);
-const glossaryRegexForZh = new RegExp(`(${glossaryZhTerms.join('|')})`, 'g');
-
-const addBilingualAnnotations = (markdown: string) => {
-    if (!markdown) return '';
-    const parts = markdown.split(/(```[\s\S]*?```|`[^`]*?`)/);
-    const processedParts = parts.map((part, index) => {
-        if (index % 2 === 1) { 
-            return part;
-        }
-        return part.replace(glossaryRegexForZh, (match) => {
-            const englishTerm = zhToEnMap[match];
-            if (englishTerm) {
-                return `${match} (${englishTerm})`;
-            }
-            return match;
-        });
-    });
-    return processedParts.join('');
-};
-
 export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer, onAnswerSelected, shouldAutoShowExplanation }) => {
   const { t } = useTranslation();
-  const { flaggedProblems, toggleFlaggedProblem } = useAppContext();
+  const { flaggedProblems, toggleFlaggedProblem, glossaryMaps } = useAppContext();
   const [showManualExplanation, setShowManualExplanation] = useState(false);
   const [showFlagToast, setShowFlagToast] = useState(false);
 
@@ -163,7 +135,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
                 <div className="mt-4 pt-4 border-t border-[var(--ui-border)]">
                     <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{t('explanation')}</h3>
                     <div className="prose prose-slate dark:prose-invert max-w-none text-left prose-p:text-[var(--text-secondary)] prose-li:text-[var(--text-secondary)]">
-                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{addBilingualAnnotations(problem.explanation_zh)}</ReactMarkdown>
+                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{addBilingualAnnotations(problem.explanation_zh, glossaryMaps)}</ReactMarkdown>
                     </div>
                 </div>
             </motion.div>

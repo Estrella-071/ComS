@@ -1,3 +1,5 @@
+
+
 import React, { useState, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -7,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { Problem } from '../types';
 import { CheckIcon, StarIcon, StarSolidIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
-import { useAppContext } from '../contexts/AppContext';
+import { useAppContext, addBilingualAnnotations } from '../contexts/AppContext';
 import { Tooltip } from './Tooltip';
 import { TextWithHighlights } from './TextWithHighlights';
 import type { View } from '../types';
@@ -39,40 +41,9 @@ const variants = {
 export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSidebarOpen }) => {
   const [direction, setDirection] = useState(0);
   const { t } = useTranslation();
-  const { subjectData } = useAppContext();
+  const { subjectData, glossaryMaps } = useAppContext();
 
   const problems = useMemo(() => subjectData?.problems || [], [subjectData]);
-  const glossaryData = useMemo(() => subjectData?.glossaryData || [], [subjectData]);
-
-  const { zhToEnMap, glossaryRegexForZh } = useMemo(() => {
-    const map = glossaryData.reduce<Record<string, string>>((acc, term) => {
-        if (term.chinese) {
-            acc[term.chinese] = term.term;
-        }
-        return acc;
-    }, {});
-    const terms = Object.keys(map).sort((a, b) => b.length - a.length);
-    const regex = new RegExp(`(${terms.join('|')})`, 'g');
-    return { zhToEnMap: map, glossaryRegexForZh: regex };
-  }, [glossaryData]);
-
-  const addBilingualAnnotations = (markdown: string) => {
-    if (!markdown) return '';
-    const parts = markdown.split(/(```[\s\S]*?```|`[^`]*?`)/);
-    const processedParts = parts.map((part, index) => {
-        if (index % 2 === 1) { 
-            return part;
-        }
-        return part.replace(glossaryRegexForZh, (match) => {
-            const englishTerm = zhToEnMap[match];
-            if (englishTerm) {
-                return `${match} (${englishTerm})`;
-            }
-            return match;
-        });
-    });
-    return processedParts.join('');
-  };
   
   const problemIndex = useMemo(() => problems.findIndex(p => p.id === id), [id, problems]);
   const problem = problems[problemIndex];
@@ -224,7 +195,7 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                               <div className="mt-4 pt-4 border-t border-[var(--ui-border)]">
                                 <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{t('explanation')}</h3>
                                 <div className="prose prose-slate dark:prose-invert max-w-none text-left prose-p:text-[var(--text-secondary)] prose-li:text-[var(--text-secondary)]">
-                                  <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{addBilingualAnnotations(problem.explanation_zh)}</ReactMarkdown>
+                                  <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{addBilingualAnnotations(problem.explanation_zh, glossaryMaps)}</ReactMarkdown>
                                 </div>
                               </div>
                             </motion.div>

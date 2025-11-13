@@ -1,10 +1,62 @@
 
+
 import React, { createContext, useState, useEffect, useContext, useCallback, useMemo } from 'react';
 import { LOCAL_STORAGE_KEYS } from '../types';
 import { subjects, allData, type SubjectData } from '../data/subjects';
-import type { Subject } from '../types';
+import type { Subject, GlossaryTerm } from '../types';
+
+// --- SHARED UTILS (to avoid code duplication) ---
+
+export interface GlossaryMaps {
+  glossaryMap: Record<string, GlossaryTerm>;
+  glossaryRegex: RegExp;
+  zhToEnMap: Record<string, string>;
+  glossaryRegexForZh: RegExp;
+}
+
+export const computeGlossaryMaps = (glossaryData: GlossaryTerm[]): GlossaryMaps => {
+    const glossaryMap = glossaryData.reduce<Record<string, GlossaryTerm>>((acc, term) => {
+        acc[term.term.toLowerCase()] = term;
+        return acc;
+    }, {});
+    const glossaryTerms = glossaryData.map(g => g.term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const glossaryRegex = new RegExp(`\\b(${glossaryTerms.join('|')})\\b`, 'gi');
+    
+    const zhToEnMap = glossaryData.reduce<Record<string, string>>((acc, term) => {
+        if (term.chinese) acc[term.chinese] = term.term;
+        return acc;
+    }, {});
+    const zhTerms = Object.keys(zhToEnMap).sort((a, b) => b.length - a.length);
+    const glossaryRegexForZh = new RegExp(`(${zhTerms.join('|')})`, 'g');
+
+    return { glossaryMap, glossaryRegex, zhToEnMap, glossaryRegexForZh };
+};
+
+export const addBilingualAnnotations = (markdown: string, maps: GlossaryMaps | null) => {
+    if (!markdown || !maps) return markdown;
+    const { zhToEnMap, glossaryRegexForZh } = maps;
+    const parts = markdown.split(/(```[\s\S]*?```|`[^`]*?`)/);
+    const processedParts = parts.map((part, index) => {
+        if (index % 2 === 1) return part;
+        return part.replace(glossaryRegexForZh, (match) => {
+            const englishTerm = zhToEnMap[match];
+            return englishTerm ? `${match} (${englishTerm})` : match;
+        });
+    });
+    return processedParts.join('');
+};
+// --- END SHARED UTILS ---
 
 type Theme = 'light' | 'dark';
+
+interface ReadingSettings {
+  fontSize: number;
+  lineHeight: number;
+  pageWidth: string;
+  readTheme: string;
+  formatMode: 'formatted' | 'unformatted' | 'text-only';
+  displayMode: 'bilingual' | 'en' | 'zh';
+}
 
 interface AppContextType {
   theme: Theme;
@@ -19,6 +71,14 @@ interface AppContextType {
   setSubject: (subjectId: string | null) => void;
   subjectData: SubjectData | null;
   isSubjectLoading: boolean;
+  glossaryMaps: GlossaryMaps | null;
+  readingSettings: ReadingSettings;
+  setFontSize: (size: number) => void;
+  setLineHeight: (height: number) => void;
+  setPageWidth: (width: string) => void;
+  setReadTheme: (theme: string) => void;
+  setFormatMode: (mode: 'formatted' | 'unformatted' | 'text-only') => void;
+  setDisplayMode: (mode: 'bilingual' | 'en' | 'zh') => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -36,6 +96,25 @@ const getInitialTheme = (): Theme => {
   return 'light';
 };
 
+const getInitialReadingSettings = (): ReadingSettings => {
+  const defaults: ReadingSettings = {
+    fontSize: 16,
+    lineHeight: 1.7,
+    pageWidth: 'max-w-4xl',
+    readTheme: 'default',
+    formatMode: 'formatted',
+    displayMode: 'bilingual',
+  };
+  if (typeof window === 'undefined') return defaults;
+  try {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEYS.READING_SETTINGS);
+    return stored ? { ...defaults, ...JSON.parse(stored) } : defaults;
+  } catch (error) {
+    console.error("Failed to parse reading settings from localStorage", error);
+    return defaults;
+  }
+};
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(getInitialTheme);
   const [flaggedProblems, setFlaggedProblems] = useState<string[]>([]);
@@ -50,6 +129,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [subjectId, setSubjectId] = useState<string | null>(null);
   const [subjectData, setSubjectData] = useState<SubjectData | null>(null);
   const [isSubjectLoading, setIsSubjectLoading] = useState<boolean>(false);
+  const [glossaryMaps, setGlossaryMaps] = useState<GlossaryMaps | null>(null);
+  const [readingSettings, setReadingSettingsState] = useState<ReadingSettings>(getInitialReadingSettings);
 
   const subject = useMemo(() => {
     if (!subjectId) return null;
@@ -101,6 +182,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           .then(data => {
             setSubjectData(data);
             setSubjectId(id);
+            setGlossaryMaps(computeGlossaryMaps(data.glossaryData));
           })
           .catch(error => console.error("Failed to load subject data", error))
           .finally(() => setIsSubjectLoading(false));
@@ -108,8 +190,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } else {
       setSubjectId(null);
       setSubjectData(null);
+      setGlossaryMaps(null);
     }
   }, []);
+
+  const updateReadingSettings = (newSettings: Partial<ReadingSettings>) => {
+    setReadingSettingsState(prev => {
+      const updated = { ...prev, ...newSettings };
+      localStorage.setItem(LOCAL_STORAGE_KEYS.READING_SETTINGS, JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -118,7 +209,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       document.documentElement.classList.remove('dark');
     }
     
-    // Manage syntax highlighting theme
     let styleLink = document.getElementById('highlight-style') as HTMLLinkElement;
     if (!styleLink) {
         styleLink = document.createElement('link');
@@ -145,6 +235,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSubject,
     subjectData,
     isSubjectLoading,
+    glossaryMaps,
+    readingSettings,
+    setFontSize: (size: number) => updateReadingSettings({ fontSize: size }),
+    setLineHeight: (height: number) => updateReadingSettings({ lineHeight: height }),
+    setPageWidth: (width: string) => updateReadingSettings({ pageWidth: width }),
+    setReadTheme: (theme: string) => updateReadingSettings({ readTheme: theme }),
+    setFormatMode: (mode: 'formatted' | 'unformatted' | 'text-only') => updateReadingSettings({ formatMode: mode }),
+    setDisplayMode: (mode: 'bilingual' | 'en' | 'zh') => updateReadingSettings({ displayMode: mode }),
   };
 
   return (

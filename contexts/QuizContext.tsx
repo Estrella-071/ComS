@@ -1,6 +1,9 @@
 
+
 import React, { createContext, useState, useContext, useCallback, ReactNode } from 'react';
-import type { Problem, View } from '../types';
+import type { Problem, View, AnsweredQuestion, QuizResult } from '../types';
+import { LOCAL_STORAGE_KEYS } from '../types';
+import { useAppContext } from './AppContext';
 
 interface QuizConfig {
   problems: Problem[];
@@ -32,6 +35,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [answers, setAnswers] = useState<Map<string, string>>(new Map());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const { subject } = useAppContext();
 
   const startQuiz = useCallback((quizInfo: QuizConfig, onNavigate: (view: View) => void) => {
     const newQuizId = `${quizInfo.title.replace(/\s+/g, '-')}-${Date.now()}`;
@@ -61,9 +65,39 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [quizState]);
 
   const finishQuiz = useCallback(() => {
-    if (isFinished || !quizState) return;
+    if (isFinished || !quizState || !subject) return;
+
+    const score = Array.from(answers).reduce((count, [id, answer]) => {
+        const problem = quizState.problems.find(p => p.id === id);
+        return problem && problem.answer === answer ? count + 1 : count;
+    }, 0);
+
+    const answeredQuestions: AnsweredQuestion[] = quizState.problems.map((p) => ({
+      problemId: p.id,
+      userAnswer: answers.get(p.id) || '',
+      isCorrect: answers.get(p.id) === p.answer,
+    }));
+
+    const result: QuizResult = {
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      quizTitle: quizState.title,
+      subjectId: subject.id,
+      score,
+      totalQuestions: quizState.problems.length,
+      answeredQuestions,
+    };
+
+    try {
+      const history = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY) || '[]');
+      history.unshift(result);
+      localStorage.setItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY, JSON.stringify(history.slice(0, 20)));
+    } catch (error) {
+      console.error("Failed to save quiz history", error);
+    }
+
     setIsFinished(true);
-  }, [isFinished, quizState]);
+  }, [isFinished, quizState, answers, subject]);
 
   const restartQuiz = useCallback(() => {
     if (!quizState) return;

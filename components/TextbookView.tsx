@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -7,10 +8,10 @@ import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { Tooltip } from './Tooltip';
-import type { View, GlossaryTerm, Problem } from '../types';
+import type { View, GlossaryTerm } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
 import { ChevronLeftIcon, XMarkIcon, PlusIcon, MinusIcon, EyeDropperIcon, ArrowsRightLeftIcon, CodeBracketIcon, ChevronUpIcon, GlobeAltIcon, PencilIcon } from './icons';
-import { useAppContext } from '../contexts/AppContext';
+import { useAppContext, addBilingualAnnotations } from '../contexts/AppContext';
 import { SegmentedControl } from './common/SegmentedControl';
 
 interface TextbookViewProps {
@@ -80,52 +81,20 @@ const renderWithGlossary = (node: React.ReactNode, glossaryMap: Record<string, G
 
 export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, setActiveTocId }) => {
     const { t } = useTranslation();
-    const { subjectData } = useAppContext();
+    const { subjectData, glossaryMaps, readingSettings, ...setters } = useAppContext();
+    const { fontSize, lineHeight, pageWidth, readTheme, formatMode, displayMode } = readingSettings;
     const contentRef = useRef<HTMLDivElement>(null);
     
     const { scrollYProgress } = useScroll({ container: contentRef });
     const scaleX = useSpring(scrollYProgress, { stiffness: 200, damping: 40 });
     
-    const [fontSize, setFontSize] = useState(16);
-    const [lineHeight, setLineHeight] = useState(1.7);
-    const [pageWidth, setPageWidth] = useState('max-w-4xl');
-    const [readTheme, setReadTheme] = useState('default');
-    const [formatMode, setFormatMode] = useState<'formatted' | 'unformatted' | 'text-only'>('formatted');
-    const [displayMode, setDisplayMode] = useState<'bilingual' | 'en' | 'zh'>('bilingual');
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [showBackToTop, setShowBackToTop] = useState(false);
 
-    const { glossaryMap, glossaryRegex, zhToEnMap, glossaryRegexForZh } = useMemo(() => {
-        const glossaryData = subjectData?.glossaryData || [];
-        const gMap = glossaryData.reduce<Record<string, GlossaryTerm>>((acc, term) => {
-            acc[term.term.toLowerCase()] = term;
-            return acc;
-        }, {});
-        const gTerms = glossaryData.map(g => g.term);
-        const gRegex = new RegExp(`\\b(${gTerms.join('|')})\\b`, 'gi');
-        
-        const zMap = glossaryData.reduce<Record<string, string>>((acc, term) => {
-            if (term.chinese) acc[term.chinese] = term.term;
-            return acc;
-        }, {});
-        const zTerms = Object.keys(zMap).sort((a, b) => b.length - a.length);
-        const zRegex = new RegExp(`(${zTerms.join('|')})`, 'g');
-
-        return { glossaryMap: gMap, glossaryRegex: gRegex, zhToEnMap: zMap, glossaryRegexForZh: zRegex };
-    }, [subjectData]);
-
-    const addBilingualAnnotations = (markdown: string) => {
-        if (!markdown) return '';
-        const parts = markdown.split(/(```[\s\S]*?```|`[^`]*?`)/);
-        const processedParts = parts.map((part, index) => {
-            if (index % 2 === 1) return part;
-            return part.replace(glossaryRegexForZh, (match) => {
-                const englishTerm = zhToEnMap[match];
-                return englishTerm ? `${match} (${englishTerm})` : match;
-            });
-        });
-        return processedParts.join('');
-    };
+    const { glossaryMap, glossaryRegex } = useMemo(() => {
+      if (!glossaryMaps) return { glossaryMap: {}, glossaryRegex: new RegExp('a^')};
+      return { glossaryMap: glossaryMaps.glossaryMap, glossaryRegex: glossaryMaps.glossaryRegex };
+    }, [glossaryMaps]);
     
     const chapterData = useMemo(() => subjectData?.textbookData[chapterId as keyof typeof subjectData.textbookData], [subjectData, chapterId]);
 
@@ -156,12 +125,25 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
     }
     
     const contentToRender = useMemo(() => {
-        const annotatedZh = addBilingualAnnotations(chapterData.content.zh);
+        const annotatedZh = addBilingualAnnotations(chapterData.content.zh, glossaryMaps);
         if (formatMode === 'text-only') {
             return { en: stripMarkdown(chapterData.content.en), zh: stripMarkdown(annotatedZh) };
         }
         return { en: chapterData.content.en, zh: annotatedZh };
-    }, [formatMode, chapterData.content, addBilingualAnnotations]);
+    }, [formatMode, chapterData.content, glossaryMaps]);
+    
+    const interleavedContent = useMemo(() => {
+      if (displayMode !== 'bilingual') return [];
+      const zhBlocks = contentToRender.zh.split(/\n{2,}/).filter(b => b.trim());
+      const enBlocks = contentToRender.en.split(/\n{2,}/).filter(b => b.trim());
+      const result: Array<{lang: 'zh' | 'en', content: string}> = [];
+      const maxLength = Math.max(zhBlocks.length, enBlocks.length);
+      for (let i = 0; i < maxLength; i++) {
+        if (zhBlocks[i]) result.push({ lang: 'zh', content: zhBlocks[i] });
+        if (enBlocks[i]) result.push({ lang: 'en', content: enBlocks[i] });
+      }
+      return result;
+    }, [displayMode, contentToRender]);
     
     const markdownComponents = {
         h2: ({ node, ...props }: any) => <h2 id={slugify(node.children.map((c: any) => c.value || '').join(''))} {...props} />,
@@ -207,13 +189,18 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
                     )}
                     {displayMode === 'en' && <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>{contentToRender.en}</ReactMarkdown>}
                     {displayMode === 'zh' && <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>{contentToRender.zh}</ReactMarkdown>}
-                    {displayMode === 'bilingual' && (
-                        <>
-                            <div lang="zh"><ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>{contentToRender.zh}</ReactMarkdown></div>
-                            <hr className="my-12 border-t-2 border-dashed border-[var(--ui-border)]" />
-                            <div lang="en"><ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>{contentToRender.en}</ReactMarkdown></div>
-                        </>
-                    )}
+                    {displayMode === 'bilingual' && interleavedContent.map((item, index) => (
+                      <React.Fragment key={index}>
+                        <div lang={item.lang}>
+                          <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>
+                            {item.content}
+                          </ReactMarkdown>
+                        </div>
+                        {item.lang === 'en' && index < interleavedContent.length - 1 && (
+                          <hr className="my-8 border-t-2 border-dashed border-[var(--ui-border)] opacity-50" />
+                        )}
+                      </React.Fragment>
+                    ))}
                 </div>
               </div>
           </div>
@@ -226,7 +213,12 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
                   </motion.button>
                 )}
             </AnimatePresence>
-             <ReadingSettings isOpen={isSettingsOpen} setIsOpen={setIsSettingsOpen} settings={{ fontSize, lineHeight, pageWidth, readTheme, formatMode, displayMode }} setters={{ setFontSize, setLineHeight, setPageWidth, setReadTheme, setFormatMode, setDisplayMode }} />
+             <ReadingSettings 
+                isOpen={isSettingsOpen} 
+                setIsOpen={setIsSettingsOpen} 
+                settings={readingSettings} 
+                setters={setters} 
+             />
         </div>
       </div>
     );

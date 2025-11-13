@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sidebar } from './components/Sidebar';
@@ -13,8 +14,7 @@ import { ShuffleQuizView } from './components/ShuffleQuizView';
 import { BookmarksView } from './components/BookmarksView';
 import { SubjectSelection } from './components/SubjectSelection';
 import { SearchModal } from './components/SearchModal';
-import type { View, QuizResult, AnsweredQuestion } from './types';
-import { LOCAL_STORAGE_KEYS } from './types';
+import type { View } from './types';
 import { useTranslation } from './hooks/useTranslation';
 import { BackgroundCanvas } from './components/BackgroundCanvas';
 import { useAppContext } from './contexts/AppContext';
@@ -75,7 +75,7 @@ const MainApp: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { t } = useTranslation();
-  const { subject, subjectData } = useAppContext();
+  const { subjectData } = useAppContext();
   const { startQuiz, endQuiz } = useQuiz();
   const [direction, setDirection] = useState(0);
   
@@ -124,7 +124,7 @@ const MainApp: React.FC = () => {
   };
   
   const getPageTitle = () => {
-    if (!subject || !subjectData) return '';
+    if (!subjectData) return '';
     
     switch (view.type) {
       case 'overview':
@@ -151,28 +151,6 @@ const MainApp: React.FC = () => {
     }
   };
 
-  const handleFinishQuizAndSave = useCallback((score: number, totalQuestions: number, answeredQuestions: AnsweredQuestion[]) => {
-    if (view.type !== 'quiz' || !subject) return;
-
-    const result: QuizResult = {
-      id: Date.now().toString(),
-      date: new Date().toISOString(),
-      quizTitle: view.title,
-      subjectId: subject.id,
-      score,
-      totalQuestions,
-      answeredQuestions,
-    };
-
-    try {
-      const history = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY) || '[]');
-      history.unshift(result);
-      localStorage.setItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY, JSON.stringify(history.slice(0, 20)));
-    } catch (error) {
-      console.error("Failed to save quiz history", error);
-    }
-  }, [view, subject]);
-
   const renderView = () => {
     switch (view.type) {
       case 'overview':
@@ -184,7 +162,6 @@ const MainApp: React.FC = () => {
                   key={view.id} 
                   onReturnHome={handleResetNavigate}
                   isSidebarOpen={isSidebarOpen}
-                  onSaveResult={handleFinishQuizAndSave}
                 />;
       case 'glossary':
         return <Glossary setView={handleNavigate} />;

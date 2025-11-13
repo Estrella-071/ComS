@@ -1,7 +1,8 @@
 
+
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion';
-import type { Problem, AnsweredQuestion } from '../types';
+import type { Problem } from '../types';
 import { QuestionCard } from './QuestionCard';
 import { useTranslation } from '../hooks/useTranslation';
 import { ChevronLeftIcon, ChevronRightIcon } from './icons';
@@ -14,11 +15,10 @@ import { ToggleSwitch } from './common/ToggleSwitch';
 interface QuizViewProps {
   onReturnHome: (view: View) => void;
   isSidebarOpen: boolean;
-  onSaveResult: (score: number, total: number, answered: AnsweredQuestion[]) => void;
 }
 
 export const QuizView: React.FC<QuizViewProps> = ({ 
-    onReturnHome, isSidebarOpen, onSaveResult
+    onReturnHome, isSidebarOpen
 }) => {
   const [direction, setDirection] = useState(0);
   const [justAnswered, setJustAnswered] = useState(false);
@@ -43,13 +43,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
   
   const handleFinish = useCallback(() => {
     finishQuiz();
-    const answeredQuestions: AnsweredQuestion[] = problems.map((p) => ({
-      problemId: p.id,
-      userAnswer: answers.get(p.id) || '',
-      isCorrect: answers.get(p.id) === p.answer,
-    }));
-    onSaveResult(score, problems.length, answeredQuestions);
-  }, [finishQuiz, problems, answers, onSaveResult, score]);
+  }, [finishQuiz]);
   
   const paginate = useCallback((newDirection: number) => {
     if (autoAdvanceTimer.current) {

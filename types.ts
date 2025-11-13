@@ -6,6 +6,7 @@ export const LOCAL_STORAGE_KEYS = {
   AUTO_SHOW_EXPLANATION: 'autoShowExplanation',
   AUTO_ADVANCE: 'autoAdvance',
   QUIZ_HISTORY: 'quizHistory',
+  READING_SETTINGS: 'readingSettings',
 };
 
 export interface Problem {

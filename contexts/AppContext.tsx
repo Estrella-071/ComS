@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useEffect, useContext, useCallback, useMemo } from 'react';
 import { LOCAL_STORAGE_KEYS } from '../types';
 import { subjects, allData, type SubjectData } from '../data/subjects';
@@ -17,6 +18,7 @@ interface AppContextType {
   subject: Subject | null;
   setSubject: (subjectId: string | null) => void;
   subjectData: SubjectData | null;
+  isSubjectLoading: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -46,12 +48,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return localStorage.getItem(LOCAL_STORAGE_KEYS.AUTO_ADVANCE) === 'true';
   });
   const [subjectId, setSubjectId] = useState<string | null>(null);
+  const [subjectData, setSubjectData] = useState<SubjectData | null>(null);
+  const [isSubjectLoading, setIsSubjectLoading] = useState<boolean>(false);
 
-  const { subject, subjectData } = useMemo(() => {
-    if (!subjectId) return { subject: null, subjectData: null };
-    const foundSubject = subjects.find(s => s.id === subjectId);
-    const data = allData[subjectId as keyof typeof allData]?.data;
-    return { subject: foundSubject || null, subjectData: data || null };
+  const subject = useMemo(() => {
+    if (!subjectId) return null;
+    return subjects.find(s => s.id === subjectId) || null;
   }, [subjectId]);
 
   useEffect(() => {
@@ -91,7 +93,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   const setSubject = useCallback((id: string | null) => {
-    setSubjectId(id);
+    if (id) {
+      const subjectLoader = allData[id]?.loader;
+      if (subjectLoader) {
+        setIsSubjectLoading(true);
+        subjectLoader()
+          .then(data => {
+            setSubjectData(data);
+            setSubjectId(id);
+          })
+          .catch(error => console.error("Failed to load subject data", error))
+          .finally(() => setIsSubjectLoading(false));
+      }
+    } else {
+      setSubjectId(null);
+      setSubjectData(null);
+    }
   }, []);
 
   useEffect(() => {
@@ -126,7 +143,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setAutoAdvance,
     subject,
     setSubject,
-    subjectData
+    subjectData,
+    isSubjectLoading,
   };
 
   return (

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sidebar } from './components/Sidebar';
 import { Glossary } from './components/Glossary';
@@ -19,9 +19,10 @@ import { useTranslation } from './hooks/useTranslation';
 import { BackgroundCanvas } from './components/BackgroundCanvas';
 import { useAppContext } from './contexts/AppContext';
 import { TopBar } from './components/TopBar';
+import { QuizProvider, useQuiz } from './contexts/QuizContext';
 
 const App: React.FC = () => {
-  const { subject } = useAppContext();
+  const { subject, isSubjectLoading } = useAppContext();
 
   return (
     <div className="relative h-screen overflow-hidden lg:p-6">
@@ -38,6 +39,16 @@ const App: React.FC = () => {
             >
               <SubjectSelection />
             </motion.div>
+          ) : isSubjectLoading ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="w-full h-full flex items-center justify-center"
+            >
+              <div className="text-lg font-semibold text-[var(--text-secondary)]">Loading...</div>
+            </motion.div>
           ) : (
             <motion.div
               key="main-app"
@@ -47,7 +58,9 @@ const App: React.FC = () => {
               transition={{ duration: 0.5 }}
               className="h-full"
             >
-              <MainApp />
+              <QuizProvider>
+                <MainApp />
+              </QuizProvider>
             </motion.div>
           )
         }
@@ -63,13 +76,8 @@ const MainApp: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { t } = useTranslation();
   const { subject, subjectData } = useAppContext();
+  const { startQuiz, endQuiz } = useQuiz();
   const [direction, setDirection] = useState(0);
-
-  // Lifted quiz state
-  const [currentQuizId, setCurrentQuizId] = useState<string | null>(null);
-  const [quizAnswers, setQuizAnswers] = useState<Map<string, string>>(new Map());
-  const [quizCurrentIndex, setQuizCurrentIndex] = useState(0);
-  const [isQuizFinished, setIsQuizFinished] = useState(false);
   
   // Lifted Table of Contents state
   const [activeTocId, setActiveTocId] = useState<string | null>(null);
@@ -77,14 +85,14 @@ const MainApp: React.FC = () => {
   const navigateTo = (newView: View, navDirection: number) => {
     setDirection(navDirection);
     
-    // Only reset quiz state if navigating to a *new* quiz
     if (newView.type === 'quiz') {
-      if (currentQuizId !== newView.id) {
-        setQuizCurrentIndex(newView.startIndex || 0);
-        setQuizAnswers(new Map());
-        setIsQuizFinished(false);
-        setCurrentQuizId(newView.id);
-      }
+      startQuiz({ 
+        problems: newView.problems, 
+        title: newView.title, 
+        startIndex: newView.startIndex || 0 
+      }, (v) => navigateTo(v, 1));
+    } else {
+      endQuiz(); // End any active quiz if navigating away
     }
 
     setView(newView);
@@ -143,33 +151,8 @@ const MainApp: React.FC = () => {
     }
   };
 
-  const handleAnswer = (problemId: string, answer: string) => {
-    if (isQuizFinished) return;
-    const newAnswers = new Map(quizAnswers);
-    newAnswers.set(problemId, answer);
-    setQuizAnswers(newAnswers);
-  };
-
-  const handleGoToProblem = (index: number) => {
-    if (view.type === 'quiz' && index >= 0 && index < view.problems.length) {
-      setQuizCurrentIndex(index);
-    }
-  };
-
-  const handleFinishQuiz = useCallback(() => {
-    if (isQuizFinished || view.type !== 'quiz' || view.problems.length === 0 || !subject) return;
-    
-    // FIX: Use a generic on `reduce` to explicitly set the accumulator's type to number and resolve a type inference issue.
-    const score = Array.from(quizAnswers).reduce<number>((count, [id, answer]) => {
-        const problem = view.problems.find(p => p.id === id);
-        return problem && problem.answer === answer ? count + 1 : count;
-    }, 0);
-
-    const answeredQuestions: AnsweredQuestion[] = view.problems.map((p) => ({
-      problemId: p.id,
-      userAnswer: quizAnswers.get(p.id) || '',
-      isCorrect: quizAnswers.get(p.id) === p.answer,
-    }));
+  const handleFinishQuizAndSave = useCallback((score: number, totalQuestions: number, answeredQuestions: AnsweredQuestion[]) => {
+    if (view.type !== 'quiz' || !subject) return;
 
     const result: QuizResult = {
       id: Date.now().toString(),
@@ -177,7 +160,7 @@ const MainApp: React.FC = () => {
       quizTitle: view.title,
       subjectId: subject.id,
       score,
-      totalQuestions: view.problems.length,
+      totalQuestions,
       answeredQuestions,
     };
 
@@ -188,34 +171,7 @@ const MainApp: React.FC = () => {
     } catch (error) {
       console.error("Failed to save quiz history", error);
     }
-    setIsQuizFinished(true);
-  }, [isQuizFinished, view, quizAnswers, subject]);
-  
-  const handleRestartQuiz = () => {
-    if (view.type !== 'quiz') return;
-    setQuizCurrentIndex(view.startIndex || 0);
-    setQuizAnswers(new Map());
-    setIsQuizFinished(false);
-  };
-
-  const quizStateForSidebar = useMemo(() => {
-    if (view.type === 'quiz' && currentQuizId === view.id) {
-      // FIX: Use a generic on `reduce` to explicitly set the accumulator's type to number and resolve a potential type inference issue.
-      const score = Array.from(quizAnswers).reduce<number>((count, [id, answer]) => {
-          const problem = view.problems.find(p => p.id === id);
-          return problem && problem.answer === answer ? count + 1 : count;
-      }, 0);
-
-      return {
-        problems: view.problems,
-        currentIndex: quizCurrentIndex,
-        answers: quizAnswers,
-        isFinished: isQuizFinished,
-        score: score,
-      };
-    }
-    return undefined;
-  }, [view, quizCurrentIndex, quizAnswers, isQuizFinished, currentQuizId]);
+  }, [view, subject]);
 
   const renderView = () => {
     switch (view.type) {
@@ -226,18 +182,9 @@ const MainApp: React.FC = () => {
       case 'quiz':
         return <QuizView 
                   key={view.id} 
-                  problems={view.problems} 
-                  title={view.title} 
-                  setView={handleNavigate} 
                   onReturnHome={handleResetNavigate}
                   isSidebarOpen={isSidebarOpen}
-                  currentIndex={quizCurrentIndex}
-                  answers={quizAnswers}
-                  isFinished={isQuizFinished}
-                  onAnswer={handleAnswer}
-                  onGoToProblem={handleGoToProblem}
-                  onFinish={handleFinishQuiz}
-                  onRestart={handleRestartQuiz}
+                  onSaveResult={handleFinishQuizAndSave}
                 />;
       case 'glossary':
         return <Glossary setView={handleNavigate} />;
@@ -302,8 +249,6 @@ const MainApp: React.FC = () => {
         onResetNavigate={handleResetNavigate}
         isOpen={isSidebarOpen} 
         setIsOpen={setIsSidebarOpen} 
-        quizState={quizStateForSidebar}
-        onGoToQuizProblem={handleGoToProblem}
         activeTocId={activeTocId}
       />
 

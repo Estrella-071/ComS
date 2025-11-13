@@ -25,7 +25,8 @@ export const SubjectSelection: React.FC = () => {
     
     const itemVariants = {
         hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } }
+        // FIX: Added 'as const' to specify the literal type 'spring' for the 'type' property, satisfying framer-motion's Transition type.
+        visible: { y: 0, opacity: 1, transition: { type: 'spring' as const, stiffness: 100 } }
     };
 
     return (

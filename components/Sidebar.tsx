@@ -1,12 +1,12 @@
 
-
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import type { Problem, QuizState, View } from '../types';
+import type { Problem, View } from '../types';
 import { BookOpenIcon, SunIcon, MoonIcon, HomeIcon, ListBulletIcon, CodeBracketIcon, FolderIcon, ChevronDownIcon, StarSolidIcon, ClockIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon, ChevronRightIcon, ChevronLeftIcon, CheckIcon, XMarkIcon, CheckBadgeIcon, ArrowsRightLeftIcon, PencilSquareIcon, MapIcon, Cog6ToothIcon, BookmarkSquareIcon, CompassIcon, BriefcaseIcon, ArrowUturnLeftIcon } from './icons';
 import { useAppContext } from '../contexts/AppContext';
 import { useTranslation } from '../hooks/useTranslation';
 import { Tooltip } from './Tooltip';
+import { useQuiz } from '../contexts/QuizContext';
 
 interface SidebarProps {
   view: View; 
@@ -14,14 +14,14 @@ interface SidebarProps {
   onResetNavigate: (view: View) => void;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  quizState?: QuizState;
-  onGoToQuizProblem?: (index: number) => void;
   activeTocId?: string | null;
 }
 
 // --- Animation Constants ---
-const spring = { type: 'spring', stiffness: 400, damping: 35 };
-const iconSpring = { type: 'spring', stiffness: 500, damping: 30 };
+// FIX: Added 'as const' to specify the literal type 'spring' for the 'type' property, satisfying framer-motion's Transition type.
+const spring = { type: 'spring' as const, stiffness: 400, damping: 35 };
+// FIX: Added 'as const' to specify the literal type 'spring' for the 'type' property, satisfying framer-motion's Transition type.
+const iconSpring = { type: 'spring' as const, stiffness: 500, damping: 30 };
 
 const sidebarVariants = {
     open: { x: 0 },
@@ -263,16 +263,23 @@ const ChapterToc: React.FC<{ chapterId: string; chapterTitle: string; activeTocI
 };
 
 const QuizQuestionNavigator: React.FC<{
-  quizState: QuizState;
-  onGoToQuizProblem: (index: number) => void;
   onNavigate: (view: View) => void;
   flaggedProblems: string[];
-}> = ({ quizState, onGoToQuizProblem, onNavigate, flaggedProblems }) => {
+}> = ({ onNavigate, flaggedProblems }) => {
     const { t } = useTranslation();
-    const { problems, currentIndex, answers, isFinished, score } = quizState;
+    const { quizState, currentIndex, answers, isFinished, goToProblem } = useQuiz();
     const [filter, setFilter] = useState<'all' | 'incorrect' | 'unanswered'>('all');
     const currentQuestionRef = React.useRef<HTMLDivElement>(null);
 
+    const { score, problems } = useMemo(() => {
+        if (!quizState) return { score: 0, problems: [] };
+        const newScore = Array.from(answers).reduce((count, [id, answer]) => {
+            const problem = quizState.problems.find(p => p.id === id);
+            return problem && problem.answer === answer ? count + 1 : count;
+        }, 0);
+        return { score: newScore, problems: quizState.problems };
+    }, [quizState, answers]);
+    
     useEffect(() => {
         if(currentQuestionRef.current) {
             currentQuestionRef.current.scrollIntoView({ block: 'nearest', inline: 'center' });
@@ -309,6 +316,8 @@ const QuizQuestionNavigator: React.FC<{
         }
     };
     
+    if (!quizState) return null;
+
     return (
         <div className="space-y-4">
             <h3 className="flex items-start gap-2 text-md font-bold text-[var(--text-primary)]">
@@ -372,7 +381,7 @@ const QuizQuestionNavigator: React.FC<{
                           transition={spring}
                         >
                           <button
-                            onClick={() => onGoToQuizProblem(index)}
+                            onClick={() => goToProblem(index)}
                             className={`h-11 w-full rounded-md text-sm font-bold transition-all flex items-center justify-center gap-1 ${
                                 isCurrent ? 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)] ring-2 ring-offset-2 ring-[var(--accent-solid)] ring-offset-[var(--bg-color)]' : 
                                 answerState ? (isCorrect ? 'bg-[var(--success-bg)] text-[var(--success-text)]' : 'bg-[var(--error-bg)] text-[var(--error-text)]') :
@@ -400,12 +409,13 @@ interface CurrentViewPaneProps extends Omit<SidebarProps, 'onResetNavigate' | 'i
   flaggedProblems: string[];
 }
 const CurrentViewPane: React.FC<CurrentViewPaneProps> = React.memo((props) => {
-    const { view, onNavigate, quizState, onGoToQuizProblem, activeTocId, flaggedProblems } = props;
+    const { view, onNavigate, activeTocId, flaggedProblems } = props;
     const { t } = useTranslation();
     const { subjectData } = useAppContext();
+    const { quizState } = useQuiz();
     
     const { content, key } = useMemo(() => {
-        const animationKey = view.type === 'textbook' ? view.chapterId : view.type === 'quiz' ? view.id : view.type;
+        const animationKey = view.type === 'textbook' ? view.chapterId : quizState ? quizState.id : view.type;
         let renderedContent: React.ReactNode = null;
 
         switch (view.type) {
@@ -416,10 +426,8 @@ const CurrentViewPane: React.FC<CurrentViewPaneProps> = React.memo((props) => {
                 }
                 break;
             case 'quiz':
-                 if (quizState && onGoToQuizProblem) {
+                 if (quizState) {
                     renderedContent = <QuizQuestionNavigator 
-                                quizState={quizState} 
-                                onGoToQuizProblem={onGoToQuizProblem} 
                                 onNavigate={onNavigate}
                                 flaggedProblems={flaggedProblems}
                             />;
@@ -437,7 +445,7 @@ const CurrentViewPane: React.FC<CurrentViewPaneProps> = React.memo((props) => {
                 );
         }
         return { content: renderedContent, key: animationKey };
-    }, [view, onNavigate, quizState, onGoToQuizProblem, activeTocId, flaggedProblems, subjectData, t]);
+    }, [view, onNavigate, quizState, activeTocId, flaggedProblems, subjectData, t]);
 
     const paneVariants = {
         initial: { opacity: 0, y: 20, scale: 0.95 },

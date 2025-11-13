@@ -117,17 +117,35 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
 
 const QuizDetailView: React.FC<{ result: QuizResult; onBack: () => void; setView: (view: View) => void }> = ({ result, onBack, setView }) => {
     const { t } = useTranslation();
-    const problemsById = useMemo(() => {
-        const subjectProblems = allData[result.subjectId]?.data?.problems;
-        if (!subjectProblems) return {};
-        
-        return subjectProblems.reduce<Record<string, Problem>>((acc, p) => {
-            acc[p.id] = p;
-            return acc;
-        }, {});
+    // FIX: Replaced synchronous useMemo with useState and useEffect to handle asynchronous loading of subject data. This resolves the error from trying to access a non-existent 'data' property.
+    const [problemsById, setProblemsById] = useState<Record<string, Problem> | null>(null);
+
+    useEffect(() => {
+        const fetchProblems = async () => {
+            const subjectLoader = allData[result.subjectId]?.loader;
+            if (subjectLoader) {
+                const subjectData = await subjectLoader();
+                const problemMap = subjectData.problems.reduce<Record<string, Problem>>((acc, p) => {
+                    acc[p.id] = p;
+                    return acc;
+                }, {});
+                setProblemsById(problemMap);
+            } else {
+                setProblemsById({});
+            }
+        };
+        fetchProblems();
     }, [result.subjectId]);
 
     const percentage = result.totalQuestions > 0 ? ((result.score / result.totalQuestions) * 100).toFixed(1) : 0;
+    
+    if (problemsById === null) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <p className="text-[var(--text-secondary)]">Loading quiz details...</p>
+            </div>
+        );
+    }
     
     return (
         <div className="max-w-4xl mx-auto h-full overflow-y-auto px-4 sm:px-6 lg:p-8">

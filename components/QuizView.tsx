@@ -1,66 +1,24 @@
 
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion';
-import type { Problem } from '../types';
+import type { Problem, AnsweredQuestion } from '../types';
 import { QuestionCard } from './QuestionCard';
 import { useTranslation } from '../hooks/useTranslation';
 import { ChevronLeftIcon, ChevronRightIcon } from './icons';
 import type { View } from '../types';
 import { useAppContext } from '../contexts/AppContext';
+import { useQuiz } from '../contexts/QuizContext';
+import { ToggleSwitch } from './common/ToggleSwitch';
+
 
 interface QuizViewProps {
-  problems: Problem[];
-  title: string;
-  setView: (view: View) => void;
   onReturnHome: (view: View) => void;
   isSidebarOpen: boolean;
-  currentIndex: number;
-  answers: Map<string, string>;
-  isFinished: boolean;
-  onAnswer: (problemId: string, answer: string) => void;
-  onGoToProblem: (index: number) => void;
-  onFinish: () => void;
-  onRestart: () => void;
+  onSaveResult: (score: number, total: number, answered: AnsweredQuestion[]) => void;
 }
 
-const ToggleSwitch: React.FC<{ checked: boolean; onChange: (checked: boolean) => void; id: string; }> = ({ checked, onChange, id }) => {
-  const spring = { type: "spring", stiffness: 700, damping: 30 } as const;
-
-  return (
-    <div
-      id={id}
-      onClick={() => onChange(!checked)}
-      className={`flex h-6 w-11 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200 ease-in-out`}
-      style={{
-        backgroundColor: checked ? 'var(--success-solid-bg)' : 'var(--ui-bg-hover)',
-        justifyContent: checked ? 'flex-end' : 'flex-start'
-      }}
-    >
-      <motion.div
-        className="h-5 w-5 rounded-full bg-white shadow-md"
-        layout
-        transition={spring}
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={{ left: 0.5, right: 0.5 }}
-        onDragEnd={(e, info) => {
-          if (checked && info.offset.x < -10) {
-            onChange(false);
-          } else if (!checked && info.offset.x > 10) {
-            onChange(true);
-          }
-        }}
-        onDragStart={(e) => e.stopPropagation()}
-      />
-    </div>
-  );
-};
-
-
 export const QuizView: React.FC<QuizViewProps> = ({ 
-    problems, title, setView, onReturnHome, isSidebarOpen, 
-    currentIndex, answers, isFinished, 
-    onAnswer, onGoToProblem, onFinish, onRestart 
+    onReturnHome, isSidebarOpen, onSaveResult
 }) => {
   const [direction, setDirection] = useState(0);
   const [justAnswered, setJustAnswered] = useState(false);
@@ -68,12 +26,30 @@ export const QuizView: React.FC<QuizViewProps> = ({
   const { autoShowExplanation, setAutoShowExplanation, autoAdvance, setAutoAdvance } = useAppContext();
   const autoAdvanceTimer = useRef<number | null>(null);
   
+  const { 
+    quizState, answers, currentIndex, isFinished, 
+    answerQuestion, goToProblem, finishQuiz, restartQuiz 
+  } = useQuiz();
+
+  const problems = quizState?.problems || [];
+  const title = quizState?.title || '';
+
   const score = useMemo(() => {
     return Array.from(answers).reduce((count: number, [id, answer]) => {
         const problem = problems.find(p => p.id === id);
         return problem && problem.answer === answer ? count + 1 : count;
     }, 0);
   }, [problems, answers]);
+  
+  const handleFinish = useCallback(() => {
+    finishQuiz();
+    const answeredQuestions: AnsweredQuestion[] = problems.map((p) => ({
+      problemId: p.id,
+      userAnswer: answers.get(p.id) || '',
+      isCorrect: answers.get(p.id) === p.answer,
+    }));
+    onSaveResult(score, problems.length, answeredQuestions);
+  }, [finishQuiz, problems, answers, onSaveResult, score]);
   
   const paginate = useCallback((newDirection: number) => {
     if (autoAdvanceTimer.current) {
@@ -85,11 +61,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
     const newIndex = currentIndex + newDirection;
     if (newIndex >= 0 && newIndex < problems.length) {
         setDirection(newDirection);
-        onGoToProblem(newIndex);
+        goToProblem(newIndex);
     } else if (newIndex >= problems.length) {
-        onFinish();
+        handleFinish();
     }
-  }, [currentIndex, problems.length, isFinished, onGoToProblem, onFinish]);
+  }, [currentIndex, problems.length, isFinished, goToProblem, handleFinish]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -104,7 +80,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
   }, [paginate]);
 
   const handleAnswer = (problemId: string, answer: string) => {
-    onAnswer(problemId, answer);
+    answerQuestion(problemId, answer);
     setJustAnswered(true);
   };
   
@@ -195,7 +171,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 <motion.div className="space-y-4" variants={resultContainerVariants}>
                     <motion.button 
                         variants={resultItemVariants}
-                        onClick={onRestart} 
+                        onClick={restartQuiz} 
                         className="w-full bg-[var(--accent-solid)] text-[var(--accent-solid-text)] font-semibold px-6 py-3 rounded-xl hover:bg-[var(--accent-solid-hover)] transition-colors"
                     >
                         {t('restart_quiz')}

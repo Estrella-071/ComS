@@ -34,7 +34,6 @@ export const Glossary: React.FC<GlossaryProps> = ({ setView }) => {
     const chapters = useMemo(() => {
       if (!subjectData) return ['all'];
       const chapterSet = new Set(subjectData.problems.map(p => p.chapter));
-      // FIX: Explicitly type the sort callback parameters to resolve type inference issue.
       return ['all', ...Array.from(chapterSet).sort((a: string, b: string) => parseInt(a) - parseInt(b))];
     }, [subjectData]);
 

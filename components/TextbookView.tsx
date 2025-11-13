@@ -11,6 +11,7 @@ import type { View, GlossaryTerm, Problem } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
 import { ChevronLeftIcon, XMarkIcon, PlusIcon, MinusIcon, EyeDropperIcon, ArrowsRightLeftIcon, CodeBracketIcon, ChevronUpIcon, GlobeAltIcon, PencilIcon } from './icons';
 import { useAppContext } from '../contexts/AppContext';
+import { SegmentedControl } from './common/SegmentedControl';
 
 interface TextbookViewProps {
   chapterId: string;
@@ -96,16 +97,14 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
 
     const { glossaryMap, glossaryRegex, zhToEnMap, glossaryRegexForZh } = useMemo(() => {
         const glossaryData = subjectData?.glossaryData || [];
-        // FIX: Type the accumulator in the callback and remove the generic argument to fix "Untyped function calls" error.
-        const gMap = glossaryData.reduce((acc: Record<string, GlossaryTerm>, term) => {
+        const gMap = glossaryData.reduce<Record<string, GlossaryTerm>>((acc, term) => {
             acc[term.term.toLowerCase()] = term;
             return acc;
         }, {});
         const gTerms = glossaryData.map(g => g.term);
         const gRegex = new RegExp(`\\b(${gTerms.join('|')})\\b`, 'gi');
         
-        // FIX: Type the accumulator in the callback and remove the generic argument to fix "Untyped function calls" error.
-        const zMap = glossaryData.reduce((acc: Record<string, string>, term) => {
+        const zMap = glossaryData.reduce<Record<string, string>>((acc, term) => {
             if (term.chinese) acc[term.chinese] = term.term;
             return acc;
         }, {});
@@ -138,7 +137,6 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
 
     useEffect(() => {
         if (!contentRef.current) return;
-        // FIX: Use NodeList.forEach directly to avoid type issues with Array.from.
         const headingElements = contentRef.current.querySelectorAll('h2, h3');
         const observer = new IntersectionObserver((entries) => {
             const visibleEntries = entries.filter(e => e.isIntersecting);
@@ -233,22 +231,6 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
       </div>
     );
 };
-
-function SegmentedControl<T extends string>({ options, value, onChange, layoutId }: { options: Array<{ label: string; value: T }>, value: T, onChange: (value: T) => void, layoutId: string }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  return (
-    <div ref={containerRef} className="flex items-center space-x-1 rounded-lg bg-[var(--ui-bg)] p-1 w-full">
-      {options.map((option, i) => (
-        <button key={option.value} onClick={() => onChange(option.value)} className={`relative flex-1 rounded-md px-2 py-1.5 text-center text-xs font-medium transition-colors`}>
-          {value === option.value && (
-            <motion.div layoutId={layoutId} className="absolute inset-0 z-0 cursor-grab rounded-md bg-[var(--accent-solid)] shadow-sm" transition={{ type: 'spring', stiffness: 350, damping: 30 }} drag="x" dragConstraints={containerRef} dragElastic={0.2} onDragEnd={(event, info) => { if (!containerRef.current) return; const { width } = containerRef.current.getBoundingClientRect(); const optionWidth = width / options.length; const newIndex = Math.round((info.offset.x + i * optionWidth) / optionWidth); const clampedIndex = Math.max(0, Math.min(options.length - 1, newIndex)); onChange(options[clampedIndex].value); }} whileTap={{ cursor: 'grabbing' }} />
-          )}
-          <span className={`relative z-10 transition-colors ${value === option.value ? 'text-[var(--accent-solid-text)]' : 'text-[var(--text-secondary)]'}`}>{option.label}</span>
-        </button>
-      ))}
-    </div>
-  );
-}
 
 interface ReadingSettingsProps { isOpen: boolean; setIsOpen: (isOpen: boolean) => void; settings: { fontSize: number; lineHeight: number; pageWidth: string; readTheme: string; formatMode: 'formatted' | 'unformatted' | 'text-only'; displayMode: 'en' | 'zh' | 'bilingual'; }; setters: { setFontSize: (size: number) => void; setLineHeight: (height: number) => void; setPageWidth: (width: string) => void; setReadTheme: (theme: string) => void; setFormatMode: (mode: 'formatted' | 'unformatted' | 'text-only') => void; setDisplayMode: (mode: 'en' | 'zh' | 'bilingual') => void; } }
 const ReadingSettings: React.FC<ReadingSettingsProps> = ({ isOpen, setIsOpen, settings, setters }) => {

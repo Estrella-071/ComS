@@ -1,8 +1,17 @@
+
+
+export const LOCAL_STORAGE_KEYS = {
+  THEME: 'theme',
+  FLAGGED_PROBLEMS: 'flaggedProblems',
+  AUTO_SHOW_EXPLANATION: 'autoShowExplanation',
+  AUTO_ADVANCE: 'autoAdvance',
+  QUIZ_HISTORY: 'quizHistory',
+};
+
 export interface Problem {
   id: string;
   chapter: string;
   number: string;
-  isStarred: boolean; // Not present in new data, but can be kept for future use
   text_en: string;
   text_zh: string;
   options: {
@@ -33,7 +42,40 @@ export interface QuizResult {
     id: string; // e.g., timestamp
     date: string;
     quizTitle: string;
+    subjectId: string;
     score: number;
     totalQuestions: number;
     answeredQuestions: AnsweredQuestion[];
 }
+
+export interface QuizState {
+    problems: Problem[];
+    currentIndex: number;
+    answers: Map<string, string>;
+    isFinished: boolean;
+    score: number;
+}
+
+export interface Subject {
+  id: string;
+  name: {
+    en: string;
+    zh: string;
+  };
+  description: {
+    en: string;
+    zh: string;
+  };
+  enabled: boolean;
+}
+
+export type View =
+  | { type: 'home' }
+  | { type: 'overview' }
+  | { type: 'textbook'; chapterId: string }
+  | { type: 'quiz'; id: string; problems: Problem[]; title: string; startIndex?: number; }
+  | { type: 'glossary' }
+  | { type: 'history' }
+  | { type: 'problem'; id: string }
+  | { type: 'question_bank_quiz' }
+  | { type: 'bookmarks' };

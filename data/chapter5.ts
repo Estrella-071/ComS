@@ -2,7 +2,7 @@ import type { Problem } from '../types';
 
 export const problems: Problem[] = [
   {
-    id: '5.1', chapter: '5', number: '5-1', isStarred: false,
+    id: '5.1', chapter: '5', number: '5-1',
     text_en: "The ________ is a computer subsystem that performs operations on data.",
     text_zh: "________ 是一個對資料執行操作的電腦子系統。",
     options: [
@@ -15,7 +15,7 @@ export const problems: Problem[] = [
     explanation_zh: "CPU (Central Processing Unit) 是電腦的核心，負責解釋和執行程式指令，以及對資料進行算術和邏輯運算。",
   },
   {
-    id: '5.2', chapter: '5', number: '5-2', isStarred: false,
+    id: '5.2', chapter: '5', number: '5-2',
     text_en: "________ is a stand-alone storage location that holds data temporarily.",
     text_zh: "________ 是一個獨立的儲存位置，用於暫時保存資料。",
     options: [
@@ -28,7 +28,7 @@ export const problems: Problem[] = [
     explanation_zh: "暫存器（Register）是 CPU 內部的高速儲存單元，用於暫時存放指令、資料和記憶體位址。",
   },
   {
-    id: '5.3', chapter: '5', number: '5-3', isStarred: false,
+    id: '5.3', chapter: '5', number: '5-3',
     text_en: "________ is a unit that can add two inputs.",
     text_zh: "________ 是一個可以將兩個輸入相加的單元。",
     options: [
@@ -41,7 +41,7 @@ export const problems: Problem[] = [
     explanation_zh: "算術邏輯單元（ALU）是 CPU 的一部分，負責執行算術運算（如加法）和邏輯運算。",
   },
   {
-    id: '5.4', chapter: '5', number: '5-4', isStarred: false,
+    id: '5.4', chapter: '5', number: '5-4',
     text_en: "A register in a CPU can hold ________.",
     text_zh: "CPU 中的暫存器可以保存 ________。",
     options: [
@@ -54,7 +54,7 @@ export const problems: Problem[] = [
     explanation_zh: "CPU 中的暫存器用途廣泛，可以儲存正在執行的指令、運算所需的資料、記憶體位址，以及指向下一條指令位址的程式計數器（Program Counter）值。",
   },
   {
-    id: '5.5', chapter: '5', number: '5-5', isStarred: false,
+    id: '5.5', chapter: '5', number: '5-5',
     text_en: "A control unit with five wires can define up to ________ operations.",
     text_zh: "一個有五條線的控制單元最多可以定義 ________ 種操作。",
     options: [
@@ -67,7 +67,7 @@ export const problems: Problem[] = [
     explanation_zh: "一個有 $n$ 條線的控制單元可以定義 $2^n$ 種不同的操作。因此，五條線可以定義 $2^5 = 32$ 種操作。",
   },
   {
-    id: '5.6', chapter: '5', number: '5-6', isStarred: false,
+    id: '5.6', chapter: '5', number: '5-6',
     text_en: "A word can be ________ bits.",
     text_zh: "一個字可以是 ________ 位元。",
     options: [
@@ -80,7 +80,7 @@ export const problems: Problem[] = [
     explanation_zh: "字（word）是電腦進行資料處理和運算的單位，其長度（位元數）取決於 CPU 的設計，可以是 8, 16, 32, 64 位元等。",
   },
   {
-    id: '5.7', chapter: '5', number: '5-7', isStarred: false,
+    id: '5.7', chapter: '5', number: '5-7',
     text_en: "If the memory address space is 16 MB and the word size is 8 bits, then ________ bits are needed to access each word.",
     text_zh: "如果記憶體位址空間為 16 MB，字組大小為 8 位元，那麼需要 ________ 位元來存取每個字。",
     options: [
@@ -93,7 +93,7 @@ export const problems: Problem[] = [
     explanation_zh: "$16 \\text{ MB} = 16 \\times 2^{20} \\text{ Bytes} = 2^4 \\times 2^{20} = 2^{24} \\text{ Bytes}$。因為字組大小是 8 位元（1 Byte），所以記憶體中有 $2^{24}$ 個字。要為 $2^{24}$ 個不同的位址進行編碼，需要 24 位元。",
   },
   {
-    id: '5.8', chapter: '5', number: '5-8', isStarred: false,
+    id: '5.8', chapter: '5', number: '5-8',
     text_en: "The data in ________ is erased if the computer is powered down.",
     text_zh: "如果電腦斷電，________ 中的資料將被清除。",
     options: [
@@ -106,7 +106,7 @@ export const problems: Problem[] = [
     explanation_zh: "RAM (Random Access Memory) 是一種揮發性記憶體，儲存的資料在電腦斷電後會消失。ROM、磁帶和 CD-ROM 都是非揮發性的。",
   },
   {
-    id: '5.9', chapter: '5', number: '5-9', isStarred: false,
+    id: '5.9', chapter: '5', number: '5-9',
     text_en: "________ is a memory type with capacitors that need to be refreshed periodically.",
     text_zh: "________ 是一種帶有電容器的記憶體類型，需要定期刷新。",
     options: [
@@ -119,7 +119,7 @@ export const problems: Problem[] = [
     explanation_zh: "DRAM (Dynamic RAM) 使用電容器來儲存位元，電容器會隨時間漏電，因此需要定期刷新（refresh）來維持資料。",
   },
   {
-    id: '5.10', chapter: '5', number: '5-10', isStarred: false,
+    id: '5.10', chapter: '5', number: '5-10',
     text_en: "________ is a memory type with traditional flip-flop gates to hold data.",
     text_zh: "________ 是一種使用傳統正反器閘門來保存資料的記憶體類型。",
     options: [
@@ -132,7 +132,7 @@ export const problems: Problem[] = [
     explanation_zh: "SRAM (Static RAM) 使用正反器（flip-flop）電路來儲存位元，只要有電力供應，資料就可以一直保持，不需要刷新，速度比 DRAM 快但成本更高。",
   },
   {
-    id: '5.11', chapter: '5', number: '5-11', isStarred: false,
+    id: '5.11', chapter: '5', number: '5-11',
     text_en: "There are ________ bytes in 16 Terabytes.",
     text_zh: "16 TB 中有 ________ 個位元組。",
     options: [
@@ -145,7 +145,7 @@ export const problems: Problem[] = [
     explanation_zh: "$1 \\text{ Terabyte (TB)} = 2^{40} \\text{ Bytes}$。$16 \\text{ TB} = 16 \\times 2^{40} = 2^4 \\times 2^{40} = 2^{44} \\text{ Bytes}$。",
   },
   {
-    id: '5.12', chapter: '5', number: '5-12', isStarred: false,
+    id: '5.12', chapter: '5', number: '5-12',
     text_en: "________ can be programmed and erased using electronic impulses but can remain in a computer during erasure.",
     text_zh: "________ 可以使用電子脈衝進行編程和擦除，但在擦除過程中可以保留在電腦中。",
     options: [
@@ -158,7 +158,7 @@ export const problems: Problem[] = [
     explanation_zh: "EEPROM (Electrically Erasable Programmable Read-Only Memory) 是一種非揮發性記憶體，可以透過電子方式進行編程和擦除，且擦除時不需要從電腦中取出。",
   },
   {
-    id: '5.13', chapter: '5', number: '5-13', isStarred: false,
+    id: '5.13', chapter: '5', number: '5-13',
     text_en: "________ is a type of memory in which the user, not the manufacturer, stores programs that cannot be overwritten.",
     text_zh: "________ 是一種記憶體類型，其中由使用者而非製造商儲存無法覆寫的程式。",
     options: [
@@ -171,7 +171,7 @@ export const problems: Problem[] = [
     explanation_zh: "PROM (Programmable Read-Only Memory) 是一種只能寫入一次的唯讀記憶體，由使用者（而非製造商）使用特殊設備進行編程。",
   },
    {
-    id: '5.14', chapter: '5', number: '5-14', isStarred: false,
+    id: '5.14', chapter: '5', number: '5-14',
     text_en: "Main memory in a computer usually consists of large amounts of ________ speed memory.",
     text_zh: "電腦中的主記憶體通常由大量的 ________ 速度記憶體組成。",
     options: [
@@ -184,7 +184,7 @@ export const problems: Problem[] = [
     explanation_zh: "主記憶體（Main memory），通常指 DRAM，其速度遠低於 CPU 內部的暫存器和快取記憶體。雖然比硬碟快，但在電腦架構層級中，相對於 CPU 的處理速度，其存取速度被視為較低速的組件。",
   },
   {
-    id: '5.15', chapter: '5', number: '5-15', isStarred: false,
+    id: '5.15', chapter: '5', number: '5-15',
     text_en: "A ________ is a storage device to which the user can write information only once.",
     text_zh: "________ 是一種使用者只能寫入資訊一次的儲存設備。",
     options: [
@@ -197,7 +197,7 @@ export const problems: Problem[] = [
     explanation_zh: "CD-R (Compact Disc-Recordable) 是一種一次性寫入的光碟，使用者可以將資料寫入其中，但寫入後無法修改或刪除。",
   },
   {
-    id: '5.16', chapter: '5', number: '5-16', isStarred: false,
+    id: '5.16', chapter: '5', number: '5-16',
     text_en: "A ________ is a storage device that can undergo multiple writes and erasures.",
     text_zh: "________ 是一種可以進行多次寫入和擦除的儲存設備。",
     options: [
@@ -210,7 +210,7 @@ export const problems: Problem[] = [
     explanation_zh: "CD-RW (Compact Disc-ReWritable) 是一種可重複讀寫的光碟，使用者可以多次寫入、刪除和覆寫資料。",
   },
   {
-    id: '5.17', chapter: '5', number: '5-17', isStarred: false,
+    id: '5.17', chapter: '5', number: '5-17',
     text_en: "The smallest storage area on a magnetic disk that can be accessed at one time is a ________.",
     text_zh: "磁碟上一次可以存取的最小儲存區域是 ________。",
     options: [
@@ -223,7 +223,7 @@ export const problems: Problem[] = [
     explanation_zh: "在磁碟中，資料儲存在同心圓的磁軌（track）上，每個磁軌又被劃分為數個磁區（sector）。磁區是磁碟讀寫操作的最小單位。",
   },
   {
-    id: '5.18', chapter: '5', number: '5-18', isStarred: false,
+    id: '5.18', chapter: '5', number: '5-18',
     text_en: "If the memory has $2^{32}$ words, the address bus needs to have ________ wires.",
     text_zh: "如果記憶體有 $2^{32}$ 個字，位址匯流排需要有 ________ 條線。",
     options: [
@@ -236,7 +236,7 @@ export const problems: Problem[] = [
     explanation_zh: "位址匯流排的線數（寬度）決定了 CPU 可以定址的最大記憶體空間。若要定址 $2^N$ 個字，位址匯流排需要有 $N$ 條線。因此，對於 $2^{32}$ 個字，需要 32 條線。",
   },
   {
-    id: '5.19', chapter: '5', number: '5-19', isStarred: false,
+    id: '5.19', chapter: '5', number: '5-19',
     text_en: "A control bus with eight wires can define ________ operations.",
     text_zh: "具有八條線的控制匯流排可以定義 ________ 種操作。",
     options: [
@@ -249,7 +249,7 @@ export const problems: Problem[] = [
     explanation_zh: "控制匯流排的線數決定了可以傳遞的控制信號種類。有 $n$ 條線的控制匯流排可以定義 $2^n$ 種不同的操作。因此，八條線可以定義 $2^8 = 256$ 種操作。",
   },
   {
-    id: '5.20', chapter: '5', number: '5-20', isStarred: false,
+    id: '5.20', chapter: '5', number: '5-20',
     text_en: "A ________ controller is a high-speed serial interface that transfers data in packets.",
     text_zh: "________ 控制器是一種高速串行接口，以封包形式傳輸數據。",
     options: [
@@ -262,7 +262,7 @@ export const problems: Problem[] = [
     explanation_zh: "USB (Universal Serial Bus) 和 FireWire (IEEE 1394) 都是高速的序列傳輸介面，它們以封包（packets）的形式傳輸資料，並支援熱插拔。",
   },
   {
-    id: '5.21', chapter: '5', number: '5-21', isStarred: false,
+    id: '5.21', chapter: '5', number: '5-21',
     text_en: "The three steps in the running of a program on a computer are performed in the specific order ________.",
     text_zh: "在電腦上運行程式的三個步驟按特定順序 ________ 執行。",
     options: [
@@ -275,7 +275,7 @@ export const problems: Problem[] = [
     explanation_zh: "CPU 執行一個指令的週期（machine cycle）包含三個主要步驟：提取（fetch）指令、解碼（decode）指令，以及執行（execute）指令。",
   },
   {
-    id: '5.22', chapter: '5', number: '5-22', isStarred: false,
+    id: '5.22', chapter: '5', number: '5-22',
     text_en: "In the ________ method for synchronizing the operation of the CPU with an I/O device, the I/O device informs the CPU when it is ready for data transfer.",
     text_zh: "在同步 CPU 與 I/O 設備操作的 ________ 方法中，I/O 設備在準備好進行數據傳輸時通知 CPU。",
     options: [
@@ -288,7 +288,7 @@ export const problems: Problem[] = [
     explanation_zh: "在中斷驅動 I/O (interrupt-driven I/O) 模式中，CPU 在發出 I/O 命令後可以繼續執行其他任務。當 I/O 設備完成操作並準備好傳輸資料時，會發送一個中斷信號來通知 CPU。",
   },
   {
-    id: '5.23', chapter: '5', number: '5-23', isStarred: false,
+    id: '5.23', chapter: '5', number: '5-23',
     text_en: "In the ________ method for synchronizing the operation of the CPU with an I/O device, the CPU is idle until the I/O operation is finished.",
     text_zh: "在同步 CPU 與 I/O 設備操作的 ________ 方法中，CPU 處於閒置狀態，直到 I/O 操作完成。",
     options: [
@@ -301,7 +301,7 @@ export const problems: Problem[] = [
     explanation_zh: "在程式控制 I/O (programmed I/O) 模式中，CPU 會不斷地檢查 I/O 設備的狀態，直到設備準備好為止。在這個等待過程中，CPU 處於閒置狀態，無法執行其他任務，效率較低。",
   },
   {
-    id: '5.24', chapter: '5', number: '5-24', isStarred: false,
+    id: '5.24', chapter: '5', number: '5-24',
     text_en: "In the ________ method for synchronizing the operation of the CPU with an I/O device, a large block of data can be passed from an I/O device to memory directly.",
     text_zh: "在同步 CPU 與 I/O 設備操作的 ________ 方法中，大塊數據可以直接從 I/O 設備傳遞到記憶體。",
     options: [

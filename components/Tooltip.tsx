@@ -36,7 +36,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
     >
       {children}
       {isVisible && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs bg-slate-900/90 dark:bg-zinc-800/90 text-white text-sm rounded-lg px-3 py-1.5 z-50 shadow-lg pointer-events-none backdrop-blur-sm animate-fade-in-up">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs bg-slate-900/90 dark:bg-zinc-800/90 text-white text-sm rounded-lg px-3 py-1.5 z-[var(--z-tooltip)] shadow-lg pointer-events-none backdrop-blur-sm animate-fade-in-up">
           {content}
           <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-slate-900/90 dark:border-t-zinc-800/90"></div>
         </div>

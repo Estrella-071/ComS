@@ -2,7 +2,7 @@ import type { Problem } from '../types';
 
 export const problems: Problem[] = [
   {
-    id: '2.1', chapter: '2', number: '2-1', isStarred: false,
+    id: '2.1', chapter: '2', number: '2-1',
     text_en: "The base of the decimal number system is ________.",
     text_zh: "十進位數字系統的基底是 ________。",
     options: [
@@ -15,7 +15,7 @@ export const problems: Problem[] = [
     explanation_zh: "十進位（Decimal）數字系統以 10 為基底，使用 0 到 9 十個數字來表示數值。",
   },
   {
-    id: '2.2', chapter: '2', number: '2-2', isStarred: false,
+    id: '2.2', chapter: '2', number: '2-2',
     text_en: "The base of the binary number system is ________.",
     text_zh: "二進位數字系統的基底是 ________。",
     options: [
@@ -28,7 +28,7 @@ export const problems: Problem[] = [
     explanation_zh: "二進位（Binary）數字系統以 2 為基底，只使用 0 和 1 兩個數字來表示數值，是電腦內部運作的基礎。",
   },
   {
-    id: '2.3', chapter: '2', number: '2-3', isStarred: false,
+    id: '2.3', chapter: '2', number: '2-3',
     text_en: "The base of the octal number system is ________.",
     text_zh: "八進位數字系統的基底是 ________。",
     options: [
@@ -41,7 +41,7 @@ export const problems: Problem[] = [
     explanation_zh: "八進位（Octal）數字系統以 8 為基底，使用 0 到 7 八個數字來表示數值。",
   },
   {
-    id: '2.4', chapter: '2', number: '2-4', isStarred: false,
+    id: '2.4', chapter: '2', number: '2-4',
     text_en: "The base of the hexadecimal number system is ________.",
     text_zh: "十六進位數字系統的基底是 ________。",
     options: [
@@ -54,7 +54,7 @@ export const problems: Problem[] = [
     explanation_zh: "十六進位（Hexadecimal）數字系統以 16 為基底，使用 0-9 和 A-F（代表 10-15）十六個符號來表示數值。",
   },
   {
-    id: '2.5', chapter: '2', number: '2-5', isStarred: false,
+    id: '2.5', chapter: '2', number: '2-5',
     text_en: "When converting a decimal integer to base b, we repeatedly ________ b.",
     text_zh: "將十進位整數轉換為基底 b 時，我們重複地 ________ b。",
     options: [
@@ -67,7 +67,7 @@ export const problems: Problem[] = [
     explanation_zh: "將十進位整數轉換為其他基底 b 的方法是「除 b 取餘法」，即重複地用該數除以 b，並記錄每次的餘數，直到商為 0，然後將餘數由下往上排列。",
   },
   {
-    id: '2.6', chapter: '2', number: '2-6', isStarred: false,
+    id: '2.6', chapter: '2', number: '2-6',
     text_en: "When converting a decimal fraction to base b, we repeatedly ________ b.",
     text_zh: "將十進位分數轉換為基底 b 時，我們重複地 ________ b。",
     options: [
@@ -80,7 +80,7 @@ export const problems: Problem[] = [
     explanation_zh: "將十進位分數（小數）轉換為其他基底 b 的方法是「乘 b 取整法」，即重複地用小數部分乘以 b，並記錄每次的整數部分，直到小數部分為 0 或達到所需精度。",
   },
   {
-    id: '2.7', chapter: '2', number: '2-7', isStarred: false,
+    id: '2.7', chapter: '2', number: '2-7',
     text_en: "Which of the following representations is erroneous?",
     text_zh: "以下哪個表示法是錯誤的？",
     options: [
@@ -93,7 +93,7 @@ export const problems: Problem[] = [
     explanation_zh: "八進位（Octal, base 8）系統中只會出現 0 到 7 的數字，因此 $(349)_8$ 是錯誤的表示法，因為它包含了數字 9。",
   },
   {
-    id: '2.8', chapter: '2', number: '2-8', isStarred: false,
+    id: '2.8', chapter: '2', number: '2-8',
     text_en: "Which of the following representations is erroneous?",
     text_zh: "以下哪個表示法是錯誤的？",
     options: [
@@ -106,7 +106,7 @@ export const problems: Problem[] = [
     explanation_zh: "二進位（Binary, base 2）系統中只會出現 0 和 1 的數字，因此 $(10211)_2$ 是錯誤的表示法，因為它包含了數字 2。",
   },
   {
-    id: '2.9', chapter: '2', number: '2-9', isStarred: false,
+    id: '2.9', chapter: '2', number: '2-9',
     text_en: "Which of the following representations is erroneous?",
     text_zh: "以下哪個表示法是錯誤的？",
     options: [
@@ -119,7 +119,7 @@ export const problems: Problem[] = [
     explanation_zh: "十六進位（Hexadecimal, base 16）系統中只會出現 0-9 和 A-F 的符號，因此 $(EEG)_{16}$ 是錯誤的表示法，因為它包含了符號 G。",
   },
   {
-    id: '2.10', chapter: '2', number: '2-10', isStarred: false,
+    id: '2.10', chapter: '2', number: '2-10',
     text_en: "Which of the following representations is erroneous?",
     text_zh: "以下哪個表示法是錯誤的？",
     options: [
@@ -132,7 +132,7 @@ export const problems: Problem[] = [
     explanation_zh: "十進位（Decimal, base 10）系統中只會出現 0 到 9 的數字，22A 包含字母 A，因此不是一個有效的十進位表示。除非上下文另有說明，否則沒有下標的數字通常被視為十進位。",
   },
   {
-    id: '2.11', chapter: '2', number: '2-11', isStarred: false,
+    id: '2.11', chapter: '2', number: '2-11',
     text_en: "Which of the following is equivalent to 12 in decimal?",
     text_zh: "以下哪個等於十進位的 12？",
     options: [
@@ -145,7 +145,7 @@ export const problems: Problem[] = [
     explanation_zh: "十進位的 12 等於十六進位的 C。 $(1110)_2 = 14_{10}$, $(15)_8 = 13_{10}$。",
   },
   {
-    id: '2.12', chapter: '2', number: '2-12', isStarred: false,
+    id: '2.12', chapter: '2', number: '2-12',
     text_en: "Which of the following is equivalent to 24 in decimal?",
     text_zh: "以下哪個等於十進位的 24？",
     options: [

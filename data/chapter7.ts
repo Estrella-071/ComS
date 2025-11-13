@@ -2,7 +2,7 @@ import type { Problem } from '../types';
 
 export const problems: Problem[] = [
   {
-    id: '7.1', chapter: '7', number: '7-1', isStarred: false,
+    id: '7.1', chapter: '7', number: '7-1',
     text_en: "________ is a program that facilitates the execution of other programs.",
     text_zh: "________ 是一個促進其他程式執行的程式。",
     options: [
@@ -15,7 +15,7 @@ export const problems: Problem[] = [
     explanation_zh: "作業系統（Operating System）是一種系統軟體，它管理電腦硬體與軟體資源，並為電腦程式提供通用服務。",
   },
   {
-    id: '7.2', chapter: '7', number: '7-2', isStarred: false,
+    id: '7.2', chapter: '7', number: '7-2',
     text_en: "________ supervises the activity of each component in a computer system.",
     text_zh: "________ 監管電腦系統中每個元件的活動。",
     options: [
@@ -28,7 +28,7 @@ export const problems: Problem[] = [
     explanation_zh: "作業系統的核心功能之一就是作為資源管理器，監管並協調所有硬體元件（如CPU、記憶體、I/O設備）的活動。",
   },
   {
-    id: '7.3', chapter: '7', number: '7-3', isStarred: false,
+    id: '7.3', chapter: '7', number: '7-3',
     text_en: "Multi-programming requires a ________ operating-system.",
     text_zh: "多重程式設計需要 ________ 作業系統。",
     options: [
@@ -41,7 +41,7 @@ export const problems: Problem[] = [
     explanation_zh: "多重程式設計（Multi-programming）的核心是讓多個程式同時存在於記憶體中，並透過CPU排程快速切換執行。分時（Time-sharing）作業系統是實現此目標的一種關鍵技術，它讓每個程式輪流使用CPU一小段時間。",
   },
   {
-    id: '7.4', chapter: '7', number: '7-4', isStarred: false,
+    id: '7.4', chapter: '7', number: '7-4',
     text_en: "________ is multi-programming with swapping.",
     text_zh: "________ 是帶有交換（swapping）的多重程式設計。",
     options: [
@@ -54,7 +54,7 @@ export const problems: Problem[] = [
     explanation_zh: "交換（Swapping）是指將整個行程（process）移出主記憶體到次級儲存體。請求分頁（Demand paging）是一種虛擬記憶體技術，它只在需要時才將頁面（page）從磁碟載入記憶體，這是一種更有效率的交換形式。",
   },
   {
-    id: '7.5', chapter: '7', number: '7-5', isStarred: false,
+    id: '7.5', chapter: '7', number: '7-5',
     text_en: "________ is multi-programming without swapping.",
     text_zh: "________ 是不帶有交換（swapping）的多重程式設計。",
     options: [
@@ -67,7 +67,7 @@ export const problems: Problem[] = [
     explanation_zh: "分割（Partitioning）是一種早期的記憶體管理技術，它將記憶體劃分為多個固定或動態的區域，每個程式完全載入到一個分割區中執行。在此模型中，程式一旦載入就不會被交換出去，直到執行完畢。",
   },
   {
-    id: '7.6', chapter: '7', number: '7-6', isStarred: false,
+    id: '7.6', chapter: '7', number: '7-6',
     text_en: "In ________, only one program can reside in memory for execution.",
     text_zh: "在 ________ 中，記憶體中一次只能有一個程式駐留以供執行。",
     options: [
@@ -80,20 +80,20 @@ export const problems: Problem[] = [
     explanation_zh: "單道程式設計（Mono-programming）是最早期的作業系統模型，記憶體中一次只存放一個使用者程式，CPU完全被該程式獨佔直到結束。",
   },
   {
-    id: '7.7', chapter: '7', number: '7-7', isStarred: false,
+    id: '7.7', chapter: '7', number: '7-7',
     text_en: "________ is a multi-programming method in which multiple programs are entirely in memory with each program occupying a contiguous space.",
     text_zh: "________ 是一種多重程式設計方法，其中多個程式完全存在於記憶體中，每個程式佔用一個連續的空間。",
     options: [
       { key: 'a', text_en: "Partitioning", text_zh: "分割" },
-      { key: 'b', text_en: "Demand segmentation", text_zh: "請求分段" },
-      { key: 'c', text_en: "Paging", text_zh: "分頁" },
-      { key: 'd', text_en: "Demand paging", text_zh: "請求分頁" },
+      { key: 'b', text_en: "demand segmentation", text_zh: "請求分段" },
+      { key: 'c', text_en: "paging", text_zh: "分頁" },
+      { key: 'd', text_en: "demand paging", text_zh: "請求分頁" },
     ],
     answer: 'a',
     explanation_zh: "分割（Partitioning）是將記憶體劃分為連續的區塊，並將整個程式載入其中一個區塊。這是最早期的多重程式設計記憶體管理方式。",
   },
   {
-    id: '7.8', chapter: '7', number: '7-8', isStarred: false,
+    id: '7.8', chapter: '7', number: '7-8',
     text_en: "In paging, a program is divided into equally sized sections called ________.",
     text_zh: "在分頁技術中，程式被劃分為大小相等的區塊，稱為 ________。",
     options: [
@@ -106,7 +106,7 @@ export const problems: Problem[] = [
     explanation_zh: "在分頁（Paging）記憶體管理中，程式的邏輯位址空間被劃分為固定大小的區塊，稱為頁面（pages）。實體記憶體則被劃分為同樣大小的頁框（frames）。",
   },
   {
-    id: '7.9', chapter: '7', number: '7-9', isStarred: false,
+    id: '7.9', chapter: '7', number: '7-9',
     text_en: "In ________, the program can be divided into differently sized sections.",
     text_zh: "在 ________ 中，程式可以被劃分為不同大小的區塊。",
     options: [
@@ -119,7 +119,7 @@ export const problems: Problem[] = [
     explanation_zh: "分段（Segmentation）是一種記憶體管理技術，它將程式的邏輯位址空間劃分為多個大小可變的段（segments），每個段對應程式的一個邏輯單元（如主程式、子程式、堆疊等）。請求分段是其與虛擬記憶體結合的技術。",
   },
   {
-    id: '7.10', chapter: '7', number: '7-10', isStarred: false,
+    id: '7.10', chapter: '7', number: '7-10',
     text_en: "In ________, the program can be divided into equally sized sections called pages, but the pages need not be in memory at the same time for execution.",
     text_zh: "在 ________ 中，程式可以被劃分為大小相等的稱為頁面的區塊，但執行時這些頁面不必同時都在記憶體中。",
     options: [
@@ -132,7 +132,7 @@ export const problems: Problem[] = [
     explanation_zh: "請求分頁（Demand paging）是虛擬記憶體的核心技術。它允許程式在只有部分頁面載入主記憶體的情況下執行，當需要用到不在記憶體中的頁面時，再從磁碟載入。",
   },
   {
-    id: '7.11', chapter: '7', number: '7-11', isStarred: false,
+    id: '7.11', chapter: '7', number: '7-11',
     text_en: "A process in the ________ state can go to either the ready, terminated, or waiting states.",
     text_zh: "處於 ________ 狀態的行程可以轉換到就緒、終止或等待狀態。",
     options: [
@@ -145,7 +145,7 @@ export const problems: Problem[] = [
     explanation_zh: "處於執行中（running）狀態的行程：1. 時間片用完會回到就緒（ready）狀態；2. 執行完畢會進入終止（terminated）狀態；3. 請求 I/O 操作會進入等待（waiting）狀態。",
   },
   {
-    id: '7.12', chapter: '7', number: '7-12', isStarred: false,
+    id: '7.12', chapter: '7', number: '7-12',
     text_en: "A process in the ready state goes to the running state when ________.",
     text_zh: "處於就緒狀態的行程在 ________ 時進入執行狀態。",
     options: [
@@ -158,7 +158,7 @@ export const problems: Problem[] = [
     explanation_zh: "行程排程器（Scheduler）會從就緒佇列（ready queue）中選擇一個行程，並分配 CPU 給它，此時該行程的狀態就從就緒（ready）轉為執行（running）。",
   },
   {
-    id: '7.13', chapter: '7', number: '7-13', isStarred: false,
+    id: '7.13', chapter: '7', number: '7-13',
     text_en: "A program becomes a ________ when it is selected by the operating system and brought to the hold state.",
     text_zh: "當一個程式被作業系統選中並帶到保持狀態時，它就變成了一個 ________。",
     options: [
@@ -171,7 +171,7 @@ export const problems: Problem[] = [
     explanation_zh: "在批次處理系統中，使用者提交的程式首先被視為一個工作（job）。作業系統的工作排程器會從工作池中選取工作，準備將其載入記憶體執行。",
   },
   {
-    id: '7.14', chapter: '7', number: '7-14', isStarred: false,
+    id: '7.14', chapter: '7', number: '7-14',
     text_en: "Every process is ________.",
     text_zh: "每個行程都是 ________。",
     options: [
@@ -184,7 +184,7 @@ export const problems: Problem[] = [
     explanation_zh: "一個行程（process）是一個正在執行中的程式實例。它源自於一個程式碼（program），並由作業系統當作一個工作（job）來管理其資源和執行。",
   },
   {
-    id: '7.15', chapter: '7', number: '7-15', isStarred: false,
+    id: '7.15', chapter: '7', number: '7-15',
     text_en: "The ________ scheduler creates a process from a job and changes a process back to a job.",
     text_zh: "________ 排程器從工作中創建一個行程，並將行程變回工作。",
     options: [
@@ -197,7 +197,7 @@ export const problems: Problem[] = [
     explanation_zh: "工作排程器（Job scheduler），也稱為長期排程器，負責從工作池中選擇工作，為其分配資源並創建行程，將其放入就緒佇列。當行程結束時，它也負責釋放資源。",
   },
   {
-    id: '7.16', chapter: '7', number: '7-16', isStarred: false,
+    id: '7.16', chapter: '7', number: '7-16',
     text_en: "The ________ scheduler moves a process from one process state to another.",
     text_zh: "________ 排程器將行程從一個狀態移動到另一個狀態。",
     options: [
@@ -210,7 +210,7 @@ export const problems: Problem[] = [
     explanation_zh: "行程排程器（Process scheduler），也稱為短期排程器或 CPU 排程器，負責管理行程在就緒、執行和等待等狀態之間的轉換。",
   },
   {
-    id: '7.17', chapter: '7', number: '7-17', isStarred: false,
+    id: '7.17', chapter: '7', number: '7-17',
     text_en: "To prevent ________, an operating system can put resource restrictions on processes.",
     text_zh: "為了防止 ________，作業系統可以對行程施加資源限制。",
     options: [
@@ -223,7 +223,7 @@ export const problems: Problem[] = [
     explanation_zh: "死結（Deadlock）是指兩個或多個行程互相等待對方釋放資源而導致所有行程都無法繼續執行的情況。作業系統可以透過資源分配策略來預防或避免死結的發生。",
   },
   {
-    id: '7.18', chapter: '7', number: '7-18', isStarred: false,
+    id: '7.18', chapter: '7', number: '7-18',
     text_en: "________ can occur if a process has too many resource restrictions.",
     text_zh: "如果一個行程有太多的資源限制，可能會發生 ________。",
     options: [
@@ -236,7 +236,7 @@ export const problems: Problem[] = [
     explanation_zh: "饑餓（Starvation）是指一個行程因為優先權過低或其他原因，長時間無法獲得執行所需的資源（如CPU時間），導致其一直無法向前推進。過多的限制可能導致這種情況。",
   },
   {
-    id: '7.19', chapter: '7', number: '7-19', isStarred: false,
+    id: '7.19', chapter: '7', number: '7-19',
     text_en: "The ________ manager is responsible for archiving and backup.",
     text_zh: "________ 管理器負責存檔和備份。",
     options: [
@@ -249,7 +249,7 @@ export const problems: Problem[] = [
     explanation_zh: "檔案管理器（File manager）是作業系統的一部分，負責管理檔案系統，包括檔案的創建、刪除、讀寫，以及存檔（archiving）和備份（backup）等操作。",
   },
   {
-    id: '7.20', chapter: '7', number: '7-20', isStarred: false,
+    id: '7.20', chapter: '7', number: '7-20',
     text_en: "The ________ manager is responsible for access to I/O devices.",
     text_zh: "________ 管理器負責對 I/O 設備的存取。",
     options: [

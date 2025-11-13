@@ -2,7 +2,7 @@ import type { Problem } from '../types';
 
 export const problems: Problem[] = [
   {
-    id: '6.1', chapter: '6', number: '6-1', isStarred: false,
+    id: '6.1', chapter: '6', number: '6-1',
     text_en: "The TCP/IP model has ________ layers.",
     text_zh: "TCP/IP 模型有 ________ 層。",
     options: [
@@ -15,7 +15,7 @@ export const problems: Problem[] = [
     explanation_zh: "TCP/IP 模型通常被劃分為五個層次（從下到上）：實體層、資料連結層、網路層、傳輸層和應用層。有時也會看到將實體層和資料連結層合併為網路介面層的四層模型。",
   },
   {
-    id: '6.2', chapter: '6', number: '6-2', isStarred: false,
+    id: '6.2', chapter: '6', number: '6-2',
     text_en: "The ________ layer of the TCP/IP protocol suite provides services for end users.",
     text_zh: "TCP/IP 協定套件的 ________ 層為終端使用者提供服務。",
     options: [
@@ -28,7 +28,7 @@ export const problems: Problem[] = [
     explanation_zh: "應用層（application layer）是 TCP/IP 模型的最高層，它直接為終端使用者的應用程式提供網路服務，例如 HTTP（網頁瀏覽）、FTP（檔案傳輸）、SMTP（電子郵件）等。",
   },
   {
-    id: '6.3', chapter: '6', number: '6-3', isStarred: false,
+    id: '6.3', chapter: '6', number: '6-3',
     text_en: "The ________ layer of the TCP/IP protocol suite transmits a bit stream over a physical medium.",
     text_zh: "TCP/IP 協定套件的 ________ 層透過實體媒介傳輸位元流。",
     options: [
@@ -41,7 +41,7 @@ export const problems: Problem[] = [
     explanation_zh: "實體層（physical layer）是 TCP/IP 模型的最底層，負責在實體媒介（如電纜、光纖）上傳輸原始的位元流（bit stream）。",
   },
   {
-    id: '6.4', chapter: '6', number: '6-4', isStarred: false,
+    id: '6.4', chapter: '6', number: '6-4',
     text_en: "The ________ layer of the TCP/IP protocol suite is responsible for node-to-node delivery of a frame between two adjacent nodes.",
     text_zh: "TCP/IP 協定套件的 ________ 層負責在兩個相鄰節點之間進行節點到節點的訊框傳遞。",
     options: [
@@ -54,7 +54,7 @@ export const problems: Problem[] = [
     explanation_zh: "資料連結層（data-link layer）負責將網路層的封包（packet）封裝成訊框（frame），並在兩個直接相連的節點之間（hop-to-hop 或 node-to-node）進行可靠的傳輸。",
   },
   {
-    id: '6.5', chapter: '6', number: '6-5', isStarred: false,
+    id: '6.5', chapter: '6', number: '6-5',
     text_en: "The ________ layer of the TCP/IP protocol suite is responsible for source-to-destination delivery of the entire message.",
     text_zh: "TCP/IP 協定套件的 ________ 層負責整個訊息的來源到目的地傳遞。",
     options: [
@@ -67,7 +67,7 @@ export const problems: Problem[] = [
     explanation_zh: "網路層（network layer）負責將封包從來源主機傳送到目的主機，實現主機到主機（host-to-host）或來源到目的地（source-to-destination）的傳遞。它處理路由和邏輯定址（IP位址）。",
   },
   {
-    id: '6.6', chapter: '6', number: '6-6', isStarred: false,
+    id: '6.6', chapter: '6', number: '6-6',
     text_en: "What is the domain name in the email address kayla@nasa.gov?",
     text_zh: "電子郵件地址 kayla@nasa.gov 中的網域名稱是什麼？",
     options: [
@@ -80,7 +80,7 @@ export const problems: Problem[] = [
     explanation_zh: "在電子郵件地址中，@ 符號後面的部分是網域名稱（domain name），它指定了郵件伺服器所在的網路域。在此例中為 nasa.gov。",
   },
   {
-    id: '6.7', chapter: '6', number: '6-7', isStarred: false,
+    id: '6.7', chapter: '6', number: '6-7',
     text_en: "Which physical topology uses a hub or switch?",
     text_zh: "哪種實體拓撲使用集線器或交換器？",
     options: [
@@ -93,7 +93,7 @@ export const problems: Problem[] = [
     explanation_zh: "星狀拓撲（star topology）是目前最常見的區域網路拓撲，所有設備都連接到一個中心的節點，如集線器（hub）或交換器（switch）。",
   },
   {
-    id: '6.8', chapter: '6', number: '6-8', isStarred: false,
+    id: '6.8', chapter: '6', number: '6-8',
     text_en: "IP addresses are currently ________ bits in length.",
     text_zh: "目前的 IP 位址長度為 ________ 位元。",
     options: [
@@ -106,7 +106,7 @@ export const problems: Problem[] = [
     explanation_zh: "目前廣泛使用的 IPv4 (Internet Protocol version 4) 位址由 32 位元組成，通常寫成四個用點分隔的十進位數（例如 192.168.1.1）。",
   },
   {
-    id: '6.9', chapter: '6', number: '6-9', isStarred: false,
+    id: '6.9', chapter: '6', number: '6-9',
     text_en: "________ protocol(s) is one of the protocols in the transport layer.",
     text_zh: "________ 協定是傳輸層中的協定之一。",
     options: [
@@ -119,7 +119,7 @@ export const problems: Problem[] = [
     explanation_zh: "傳輸層（transport layer）負責提供端對端（end-to-end）的通訊服務。主要的協定有 TCP (提供可靠、面向連接的服務)、UDP (提供不可靠、無連接的服務) 和 SCTP (Stream Control Transmission Protocol)。",
   },
   {
-    id: '6.10', chapter: '6', number: '6-10', isStarred: false,
+    id: '6.10', chapter: '6', number: '6-10',
     text_en: "________ is a protocol for file transfer.",
     text_zh: "________ 是一種用於檔案傳輸的協定。",
     options: [
@@ -132,7 +132,7 @@ export const problems: Problem[] = [
     explanation_zh: "FTP (File Transfer Protocol) 是一個專門用於在網路上進行檔案傳輸的應用層協定。",
   },
   {
-    id: '6.11', chapter: '6', number: '6-11', isStarred: false,
+    id: '6.11', chapter: '6', number: '6-11',
     text_en: "________ is a protocol for email services.",
     text_zh: "________ 是一種用於電子郵件服務的協定。",
     options: [
@@ -145,7 +145,7 @@ export const problems: Problem[] = [
     explanation_zh: "SMTP (Simple Mail Transfer Protocol) 是用於傳送電子郵件的標準應用層協定。",
   },
   {
-    id: '6.12', chapter: '6', number: '6-12', isStarred: false,
+    id: '6.12', chapter: '6', number: '6-12',
     text_en: "________ is a protocol for accessing and transferring documents on the WWW.",
     text_zh: "________ 是用於在全球資訊網上存取和傳輸文件的協定。",
     options: [

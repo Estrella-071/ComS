@@ -2,7 +2,7 @@ import type { Problem } from '../types';
 
 export const problems: Problem[] = [
   {
-    id: '3.1', chapter: '3', number: '3-1', isStarred: false,
+    id: '3.1', chapter: '3', number: '3-1',
     text_en: "A byte consists of ________ bits.",
     text_zh: "一個位元組由 ________ 個位元組成。",
     options: [
@@ -15,7 +15,7 @@ export const problems: Problem[] = [
     explanation_zh: "一個位元組（Byte）是電腦資訊計量的基本單位，通常由 8 個位元（bits）組成。",
   },
   {
-    id: '3.2', chapter: '3', number: '3-2', isStarred: false,
+    id: '3.2', chapter: '3', number: '3-2',
     text_en: "In a set of 64 symbols, each symbol requires a bit pattern length of ________ bits.",
     text_zh: "在一組 64 個符號的集合中，每個符號需要 ________ 位元的位元模式長度。",
     options: [
@@ -28,7 +28,7 @@ export const problems: Problem[] = [
     explanation_zh: "若要表示 64 個不同的符號，需要的位元數 $n$ 必須滿足 $2^n \\ge 64$。因為 $2^6 = 64$，所以需要 6 位元的長度。",
   },
   {
-    id: '3.3', chapter: '3', number: '3-3', isStarred: false,
+    id: '3.3', chapter: '3', number: '3-3',
     text_en: "How many symbols can be represented by a bit pattern with ten bits?",
     text_zh: "一個十位元的位元模式可以表示多少個符號？",
     options: [
@@ -41,7 +41,7 @@ export const problems: Problem[] = [
     explanation_zh: "一個 $n$ 位元的位元模式可以表示 $2^n$ 個不同的符號。因此，10 位元可以表示 $2^{10} = 1024$ 個符號。",
   },
   {
-    id: '3.4', chapter: '3', number: '3-4', isStarred: false,
+    id: '3.4', chapter: '3', number: '3-4',
     text_en: "If the ASCII code for E is 1000101, then the ASCII code for e is ________. Answer the question without consulting the ASCII table.",
     text_zh: "如果 E 的 ASCII 碼是 1000101，那麼 e 的 ASCII 碼是 ________。不查 ASCII 表回答問題。",
     options: [
@@ -54,7 +54,7 @@ export const problems: Problem[] = [
     explanation_zh: "在 ASCII 碼中，大寫字母和小寫字母的碼值相差 32。'E' 的 ASCII 碼是 $1000101_2$ (69)，'e' 的 ASCII 碼是 $1100101_2$ (101)。兩者相差 $0100000_2$ (32)。",
   },
   {
-    id: '3.5', chapter: '3', number: '3-5', isStarred: false,
+    id: '3.5', chapter: '3', number: '3-5',
     text_en: "A 32-bit code called ________ represents symbols in all languages.",
     text_zh: "一種稱為 ________ 的 32 位元代碼，用於表示所有語言的符號。",
     options: [
@@ -67,7 +67,7 @@ export const problems: Problem[] = [
     explanation_zh: "Unicode 是一個全球性的字元編碼標準，旨在為世界上所有語言的每個字元提供一個唯一的編號，它可以使用不同的編碼方案，如 UTF-8, UTF-16, UTF-32。",
   },
   {
-    id: '3.6', chapter: '3', number: '3-6', isStarred: false,
+    id: '3.6', chapter: '3', number: '3-6',
     text_en: "An image can be represented in a computer using the ________ method.",
     text_zh: "在電腦中，圖像可以使用 ________ 方法來表示。",
     options: [
@@ -80,7 +80,7 @@ export const problems: Problem[] = [
     explanation_zh: "電腦圖像主要有兩種表示方法：點陣圖（bitmap graphic）和向量圖（vector graphic）。點陣圖由像素組成，向量圖由數學方程式定義的線條和形狀組成。",
   },
   {
-    id: '3.7', chapter: '3', number: '3-7', isStarred: false,
+    id: '3.7', chapter: '3', number: '3-7',
     text_en: "In the ________ graphic method of representing an image in a computer, each pixel is assigned a bit patterns.",
     text_zh: "在電腦中表示圖像的 ________ 圖形方法中，每個像素都被分配一個位元模式。",
     options: [
@@ -93,7 +93,7 @@ export const problems: Problem[] = [
     explanation_zh: "在點陣圖（bitmap）表示法中，圖像被視為一個像素網格，每個像素都被分配一個位元模式來表示其顏色。",
   },
   {
-    id: '3.8', chapter: '3', number: '3-8', isStarred: false,
+    id: '3.8', chapter: '3', number: '3-8',
     text_en: "In the ________ graphic method of representing an image in a computer, the image is decomposed into a combination of geometrical figures.",
     text_zh: "在電腦中表示圖像的 ________ 圖形方法中，圖像被分解為幾何圖形的組合。",
     options: [
@@ -106,7 +106,7 @@ export const problems: Problem[] = [
     explanation_zh: "在向量圖（vector）表示法中，圖像由一系列幾何圖形（如線條、曲線、多邊形）的數學描述組成。",
   },
   {
-    id: '3.9', chapter: '3', number: '3-9', isStarred: false,
+    id: '3.9', chapter: '3', number: '3-9',
     text_en: "In the ________ graphic method of representing an image in a computer, re-scaling of the image creates a ragged or grainy image.",
     text_zh: "在電腦中表示圖像的 ________ 圖形方法中，重新縮放圖像會產生鋸齒狀或顆粒狀的圖像。",
     options: [
@@ -119,7 +119,7 @@ export const problems: Problem[] = [
     explanation_zh: "點陣圖（bitmap）在放大時，像素點會變大，導致圖像邊緣出現鋸齒狀或模糊，即「失真」。向量圖則可以無失真地縮放。",
   },
   {
-    id: '3.10', chapter: '3', number: '3-10', isStarred: false,
+    id: '3.10', chapter: '3', number: '3-10',
     text_en: "When we want to store music in a computer, the audio signal must be ________.",
     text_zh: "當我們想在電腦中儲存音樂時，音訊信號必須經過 ________ 處理。",
     options: [
@@ -132,7 +132,7 @@ export const problems: Problem[] = [
     explanation_zh: "將類比的音訊信號轉換為數位形式儲存在電腦中，需要經過三個步驟：取樣（Sampling）、量化（Quantization）和編碼（Coding）。",
   },
   {
-    id: '3.11', chapter: '3', number: '3-11', isStarred: false,
+    id: '3.11', chapter: '3', number: '3-11',
     text_en: "A floating-point value after normalization is $(1.0101) \\times 2^4$. What is the value of exponent section in the Excess-127 representation?",
     text_zh: "一個浮點數正規化後為 $(1.0101) \\times 2^4$。在 Excess-127 表示法中，指數部分的值是多少？",
     options: [
@@ -145,7 +145,7 @@ export const problems: Problem[] = [
     explanation_zh: "Excess-127 表示法中，實際指數值需要加上一個偏置值（bias）127。因此，指數 $4$ 在 Excess-127 中表示為 $4 + 127 = 131$。(註：原始考題選項D為123，可能是將指數誤植為 $-4$ 所致 ($127 - 4 = 123$)，但根據題目給出的正規化形式，指數應為 $+4$)。",
   },
   {
-    id: '3.12', chapter: '3', number: '3-12', isStarred: false,
+    id: '3.12', chapter: '3', number: '3-12',
     text_en: "Assume a new Excess system uses 17 bits to represent the exponent section. What is the bias value in this system?",
     text_zh: "假設一個新的超額系統使用 17 位元來表示指數部分。該系統中的偏置值是多少？",
     options: [
@@ -158,7 +158,7 @@ export const problems: Problem[] = [
     explanation_zh: "在一個使用 $n$ 位元表示指數的超額系統中，偏置值為 $2^{n-1} - 1$。對於 17 位元，偏置值是 $2^{17-1} - 1 = 2^{16} - 1 = 65536 - 1 = 65535$。",
   },
   {
-    id: '3.13', chapter: '3', number: '3-13', isStarred: false,
+    id: '3.13', chapter: '3', number: '3-13',
     text_en: "Which number representation method is often used to store the exponential value of a fractional part?",
     text_zh: "哪種數字表示法常用於儲存小數部分的指數值？",
     options: [
@@ -171,7 +171,7 @@ export const problems: Problem[] = [
     explanation_zh: "超額表示法（Excess representation）常用於浮點數表示法中儲存指數部分，因為它可以將負指數對應到一個正的二進位數，簡化了指數大小的比較。",
   },
   {
-    id: '3.14', chapter: '3', number: '3-14', isStarred: false,
+    id: '3.14', chapter: '3', number: '3-14',
     text_en: "In an Excess conversion, we ________ the number to be converted.",
     text_zh: "在超額表示法轉換中，我們對要轉換的數字 ________。",
     options: [
@@ -184,7 +184,7 @@ export const problems: Problem[] = [
     explanation_zh: "在超額表示法轉換中，我們將要轉換的數字加上偏置數（bias），然後將結果轉換為無符號二進位數。",
   },
   {
-    id: '3.15', chapter: '3', number: '3-15', isStarred: false,
+    id: '3.15', chapter: '3', number: '3-15',
     text_en: "When a fractional part is normalized, the computer stores the ________.",
     text_zh: "當小數部分被正規化時，電腦儲存 ________。",
     options: [
@@ -197,7 +197,7 @@ export const problems: Problem[] = [
     explanation_zh: "浮點數在電腦中儲存時，通常會將其正規化，然後分別儲存三個部分：符號（sign）、指數（exponent）和尾數（mantissa）。",
   },
   {
-    id: '3.16', chapter: '3', number: '3-16', isStarred: false,
+    id: '3.16', chapter: '3', number: '3-16',
     text_en: "The precision of the fractional part of a number stored in a computer is defined by the ________.",
     text_zh: "電腦中儲存的數字小數部分的精度由 ________ 定義。",
     options: [
@@ -210,7 +210,7 @@ export const problems: Problem[] = [
     explanation_zh: "尾數（mantissa）部分儲存了數字的有效數字，其位元數的多少直接決定了浮點數的精度（precision）。",
   },
   {
-    id: '3.17', chapter: '3', number: '3-17', isStarred: false,
+    id: '3.17', chapter: '3', number: '3-17',
     text_en: "The combination of sign and mantissa of a real number in IEEE standard floating point format is stored as an integer in the ________ representation.",
     text_zh: "在 IEEE 標準浮點格式中，實數的符號和尾數的組合以 ________ 表示法儲存為整數。",
     options: [

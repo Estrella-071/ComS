@@ -1,17 +1,21 @@
+
+
 export const zh = {
   // General
-  app_name: '計算機概論\n期中試題選題題庫',
+  app_name: '互動學習題庫',
   cancel: '取消',
   
-  // Sidebar
-  home: '題目總覽',
+  // Sidebar & Home
+  home: '目錄',
+  table_of_contents: '目錄',
   modes: '測驗模式',
-  all_questions: '全部測驗',
-  shuffle_mode: '隨機測驗',
-  flagged_for_review: '已標註題目',
+  practice_modes: '練習模式',
+  all_questions: '全部題目',
+  question_bank_quiz: '題庫測驗',
+  flagged_for_review: '書籤',
   tools: '工具',
   quiz_history: '測驗紀錄',
-  by_chapter: '分章節練習',
+  by_chapter: '分章節閱讀',
   glossary: '詞彙表',
   chapter: '第',
   chapter_short: '第',
@@ -21,8 +25,29 @@ export const zh = {
   enter_fullscreen: '進入全螢幕',
   exit_fullscreen: '退出全螢幕',
   search_placeholder: '搜尋題目內容...',
-  flagged_toast: '已收錄於「已標註題目」',
+  flagged_toast: '已新增至書籤',
   search: '搜尋題目',
+  sidebar_toc_header: '本章目錄',
+  sidebar_quiz_nav_header: '測驗導航',
+  sidebar_problem_nav_header: '題目導航',
+  review_incorrect_questions: '複習錯題',
+  sidebar_tab_current: '當前',
+  sidebar_tab_navigate: '導航',
+  sidebar_tab_tools: '工具',
+  sidebar_tab_settings: '設定',
+  navigate: '導航',
+  recent_quizzes: '近期測驗',
+  no_recent_quizzes: '完成一次測驗後，紀錄將會顯示於此。',
+  change_subject: '更換科目',
+
+  // Subject Selection
+  select_subject: '選擇科目',
+
+  // Bookmarks View
+  bookmarks_title: '書籤',
+  bookmarks_description: '檢視您已加入書籤的題目，或使用這些題目進行測驗。',
+  bookmarks_no_problems: '您尚未將任何題目加入書籤。',
+  bookmarks_start_quiz: '使用已加入書籤的題目進行測驗',
   
   // Quiz View
   question: '題目',
@@ -30,7 +55,6 @@ export const zh = {
   show_explanation: '顯示詳解',
   hide_explanation: '隱藏詳解',
   explanation: '詳解',
-  ai_thinking: '您的個人 AI 助教正在思考中...',
   next_question: '下一題',
   previous_question: '上一題',
   results: '測驗結果',
@@ -39,26 +63,35 @@ export const zh = {
   correct: '答對',
   incorrect: '答錯',
   restart_quiz: '重新測驗',
-  return_home: '返回總覽',
+  return_home: '返回目錄',
   select_question: '快速跳轉...',
-  show_explanation_on_answer: '答題後自動顯示詳解',
-  auto_advance_on_answer: '答題後自動前進',
+  show_explanation_on_answer: '自動顯示詳解',
+  auto_advance_on_answer: '自動前進',
   go_to_first: '跳至第一題',
   go_to_last: '跳至最後一題',
+  quiz_nav_all: '全部',
+  quiz_nav_incorrect: '錯誤',
+  quiz_nav_unanswered: '未答',
 
-  // Shuffle Modal
-  shuffle_settings: '隨機測驗設定',
-  shuffle_description: '選擇要包含在隨機測驗中的章節。如果未選擇任何章節，將包含所有章節。',
+  // Question Bank Quiz Settings
+  quiz_settings: '題庫測驗設定',
+  quiz_description: '選擇要包含在測驗中的章節並設定測驗模式。',
   select_all: '全選',
   deselect_all: '全部取消',
-  start_shuffled_quiz: '開始隨機測驗',
-  shuffle_num_questions: '題目數量',
-  shuffle_all_questions: '全部',
+  start_quiz: '開始測驗',
+  quiz_num_questions: '題目數量',
+  quiz_all_questions: '全部',
+  quiz_include_chapters: '包含的章節',
+  quiz_mode: '測驗模式',
+  quiz_mode_shuffled: '亂序測驗',
+  quiz_mode_sequential: '順序測驗',
+
   
   // Search Modal
   search_modal_title: '搜尋題目',
   search_modal_placeholder: '輸入關鍵字搜尋題目...',
   search_no_results: '找不到相關題目。',
+  search_results_title: '搜尋結果',
 
   // Glossary
   glossary_title: '詞彙表',
@@ -86,7 +119,20 @@ export const zh = {
   key_problem: '重點問題',
   options: '選項',
 
-  // FIX: Add missing translation keys for tool components.
-  number_converter: '數字系統轉換器',
-  kmap_solver: '卡諾圖化簡工具',
+  // Textbook View
+  practice_questions_for_chapter: '練習本章題目',
+  next_chapter: '下一章',
+  previous_chapter: '上一章',
+  reading_settings_font_size: '字體大小',
+  reading_settings_line_height: '行高',
+  reading_settings_page_width: '頁面寬度',
+  reading_settings_theme: '主題',
+  reading_settings_formatting: '格式',
+  reading_settings_format_mode_formatted: '顯示格式',
+  reading_settings_format_mode_unformatted: '隱藏格式',
+  reading_settings_format_mode_text_only: '純文字',
+  reading_settings_language: '顯示語言',
+  reading_settings_lang_en: '英文',
+  reading_settings_lang_zh: '中文',
+  reading_settings_lang_bilingual: '中英對照',
 };

@@ -1,77 +1,289 @@
-import React, { useState, useEffect, useMemo } from 'react';
+
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sidebar } from './components/Sidebar';
 import { Glossary } from './components/Glossary';
 import { QuizView } from './components/QuizView';
+import { Home } from './components/Home';
+import { Overview } from './components/Overview';
 import { ProblemSolver } from './components/ProblemSolver';
 import { QuizHistory } from './components/QuizHistory';
-import type { Problem } from './types';
-import { problems } from './data/problems';
-import { Bars3Icon, SunIcon, MoonIcon, CheckCircleIcon, SearchIcon, StarSolidIcon, ShuffleIcon } from './components/icons';
+import { TextbookView } from './components/TextbookView';
+import { ShuffleQuizView } from './components/ShuffleQuizView';
+import { BookmarksView } from './components/BookmarksView';
+import { SubjectSelection } from './components/SubjectSelection';
+import { SearchModal } from './components/SearchModal';
+import type { View, QuizResult, AnsweredQuestion } from './types';
+import { LOCAL_STORAGE_KEYS } from './types';
 import { useTranslation } from './hooks/useTranslation';
+import { BackgroundCanvas } from './components/BackgroundCanvas';
 import { useAppContext } from './contexts/AppContext';
-import { TextWithHighlights } from './components/TextWithHighlights';
-import { ShuffleQuizModal } from './components/ShuffleQuizModal';
-
-
-export type View =
-  | { type: 'home' }
-  | { type: 'quiz'; problems: Problem[]; title: string; startIndex?: number; }
-  | { type: 'glossary' }
-  | { type: 'history' }
-  | { type: 'problem'; id: string };
+import { TopBar } from './components/TopBar';
 
 const App: React.FC = () => {
-  const [view, setView] = useState<View>({ type: 'home' });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { subject } = useAppContext();
 
-  const handleSetView = (newView: View) => {
+  return (
+    <div className="relative h-screen overflow-hidden lg:p-6">
+      <BackgroundCanvas />
+      <AnimatePresence mode="wait">
+        {!subject ? (
+            <motion.div
+              key="subject-selection"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="w-full h-full"
+            >
+              <SubjectSelection />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="main-app"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="h-full"
+            >
+              <MainApp />
+            </motion.div>
+          )
+        }
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const MainApp: React.FC = () => {
+  const [view, setView] = useState<View>({ type: 'home' });
+  const [history, setHistory] = useState<View[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { t } = useTranslation();
+  const { subject, subjectData } = useAppContext();
+  const [direction, setDirection] = useState(0);
+
+  // Lifted quiz state
+  const [currentQuizId, setCurrentQuizId] = useState<string | null>(null);
+  const [quizAnswers, setQuizAnswers] = useState<Map<string, string>>(new Map());
+  const [quizCurrentIndex, setQuizCurrentIndex] = useState(0);
+  const [isQuizFinished, setIsQuizFinished] = useState(false);
+  
+  // Lifted Table of Contents state
+  const [activeTocId, setActiveTocId] = useState<string | null>(null);
+
+  const navigateTo = (newView: View, navDirection: number) => {
+    setDirection(navDirection);
+    
+    // Only reset quiz state if navigating to a *new* quiz
+    if (newView.type === 'quiz') {
+      if (currentQuizId !== newView.id) {
+        setQuizCurrentIndex(newView.startIndex || 0);
+        setQuizAnswers(new Map());
+        setIsQuizFinished(false);
+        setCurrentQuizId(newView.id);
+      }
+    }
+
     setView(newView);
-    setIsSidebarOpen(false);
+    if (window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+    setActiveTocId(null);
+  };
+  
+  const handleNavigate = (newView: View) => {
+    setHistory(prev => [...prev, view]);
+    navigateTo(newView, 1);
+    setIsSearchOpen(false);
   };
 
-  const renderView = () => {
-    switch (view.type) {
-      case 'quiz':
-        return <QuizView key={view.title + (view.startIndex || 0)} problems={view.problems} title={view.title} setView={handleSetView} startIndex={view.startIndex} isSidebarOpen={isSidebarOpen} />;
-      case 'glossary':
-        return <Glossary />;
-      case 'problem':
-        return <ProblemSolver id={view.id} setView={handleSetView} isSidebarOpen={isSidebarOpen} />;
-      case 'history':
-        return <QuizHistory setView={handleSetView} />;
-      case 'home':
-      default:
-        return <Overview setView={handleSetView} />;
+  const handleResetNavigate = (newView: View) => {
+    setHistory([]);
+    navigateTo(newView, 0);
+    setIsSearchOpen(false);
+  };
+  
+  const handleBack = () => {
+    if (history.length > 0) {
+      const lastView = history[history.length - 1];
+      const newHistory = history.slice(0, -1);
+      setHistory(newHistory);
+      navigateTo(lastView, -1);
     }
   };
   
-  const getAnimationKey = () => {
-    if (view.type === 'quiz') return `${view.type}-${view.title}`;
-    if (view.type === 'problem') return 'problem';
-    return view.type;
-  }
-
   const getPageTitle = () => {
-    const { t } = useTranslation();
+    if (!subject || !subjectData) return '';
+    
     switch (view.type) {
+      case 'overview':
+        return t('all_questions');
+      case 'textbook':
+        const chapter = subjectData.chapterList.find(c => c.id === view.chapterId);
+        return chapter ? chapter.title.zh : t('home');
       case 'quiz':
         return view.title;
       case 'glossary':
         return t('glossary');
       case 'problem':
-        const problem = problems.find(p => p.id === view.id);
+        const problem = subjectData.problems.find(p => p.id === view.id);
         return problem ? `${t('problem_header')} ${problem.number}` : t('home');
       case 'history':
         return t('quiz_history');
+      case 'question_bank_quiz':
+        return t('question_bank_quiz');
+      case 'bookmarks':
+        return t('bookmarks_title');
       case 'home':
       default:
         return t('home');
     }
+  };
+
+  const handleAnswer = (problemId: string, answer: string) => {
+    if (isQuizFinished) return;
+    const newAnswers = new Map(quizAnswers);
+    newAnswers.set(problemId, answer);
+    setQuizAnswers(newAnswers);
+  };
+
+  const handleGoToProblem = (index: number) => {
+    if (view.type === 'quiz' && index >= 0 && index < view.problems.length) {
+      setQuizCurrentIndex(index);
+    }
+  };
+
+  const handleFinishQuiz = useCallback(() => {
+    if (isQuizFinished || view.type !== 'quiz' || view.problems.length === 0 || !subject) return;
+    
+    // FIX: Use a generic on `reduce` to explicitly set the accumulator's type to number and resolve a type inference issue.
+    const score = Array.from(quizAnswers).reduce<number>((count, [id, answer]) => {
+        const problem = view.problems.find(p => p.id === id);
+        return problem && problem.answer === answer ? count + 1 : count;
+    }, 0);
+
+    const answeredQuestions: AnsweredQuestion[] = view.problems.map((p) => ({
+      problemId: p.id,
+      userAnswer: quizAnswers.get(p.id) || '',
+      isCorrect: quizAnswers.get(p.id) === p.answer,
+    }));
+
+    const result: QuizResult = {
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      quizTitle: view.title,
+      subjectId: subject.id,
+      score,
+      totalQuestions: view.problems.length,
+      answeredQuestions,
+    };
+
+    try {
+      const history = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY) || '[]');
+      history.unshift(result);
+      localStorage.setItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY, JSON.stringify(history.slice(0, 20)));
+    } catch (error) {
+      console.error("Failed to save quiz history", error);
+    }
+    setIsQuizFinished(true);
+  }, [isQuizFinished, view, quizAnswers, subject]);
+  
+  const handleRestartQuiz = () => {
+    if (view.type !== 'quiz') return;
+    setQuizCurrentIndex(view.startIndex || 0);
+    setQuizAnswers(new Map());
+    setIsQuizFinished(false);
+  };
+
+  const quizStateForSidebar = useMemo(() => {
+    if (view.type === 'quiz' && currentQuizId === view.id) {
+      // FIX: Use a generic on `reduce` to explicitly set the accumulator's type to number and resolve a potential type inference issue.
+      const score = Array.from(quizAnswers).reduce<number>((count, [id, answer]) => {
+          const problem = view.problems.find(p => p.id === id);
+          return problem && problem.answer === answer ? count + 1 : count;
+      }, 0);
+
+      return {
+        problems: view.problems,
+        currentIndex: quizCurrentIndex,
+        answers: quizAnswers,
+        isFinished: isQuizFinished,
+        score: score,
+      };
+    }
+    return undefined;
+  }, [view, quizCurrentIndex, quizAnswers, isQuizFinished, currentQuizId]);
+
+  const renderView = () => {
+    switch (view.type) {
+      case 'overview':
+        return <Overview setView={handleNavigate} />;
+      case 'textbook':
+        return <TextbookView chapterId={view.chapterId} setView={handleNavigate} setActiveTocId={setActiveTocId} />;
+      case 'quiz':
+        return <QuizView 
+                  key={view.id} 
+                  problems={view.problems} 
+                  title={view.title} 
+                  setView={handleNavigate} 
+                  onReturnHome={handleResetNavigate}
+                  isSidebarOpen={isSidebarOpen}
+                  currentIndex={quizCurrentIndex}
+                  answers={quizAnswers}
+                  isFinished={isQuizFinished}
+                  onAnswer={handleAnswer}
+                  onGoToProblem={handleGoToProblem}
+                  onFinish={handleFinishQuiz}
+                  onRestart={handleRestartQuiz}
+                />;
+      case 'glossary':
+        return <Glossary setView={handleNavigate} />;
+      case 'problem':
+        return <ProblemSolver id={view.id} setView={handleNavigate} isSidebarOpen={isSidebarOpen} />;
+      case 'history':
+        return <QuizHistory setView={handleNavigate} />;
+      case 'question_bank_quiz':
+        return <ShuffleQuizView setView={handleNavigate} />;
+      case 'bookmarks':
+        return <BookmarksView setView={handleNavigate} />;
+      case 'home':
+      default:
+        return <Home setView={handleNavigate} />;
+    }
+  };
+  
+  const getAnimationKey = () => {
+    if (view.type === 'quiz') return view.id;
+    if (view.type === 'problem') return view.id; // Animate between problems
+    if (view.type === 'textbook') return view.chapterId;
+    return view.type;
   }
+  
+  const pageVariants = {
+    enter: (direction: number) => ({
+      opacity: 0,
+      x: direction > 0 ? 15 : (direction < 0 ? -15 : 0),
+      y: direction === 0 ? 10 : 0,
+    }),
+    center: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+    },
+    exit: (direction: number) => ({
+      opacity: 0,
+      x: direction > 0 ? -15 : (direction < 0 ? 15 : 0),
+      y: direction === 0 ? -10 : 0,
+    }),
+  };
+
+  const pageTitle = getPageTitle();
 
   return (
-    <div className="lg:flex h-screen overflow-hidden">
+    <div className="h-full">
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div
@@ -79,179 +291,52 @@ const App: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsSidebarOpen(false)}
-            className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+            className="lg:hidden fixed inset-0 bg-black/30 z-[var(--z-sidebar-backdrop)]"
           />
         )}
       </AnimatePresence>
-      <Sidebar view={view} setView={handleSetView} isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       
-      <div className="flex-1 flex flex-col h-screen">
-         <header className="lg:hidden flex items-center justify-between p-4 flex-shrink-0 bg-[var(--bg-translucent)] backdrop-blur-xl border-b border-b-[var(--ui-border)] z-10">
-          <button onClick={() => setIsSidebarOpen(true)} className="p-2 -ml-2 text-[var(--text-primary)]">
-            <Bars3Icon className="w-6 h-6" />
-          </button>
-          <h2 className="text-lg font-bold truncate text-[var(--text-primary)]">{getPageTitle()}</h2>
-          <ThemeToggleMobile />
-        </header>
-        <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:p-8">
-          <AnimatePresence mode="wait">
+      <Sidebar 
+        view={view} 
+        onNavigate={handleNavigate}
+        onResetNavigate={handleResetNavigate}
+        isOpen={isSidebarOpen} 
+        setIsOpen={setIsSidebarOpen} 
+        quizState={quizStateForSidebar}
+        onGoToQuizProblem={handleGoToProblem}
+        activeTocId={activeTocId}
+      />
+
+      <div className="relative h-full flex flex-col overflow-hidden lg:glass-pane lg:rounded-2xl lg:ml-80">
+        <TopBar
+            onOpenSidebar={() => setIsSidebarOpen(true)}
+            pageTitle={pageTitle}
+            showBackButton={history.length > 0}
+            onBack={handleBack}
+            onOpenSearch={() => setIsSearchOpen(true)}
+        />
+        <main className="flex-1 overflow-hidden" style={{ position: 'relative' }}>
+          <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={getAnimationKey()}
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-              className="h-full"
+              custom={direction}
+              variants={pageVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="h-full pt-16 lg:pt-0"
             >
               {renderView()}
             </motion.div>
           </AnimatePresence>
         </main>
       </div>
+      <AnimatePresence>
+        {isSearchOpen && <SearchModal onClose={() => setIsSearchOpen(false)} onNavigate={handleNavigate} />}
+      </AnimatePresence>
     </div>
   );
 };
-
-const ThemeToggleMobile: React.FC = () => {
-    const { theme, setTheme } = useAppContext();
-    return (
-        <button
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            className="w-8 h-8 flex justify-center items-center rounded-full bg-[var(--ui-bg)] text-[var(--text-primary)]"
-            aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-        >
-             <AnimatePresence mode="wait">
-                <motion.div
-                    key={theme}
-                    initial={{ opacity: 0, y: -10, scale: 0.8 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.8 }}
-                    transition={{ duration: 0.2 }}
-                >
-                    {theme === 'light' ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
-                </motion.div>
-            </AnimatePresence>
-        </button>
-    )
-}
-
-const Overview: React.FC<{ setView: (view: View) => void }> = ({ setView }) => {
-    const { t } = useTranslation();
-    const { flaggedProblems } = useAppContext();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [isShuffleModalOpen, setIsShuffleModalOpen] = useState(false);
-
-    const filteredProblems = useMemo(() => {
-        if (!searchQuery) return problems;
-        const lowercasedQuery = searchQuery.toLowerCase();
-        return problems.filter(p => 
-            p.text_en.toLowerCase().includes(lowercasedQuery) ||
-            p.text_zh.toLowerCase().includes(lowercasedQuery)
-        );
-    }, [searchQuery]);
-
-    const problemsByChapter = useMemo(() => {
-        return filteredProblems.reduce<Record<string, Problem[]>>((acc, problem) => {
-            if (!acc[problem.chapter]) acc[problem.chapter] = [];
-            acc[problem.chapter].push(problem);
-            return acc;
-        }, {});
-    }, [filteredProblems]);
-
-    const handleProblemClick = (problemId: string) => {
-        setView({ type: 'problem', id: problemId });
-    };
-
-    const startShuffledQuiz = (selectedChapters: string[], count: number) => {
-        let problemsToShuffle = problems;
-        if (selectedChapters.length > 0) {
-            problemsToShuffle = problems.filter(p => selectedChapters.includes(p.chapter));
-        }
-        const quizProblems = [...problemsToShuffle].sort(() => Math.random() - 0.5).slice(0, count);
-        const title = selectedChapters.length > 0 
-            ? `${t('shuffle_mode')} (${selectedChapters.map(c => `${t('chapter_short')}${c}${t('chapter_unit')}`).join(', ')})`
-            : t('shuffle_mode');
-    
-        setView({ type: 'quiz', problems: quizProblems, title, startIndex: 0 });
-        setIsShuffleModalOpen(false);
-      }
-    
-    return (
-        <div className="max-w-7xl mx-auto pt-8 lg:pt-0">
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight text-[var(--text-primary)] mb-6 text-center whitespace-pre-line">{t('app_name')}</h1>
-            
-            <div className="lg:static sticky top-0 z-20 bg-[var(--bg-color)]/80 backdrop-blur-md -mx-4 sm:-mx-6 px-4 sm:px-6 py-6 mb-12">
-                <div className="max-w-2xl mx-auto">
-                    <div className="relative">
-                        <input 
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder={t('search_placeholder')}
-                            className="w-full bg-[var(--bg-translucent)] backdrop-blur-xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] rounded-full py-3 pl-12 pr-4 text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent-solid)] outline-none transition-all"
-                        />
-                        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-subtle)]" />
-                    </div>
-                </div>
-            </div>
-
-            {Object.entries(problemsByChapter).map(([chapter, chapterProblems]: [string, Problem[]]) => (
-                <div key={chapter} className="mb-16">
-                    <h2 className="lg:static sticky top-[88px] z-10 bg-[var(--bg-color)]/80 backdrop-blur-md text-3xl font-bold text-[var(--text-secondary)] border-b-2 border-[var(--ui-border)] py-3 mb-6 -mx-4 sm:-mx-6 px-4 sm:px-6">{`${t('chapter')} ${chapter}${t('chapter_unit')}`}</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {chapterProblems.map(p => {
-                            const correctOption = p.options.find(opt => opt.key === p.answer);
-                            const isFlagged = flaggedProblems.includes(p.id);
-                            return (
-                                <motion.button 
-                                    key={p.id}
-                                    onClick={() => handleProblemClick(p.id)}
-                                    whileHover={{ y: -5 }}
-                                    whileTap={{ scale: 0.97 }}
-                                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                                    className={`relative bg-[var(--bg-translucent)] backdrop-blur-xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] rounded-2xl p-5 text-left h-full flex flex-col transition-shadow ${isFlagged ? 'flagged-glow' : ''}`}
-                                >
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="text-sm font-semibold text-[var(--accent-text)]">{t('problem_header')} {p.number}</span>
-                                        {isFlagged && <StarSolidIcon className="w-4 h-4 text-amber-400" />}
-                                    </div>
-                                    <p className="text-[var(--text-secondary)] text-sm leading-relaxed line-clamp-3 flex-grow mb-6">
-                                       <TextWithHighlights text={p.text_en} highlight={searchQuery} />
-                                    </p>
-                                    <div className="absolute bottom-3 right-4 flex items-center gap-2 text-xs text-green-600 dark:text-green-500 font-medium">
-                                        <CheckCircleIcon className="w-4 h-4"/>
-                                        <span className="truncate">{`(${p.answer.toUpperCase()}) ${correctOption?.text_en}`}</span>
-                                    </div>
-                                </motion.button>
-                            )
-                        })}
-                    </div>
-                </div>
-            ))}
-            
-            <AnimatePresence>
-                <motion.button
-                    onClick={() => setIsShuffleModalOpen(true)}
-                    className="fixed bottom-6 right-6 lg:hidden w-16 h-16 bg-[var(--accent-solid)] rounded-full text-white flex items-center justify-center shadow-lg z-40"
-                    initial={{ scale: 0, opacity: 0, y: 50 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0, opacity: 0, y: 50 }}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    aria-label={t('shuffle_mode')}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                >
-                    <ShuffleIcon className="w-8 h-8"/>
-                </motion.button>
-            </AnimatePresence>
-             <ShuffleQuizModal 
-                isOpen={isShuffleModalOpen}
-                onClose={() => setIsShuffleModalOpen(false)}
-                onStart={startShuffledQuiz}
-                chapters={Object.keys(problems.reduce<Record<string, boolean>>((acc, p) => { acc[p.chapter] = true; return acc; }, {})).sort((a, b) => parseInt(a) - parseInt(b))}
-            />
-        </div>
-    )
-}
 
 export default App;

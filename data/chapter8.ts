@@ -2,7 +2,7 @@ import type { Problem } from '../types';
 
 export const problems: Problem[] = [
   {
-    id: '8.1', chapter: '8', number: '8-1', isStarred: false,
+    id: '8.1', chapter: '8', number: '8-1',
     text_en: "________ is a step-by-step method for solving a problem or doing a task.",
     text_zh: "________ 是解決問題或完成任務的逐步方法。",
     options: [
@@ -15,7 +15,7 @@ export const problems: Problem[] = [
     explanation_zh: "演算法（Algorithm）是一組明確定義的、有限的步驟序列，用於解決特定問題或執行計算。",
   },
   {
-    id: '8.2', chapter: '8', number: '8-2', isStarred: false,
+    id: '8.2', chapter: '8', number: '8-2',
     text_en: "There are ________ basic constructs in computer-science.",
     text_zh: "電腦科學中有 ________ 種基本建構。",
     options: [
@@ -28,7 +28,7 @@ export const problems: Problem[] = [
     explanation_zh: "結構化程式設計的三種基本建構是：循序（sequence）、選擇（decision/selection）和重複（repetition/iteration）。",
   },
   {
-    id: '8.3', chapter: '8', number: '8-3', isStarred: false,
+    id: '8.3', chapter: '8', number: '8-3',
     text_en: "The ________ construct tests a condition.",
     text_zh: "________ 建構測試一個條件。",
     options: [
@@ -41,7 +41,7 @@ export const problems: Problem[] = [
     explanation_zh: "選擇（Decision）建構（例如 if-then-else）會根據一個條件的真假來決定執行哪一個程式碼區塊。",
   },
   {
-    id: '8.4', chapter: '8', number: '8-4', isStarred: false,
+    id: '8.4', chapter: '8', number: '8-4',
     text_en: "The ________ construct uses a set of actions one after another.",
     text_zh: "________ 建構將一組動作一個接一個地執行。",
     options: [
@@ -54,7 +54,7 @@ export const problems: Problem[] = [
     explanation_zh: "循序（Sequence）建構是指程式碼中的指令按照它們出現的順序，從上到下依次執行。",
   },
   {
-    id: '8.5', chapter: '8', number: '8-5', isStarred: false,
+    id: '8.5', chapter: '8', number: '8-5',
     text_en: "The ________ construct handles repeated actions.",
     text_zh: "________ 建構處理重複的動作。",
     options: [
@@ -67,7 +67,7 @@ export const problems: Problem[] = [
     explanation_zh: "重複（Repetition）建構（例如 while 或 for 迴圈）允許一個程式碼區塊被重複執行多次。",
   },
   {
-    id: '8.6', chapter: '8', number: '8-6', isStarred: false,
+    id: '8.6', chapter: '8', number: '8-6',
     text_en: "________ is a pictorial representation of an algorithm.",
     text_zh: "________ 是演算法的圖形表示。",
     options: [
@@ -80,7 +80,7 @@ export const problems: Problem[] = [
     explanation_zh: "UML（統一建模語言）圖，特別是活動圖（Activity Diagram），可以用來圖形化地表示演算法的流程。更傳統的說法是流程圖（Flowchart）。",
   },
   {
-    id: '8.7', chapter: '8', number: '8-7', isStarred: false,
+    id: '8.7', chapter: '8', number: '8-7',
     text_en: "________ is an English-language-like representation of code.",
     text_zh: "________ 是一種近似英語的程式碼表示法。",
     options: [
@@ -93,7 +93,7 @@ export const problems: Problem[] = [
     explanation_zh: "偽代碼（Pseudocode）是一種非正式的高階語言，用於在編寫實際程式碼之前，描述演算法的邏輯和步驟。",
   },
   {
-    id: '8.8', chapter: '8', number: '8-8', isStarred: false,
+    id: '8.8', chapter: '8', number: '8-8',
     text_en: "________ is a basic algorithm that adds a list of numbers.",
     text_zh: "________ 是將一列數字相加的基本演算法。",
     options: [
@@ -106,7 +106,7 @@ export const problems: Problem[] = [
     explanation_zh: "總和（Summation）演算法遍歷一個數字列表，並將所有數字累加起來得到總和。",
   },
   {
-    id: '8.9', chapter: '8', number: '8-9', isStarred: false,
+    id: '8.9', chapter: '8', number: '8-9',
     text_en: "________ is a basic algorithm that multiplies a list of numbers.",
     text_zh: "________ 是將一列數字相乘的基本演算法。",
     options: [
@@ -119,7 +119,7 @@ export const problems: Problem[] = [
     explanation_zh: "乘積（Product）演算法遍歷一個數字列表，並將所有數字累乘起來得到總乘積。",
   },
   {
-    id: '8.10', chapter: '8', number: '8-10', isStarred: false,
+    id: '8.10', chapter: '8', number: '8-10',
     text_en: "________ is a basic algorithm that arranges data according to its value.",
     text_zh: "________ 是根據數值排列資料的基本演算法。",
     options: [
@@ -132,7 +132,7 @@ export const problems: Problem[] = [
     explanation_zh: "排序（Sorting）演算法是將一組資料（如數字或字串）按照特定的順序（如由小到大或字母順序）重新排列的过程。",
   },
   {
-    id: '8.11', chapter: '8', number: '8-11', isStarred: false,
+    id: '8.11', chapter: '8', number: '8-11',
     text_en: "The items are divided into two lists (sorted and unsorted) ________ sort.",
     text_zh: "在 ________ 排序中，項目被分為兩個列表（已排序和未排序）。",
     options: [
@@ -145,7 +145,7 @@ export const problems: Problem[] = [
     explanation_zh: "選擇排序、氣泡排序和插入排序這三種基本的排序演算法，其核心思想都是將列表視為已排序和未排序兩部分，並逐步將未排序部分的元素移動到已排序部分。",
   },
   {
-    id: '8.12', chapter: '8', number: '8-12', isStarred: false,
+    id: '8.12', chapter: '8', number: '8-12',
     text_en: "In ________ sort, the item that goes into the sorted list is always the first item in the unsorted list.",
     text_zh: "在 ________ 排序中，進入已排序列表的項目總是未排序列表中的第一個項目。",
     options: [
@@ -158,7 +158,7 @@ export const problems: Problem[] = [
     explanation_zh: "在插入排序（Insertion sort）中，我們依序從未排序部分取出第一個元素，然後在已排序部分中找到合適的位置插入它。",
   },
   {
-    id: '8.13', chapter: '8', number: '8-13', isStarred: false,
+    id: '8.13', chapter: '8', number: '8-13',
     text_en: "In ________ sort, the smallest item from the unsorted list is swapped with the item at the beginning of the unsorted list.",
     text_zh: "在 ________ 排序中，從未排序列表中找到的最小項目會與未排序列表開頭的項目交換。",
     options: [
@@ -171,7 +171,7 @@ export const problems: Problem[] = [
     explanation_zh: "在選擇排序（Selection sort）中，每一輪都會從當前的未排序部分找到最小（或最大）的元素，然後將它與未排序部分的第一个元素交換位置。",
   },
   {
-    id: '8.14', chapter: '8', number: '8-14', isStarred: false,
+    id: '8.14', chapter: '8', number: '8-14',
     text_en: "In ________ sort, the smallest item moves to the beginning of the unsorted list. There is no one-to-one swapping.",
     text_zh: "在 ________ 排序中，最小的項目移動到未排序列表的開頭。沒有一對一的交換。",
     options: [
@@ -184,7 +184,7 @@ export const problems: Problem[] = [
     explanation_zh: "在氣泡排序（Bubble sort）中，透過重複比較相鄰的元素並交換它們（如果順序錯誤），較小（或較大）的元素會像氣泡一樣逐漸浮到列表的頂端。這個過程涉及多次相鄰交換，而不是一次性的交換到開頭。",
   },
   {
-    id: '8.15', chapter: '8', number: '8-15', isStarred: false,
+    id: '8.15', chapter: '8', number: '8-15',
     text_en: "________ is a basic algorithm in which we want to find the location of a target in a list of items.",
     text_zh: "________ 是一種基本演算法，我們想在項目列表中找到目標的位置。",
     options: [
@@ -197,7 +197,7 @@ export const problems: Problem[] = [
     explanation_zh: "搜尋（Searching）演算法用於在資料集合中查找滿足特定條件的項目。",
   },
   {
-    id: '8.16', chapter: '8', number: '8-16', isStarred: false,
+    id: '8.16', chapter: '8', number: '8-16',
     text_en: "We use a ________ search for an unordered list.",
     text_zh: "我們對未排序的列表使用 ________ 搜尋。",
     options: [
@@ -210,7 +210,7 @@ export const problems: Problem[] = [
     explanation_zh: "循序搜尋（Sequential search）從列表的開頭逐一檢查每個元素，直到找到目標或遍歷完整個列表。它適用於任何列表，無論是否排序。",
   },
   {
-    id: '8.17', chapter: '8', number: '8-17', isStarred: false,
+    id: '8.17', chapter: '8', number: '8-17',
     text_en: "We use a ________ search for an ordered list.",
     text_zh: "我們對已排序的列表使用 ________ 搜尋。",
     options: [
@@ -223,7 +223,7 @@ export const problems: Problem[] = [
     explanation_zh: "二元搜尋（Binary search）是一種高效的搜尋演算法，但它要求列表必須是已排序的。它透過反覆將搜尋區間一分為二來快速定位目標。",
   },
   {
-    id: '8.18', chapter: '8', number: '8-18', isStarred: false,
+    id: '8.18', chapter: '8', number: '8-18',
     text_en: "________ is a process in which an algorithm calls itself.",
     text_zh: "________ 是演算法呼叫自身的過程。",
     options: [

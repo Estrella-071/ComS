@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import type { QuizResult, Problem } from '../types';
-import { problems } from '../data/problems';
+import { LOCAL_STORAGE_KEYS } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
-import { CheckBadgeIcon, ClockIcon, XMarkIcon, CheckIcon } from './icons';
-import type { View } from '../App';
+import { CheckBadgeIcon, ClockIcon, XMarkIcon, CheckIcon, ChevronUpIcon } from './icons';
+import type { View } from '../types';
+import { allData } from '../data/subjects';
 
 interface QuizHistoryProps {
   setView: (view: View) => void;
@@ -14,10 +16,24 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
   const [history, setHistory] = useState<QuizResult[]>([]);
   const [selectedResult, setSelectedResult] = useState<QuizResult | null>(null);
   const { t } = useTranslation();
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({ container: contentRef });
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    return scrollYProgress.onChange((latest) => {
+        setShowBackToTop(latest > 0.1);
+    });
+  }, [scrollYProgress]);
+
+  const scrollToTop = () => {
+    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     try {
-      const storedHistory = localStorage.getItem('quizHistory');
+      const storedHistory = localStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY);
       if (storedHistory) {
         setHistory(JSON.parse(storedHistory));
       }
@@ -31,52 +47,70 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 rounded-2xl bg-[var(--bg-translucent)] backdrop-blur-xl flex items-center justify-center border border-[var(--glass-border)] shadow-[var(--glass-shadow)]">
-          <ClockIcon className="w-7 h-7 text-[var(--accent-text)]" />
-        </div>
-        <h1 className="text-3xl font-bold text-[var(--text-primary)]">{t('history_title')}</h1>
-      </div>
+    <div ref={contentRef} className="h-full overflow-y-auto px-4 sm:px-6 lg:p-8 relative">
+        <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-4 my-8">
+                <div className="w-12 h-12 rounded-2xl glass-pane flex items-center justify-center">
+                    <ClockIcon className="w-7 h-7 text-[var(--accent-text)]" />
+                </div>
+                <h1 className="text-3xl font-bold text-[var(--text-primary)]">{t('history_title')}</h1>
+            </div>
 
-      {history.length === 0 ? (
-        <div className="text-center py-10 bg-[var(--bg-translucent)] backdrop-blur-xl p-4 rounded-2xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)]">
-          <p className="text-[var(--text-secondary)]">{t('history_no_quizzes')}</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {history.map(result => (
-            <motion.div
-              key={result.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="bg-[var(--bg-translucent)] backdrop-blur-xl p-4 rounded-2xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)]"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex-1 mb-4 sm:mb-0">
-                  <h2 className="font-bold text-[var(--text-primary)]">{result.quizTitle}</h2>
-                  <p className="text-sm text-[var(--text-secondary)]">
-                    {new Date(result.date).toLocaleString()}
-                  </p>
+            {history.length === 0 ? (
+                <div className="text-center py-10 glass-pane p-4 rounded-2xl">
+                    <p className="text-[var(--text-secondary)]">{t('history_no_quizzes')}</p>
                 </div>
-                <div className="flex items-center justify-between sm:justify-end gap-4">
-                    <div className="text-center">
-                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold">{t('history_score')}</p>
-                        <p className="font-bold text-lg text-[var(--accent-text)]">{result.score} / {result.totalQuestions}</p>
-                    </div>
-                    <button 
-                        onClick={() => setSelectedResult(result)}
-                        className="bg-[var(--ui-bg)] text-[var(--text-secondary)] font-semibold px-4 py-2 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors"
-                    >
-                        {t('history_view_details')}
-                    </button>
+            ) : (
+                <div className="space-y-4 pb-16">
+                    {history.map(result => (
+                        <motion.div
+                            key={result.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="glass-pane p-4 rounded-2xl"
+                        >
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex-1 mb-4 sm:mb-0">
+                                    <h2 className="font-bold text-[var(--text-primary)]">{result.quizTitle}</h2>
+                                    <p className="text-sm text-[var(--text-secondary)]">
+                                        {new Date(result.date).toLocaleString()}
+                                    </p>
+                                </div>
+                                <div className="flex items-center justify-between sm:justify-end gap-4">
+                                    <div className="text-center">
+                                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold">{t('history_score')}</p>
+                                        <p className="font-bold text-lg text-[var(--accent-text)]">{result.score} / {result.totalQuestions}</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => setSelectedResult(result)}
+                                        className="bg-[var(--ui-bg)] text-[var(--text-secondary)] font-semibold px-4 py-2 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors"
+                                    >
+                                        {t('history_view_details')}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
                 </div>
-              </div>
-            </motion.div>
-          ))}
+            )}
         </div>
-      )}
+        <AnimatePresence>
+            {showBackToTop && (
+                <motion.button
+                    onClick={scrollToTop}
+                    className="fixed bottom-6 right-6 w-14 h-14 bg-[var(--ui-bg)] rounded-full text-[var(--text-primary)] flex items-center justify-center shadow-lg z-[var(--z-fab)]"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    aria-label="Back to top"
+                >
+                    <ChevronUpIcon className="w-7 h-7" />
+                </motion.button>
+            )}
+        </AnimatePresence>
     </div>
   );
 };
@@ -84,31 +118,34 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
 const QuizDetailView: React.FC<{ result: QuizResult; onBack: () => void; setView: (view: View) => void }> = ({ result, onBack, setView }) => {
     const { t } = useTranslation();
     const problemsById = useMemo(() => {
-        return problems.reduce<Record<string, Problem>>((acc, p) => {
+        const subjectProblems = allData[result.subjectId]?.data?.problems;
+        if (!subjectProblems) return {};
+        
+        return subjectProblems.reduce<Record<string, Problem>>((acc, p) => {
             acc[p.id] = p;
             return acc;
         }, {});
-    }, []);
+    }, [result.subjectId]);
 
     const percentage = result.totalQuestions > 0 ? ((result.score / result.totalQuestions) * 100).toFixed(1) : 0;
-
+    
     return (
-        <div className="max-w-4xl mx-auto">
-            <button onClick={onBack} className="text-sm font-semibold text-[var(--accent-text)] mb-6">&larr; {t('quiz_history')}</button>
-            <div className="bg-[var(--bg-translucent)] backdrop-blur-xl p-6 rounded-2xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] mb-6">
+        <div className="max-w-4xl mx-auto h-full overflow-y-auto px-4 sm:px-6 lg:p-8">
+            <button onClick={onBack} className="text-sm font-semibold text-[var(--accent-text)] my-6">&larr; {t('quiz_history')}</button>
+            <div className="glass-pane p-6 rounded-2xl mb-6">
                 <div className="flex justify-between items-center">
                     <div>
                         <h1 className="text-2xl font-bold text-[var(--text-primary)]">{result.quizTitle}</h1>
                         <p className="text-sm text-[var(--text-secondary)]">{new Date(result.date).toLocaleString()}</p>
                     </div>
-                    <div className="flex items-center gap-2 text-green-500">
+                    <div className="flex items-center gap-2 text-[var(--success-text)]">
                         <CheckBadgeIcon className="w-8 h-8"/>
                         <span className="text-3xl font-bold">{percentage}%</span>
                     </div>
                 </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 pb-16">
                 {result.answeredQuestions.map(ans => {
                     const problem = problemsById[ans.problemId];
                     if (!problem) return null;
@@ -116,12 +153,12 @@ const QuizDetailView: React.FC<{ result: QuizResult; onBack: () => void; setView
                     const userOption = problem.options.find(o => o.key === ans.userAnswer);
 
                     return (
-                        <div key={ans.problemId} className="bg-[var(--bg-translucent)] backdrop-blur-xl p-4 rounded-xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)]">
+                        <div key={ans.problemId} className="glass-pane p-4 rounded-2xl">
                            <p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">{t('problem_header')} {problem.number}</p>
                            <p className="mb-4 text-[var(--text-primary)]">{problem.text_en}</p>
                            <div className="space-y-2">
-                                <div className={`flex items-start gap-3 p-2 rounded-lg ${ans.isCorrect ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
-                                    <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-white ${ans.isCorrect ? 'bg-green-500' : 'bg-red-500'}`}>
+                                <div className={`flex items-start gap-3 p-3 rounded-lg ${ans.isCorrect ? 'bg-[var(--success-bg)]' : 'bg-[var(--error-bg)]'}`}>
+                                    <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${ans.isCorrect ? 'bg-[var(--success-solid-bg)] text-[var(--success-solid-text)]' : 'bg-[var(--error-solid-bg)] text-[var(--error-solid-text)]'}`}>
                                         {ans.isCorrect ? <CheckIcon className="w-3 h-3"/> : <XMarkIcon className="w-3 h-3"/>}
                                     </div>
                                     <p className="text-sm text-[var(--text-primary)]">
@@ -130,8 +167,8 @@ const QuizDetailView: React.FC<{ result: QuizResult; onBack: () => void; setView
                                     </p>
                                 </div>
                                 {!ans.isCorrect && (
-                                     <div className="flex items-start gap-3 p-2 rounded-lg bg-green-500/10">
-                                        <div className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center bg-green-500 text-white">
+                                     <div className="flex items-start gap-3 p-3 rounded-lg bg-[var(--success-bg)]">
+                                        <div className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 bg-[var(--success-solid-bg)] text-[var(--success-solid-text)]">
                                             <CheckIcon className="w-3 h-3"/>
                                         </div>
                                         <p className="text-sm text-[var(--text-primary)]">

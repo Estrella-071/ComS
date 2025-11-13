@@ -2,7 +2,7 @@ import type { Problem } from '../types';
 
 export const problems: Problem[] = [
   {
-    id: '4.1', chapter: '4', number: '4-1', isStarred: false,
+    id: '4.1', chapter: '4', number: '4-1',
     text_en: "________ is an arithmetic operation.",
     text_zh: "________ 是一種算術運算。",
     options: [
@@ -15,7 +15,7 @@ export const problems: Problem[] = [
     explanation_zh: "減法（Subtraction）是一種基本的算術運算。AND、OR、XOR 和 NOT 則是邏輯運算。",
   },
   {
-    id: '4.2', chapter: '4', number: '4-2', isStarred: false,
+    id: '4.2', chapter: '4', number: '4-2',
     text_en: "________ is a logical bit operator.",
     text_zh: "________ 是一種邏輯位元運算子。",
     options: [
@@ -28,7 +28,7 @@ export const problems: Problem[] = [
     explanation_zh: "邏輯位元運算子對二進位數的每一位進行操作。互斥或（XOR）、一元非（unary NOT）和二元與（binary AND）都屬於邏輯位元運算子。",
   },
   {
-    id: '4.3', chapter: '4', number: '4-3', isStarred: false,
+    id: '4.3', chapter: '4', number: '4-3',
     text_en: "The ________ method of integer representation is the most common method for storing integers in computer memory.",
     text_zh: "________ 整數表示法是電腦記憶體中儲存整數最常見的方法。",
     options: [
@@ -41,7 +41,7 @@ export const problems: Problem[] = [
     explanation_zh: "二的補數（two's complement）是電腦系統中最常用來表示和處理有符號整數的方法，因為它簡化了加法和減法運算。",
   },
   {
-    id: '4.4', chapter: '4', number: '4-4', isStarred: false,
+    id: '4.4', chapter: '4', number: '4-4',
     text_en: "In two's complement addition, if there is a final carry after the left most column addition, ________.",
     text_zh: "在二的補數加法中，如果最左邊一欄相加後有最終進位，則 ________。",
     options: [
@@ -54,7 +54,7 @@ export const problems: Problem[] = [
     explanation_zh: "在二的補數加法中，如果最高位（最左邊）相加產生了進位，這個進位應該被直接丟棄。這個特性使得加法和減法可以使用相同的電路來實現。",
   },
   {
-    id: '4.5', chapter: '4', number: '4-5', isStarred: false,
+    id: '4.5', chapter: '4', number: '4-5',
     text_en: "For an 8-bit allocation, the smallest decimal number that can be represented in two's complement form is ________.",
     text_zh: "對於 8 位元的配置，可以用二的補數形式表示的最小十進位數是 ________。",
     options: [
@@ -67,7 +67,7 @@ export const problems: Problem[] = [
     explanation_zh: "對於 $n$ 位元的二的補數表示法，可表示的範圍是 $-2^{n-1}$ 到 $2^{n-1} - 1$。對於 8 位元，範圍是 $-2^7$ 到 $2^7 - 1$，即 $-128$ 到 $127$。最小數為 $-128$。",
   },
   {
-    id: '4.6', chapter: '4', number: '4-6', isStarred: false,
+    id: '4.6', chapter: '4', number: '4-6',
     text_en: "For an 8-bit allocation, the largest decimal number that can be represented in two's complement form is ________.",
     text_zh: "對於 8 位元的配置，可以用二的補數形式表示的最大十進位數是 ________。",
     options: [
@@ -80,7 +80,7 @@ export const problems: Problem[] = [
     explanation_zh: "對於 $n$ 位元的二的補數表示法，可表示的範圍是 $-2^{n-1}$ 到 $2^{n-1} - 1$。對於 8 位元，範圍是 $-128$ 到 $127$。最大數為 $127$。",
   },
   {
-    id: '4.7', chapter: '4', number: '4-7', isStarred: false,
+    id: '4.7', chapter: '4', number: '4-7',
     text_en: "In two's complement representation with a 4-bit allocation, we get ________ when we add 1 to 7.",
     text_zh: "在 4 位元配置的二的補數表示法中，當我們將 1 加到 7 時，得到 ________。",
     options: [
@@ -93,7 +93,7 @@ export const problems: Problem[] = [
     explanation_zh: "在 4 位元二的補數中，$7_{10} = 0111_2$。加 1 後為 $1000_2$。因為最高位是 1，這是一個負數。$1000_2$ 的二的補數是它本身，代表的十進位數是 $-8_{10}$。這是一個溢位（overflow）的例子。",
   },
   {
-    id: '4.8', chapter: '4', number: '4-8', isStarred: false,
+    id: '4.8', chapter: '4', number: '4-8',
     text_en: "In two's complement representation with a 4-bit allocation, we get ________ when we add 5 to 5.",
     text_zh: "在 4 位元配置的二的補數表示法中，當我們將 5 加到 5 時，得到 ________。",
     options: [
@@ -106,7 +106,7 @@ export const problems: Problem[] = [
     explanation_zh: "在 4 位元二的補數中，$5_{10}$ 的表示為 $0101_2$。$5 + 5 = 10$，二進位相加為 $0101_2 + 0101_2 = 1010_2$。最高位是 1，為負數。取其二的補數得到 $0110_2$，即 6。所以 $1010_2$ 代表 $-6_{10}$。這也是一個溢位的例子。",
   },
   {
-    id: '4.9', chapter: '4', number: '4-9', isStarred: false,
+    id: '4.9', chapter: '4', number: '4-9',
     text_en: "If the exponent in Excess_127 is binary 10000101, the exponent in decimal is ________.",
     text_zh: "如果 Excess_127 中的指數是二進位的 10000101，那麼十進位的指數是 ________。",
     options: [
@@ -119,7 +119,7 @@ export const problems: Problem[] = [
     explanation_zh: "在 Excess_127 表示法中，要得到真實的指數值，需要將二進位表示轉換為十進位後再減去偏置值 127。二進位 $10000101_2$ 等於十進位 $133_{10}$ ($128+4+1$)。所以真實指數是 $133 - 127 = 6$。",
   },
   {
-    id: '4.10', chapter: '4', number: '4-10', isStarred: false,
+    id: '4.10', chapter: '4', number: '4-10',
     text_en: "If we are adding two numbers, one of which has an exponent value of 7 and the other an exponent value of 9, we need to shift the decimal point of the smaller number ________.",
     text_zh: "如果我們相加兩個數字，其中一個的指數值為 7，另一個的指數值為 9，我們需要將較小數字的小數點向 ________ 移動。",
     options: [
@@ -132,7 +132,7 @@ export const problems: Problem[] = [
     explanation_zh: "在進行浮點數加法時，需要先對齊指數。將指數較小的數的尾數向右移動，每移動一位，指數加一。為了將指數 7 對齊到 9，需要將指數為 7 的數的尾數向右移動 $9 - 7 = 2$ 位，這相當於將其小數點向左移動兩位。",
   },
   {
-    id: '4.11', chapter: '4', number: '4-11', isStarred: false,
+    id: '4.11', chapter: '4', number: '4-11',
     text_en: "________ operator(s) takes two inputs to produce one output.",
     text_zh: "________ 運算子接受兩個輸入以產生一個輸出。",
     options: [
@@ -145,7 +145,7 @@ export const problems: Problem[] = [
     explanation_zh: "二元運算子（binary operator）接受兩個輸入（運算元）來產生一個輸出。AND, OR, XOR 都是二元運算子。NOT 是一元運算子。",
   },
   {
-    id: '4.12', chapter: '4', number: '4-12', isStarred: false,
+    id: '4.12', chapter: '4', number: '4-12',
     text_en: "The unary ________ operator inverts its single input.",
     text_zh: "一元 ________ 運算子會反轉其單一輸入。",
     options: [
@@ -158,7 +158,7 @@ export const problems: Problem[] = [
     explanation_zh: "一元（unary）運算子只接受一個輸入。NOT 運算子（也稱為反相器）會將其輸入的位元反轉（0 變 1，1 變 0）。",
   },
   {
-    id: '4.13', chapter: '4', number: '4-13', isStarred: false,
+    id: '4.13', chapter: '4', number: '4-13',
     text_en: "________ operator(s), if the input is two 0s, the output is 0.",
     text_zh: "________ 運算子，如果輸入是兩個 0，輸出是 0。",
     options: [
@@ -171,7 +171,7 @@ export const problems: Problem[] = [
     explanation_zh: "AND: $0 \\& 0 = 0$. OR: $0 | 0 = 0$. XOR: $0 \\oplus 0 = 0$. 所以三者在輸入為兩個 0 時，輸出都是 0。",
   },
   {
-    id: '4.14', chapter: '4', number: '4-14', isStarred: false,
+    id: '4.14', chapter: '4', number: '4-14',
     text_en: "________ operator(s), if the input is two 1s, the output is 0.",
     text_zh: "________ 運算子，如果輸入是兩個 1，輸出是 0。",
     options: [
@@ -184,7 +184,7 @@ export const problems: Problem[] = [
     explanation_zh: "XOR (互斥或) 運算子的規則是：當兩個輸入位元不同時，輸出為 1；相同時，輸出為 0。因此當輸入是兩個 1 時，輸出是 0。",
   },
   {
-    id: '4.15', chapter: '4', number: '4-15', isStarred: false,
+    id: '4.15', chapter: '4', number: '4-15',
     text_en: "For the binary AND operation, only an input of ________ gives an output of 1.",
     text_zh: "對於二進位 AND 運算，只有 ________ 的輸入會得到 1 的輸出。",
     options: [
@@ -197,7 +197,7 @@ export const problems: Problem[] = [
     explanation_zh: "對於 AND 運算，只有當所有輸入都為 1 時，輸出才為 1。",
   },
   {
-    id: '4.16', chapter: '4', number: '4-16', isStarred: false,
+    id: '4.16', chapter: '4', number: '4-16',
     text_en: "For the binary OR operation, only an input of ________ gives an output of 0.",
     text_zh: "對於二進位 OR 運算，只有 ________ 的輸入會得到 0 的輸出。",
     options: [
@@ -210,7 +210,7 @@ export const problems: Problem[] = [
     explanation_zh: "對於 OR 運算，只有當所有輸入都為 0 時，輸出才為 0。",
   },
   {
-    id: '4.17', chapter: '4', number: '4-17', isStarred: false,
+    id: '4.17', chapter: '4', number: '4-17',
     text_en: "We use a bit pattern called a ________ to modify another bit pattern.",
     text_zh: "我們使用稱為 ________ 的位元模式來修改另一個位元模式。",
     options: [
@@ -223,7 +223,7 @@ export const problems: Problem[] = [
     explanation_zh: "遮罩（mask）是一個位元模式，用於位元運算中，可以選擇性地修改、選取或清除另一個位元模式中的某些位元。",
   },
   {
-    id: '4.18', chapter: '4', number: '4-18', isStarred: false,
+    id: '4.18', chapter: '4', number: '4-18',
     text_en: "To flip all the bits of a bit pattern, make a mask of all 1s and then ________ the bit pattern and the mask.",
     text_zh: "要反轉位元模式的所有位元，請建立一個全為 1 的遮罩，然後將該位元模式與遮罩進行 ________ 運算。",
     options: [
@@ -236,7 +236,7 @@ export const problems: Problem[] = [
     explanation_zh: "要反轉（flip）一個位元模式的所有位元，可以使用 XOR 運算。任何位元 A XOR 1 的結果都是 A 的反轉。因此，使用一個全為 1 的遮罩進行 XOR 運算可以反轉所有位元。",
   },
   {
-    id: '4.19', chapter: '4', number: '4-19', isStarred: false,
+    id: '4.19', chapter: '4', number: '4-19',
     text_en: "To un-set (force to 0) all the bits of a bit pattern, make a mask of all 0s and then ________ the bit pattern and the mask.",
     text_zh: "要取消設定 (強制為 0) 位元模式的所有位元，請建立一個全為 0 的遮罩，然後將該位元模式與遮罩進行 ________ 運算。",
     options: [
@@ -249,7 +249,7 @@ export const problems: Problem[] = [
     explanation_zh: "要取消設定（un-set，強制為 0）一個位元模式中的某些位元，可以使用 AND 運算。任何位元 A AND 0 的結果都是 0。因此，使用一個全為 0 的遮罩進行 AND 運算可以將所有位元強制為 0。",
   },
   {
-    id: '4.20', chapter: '4', number: '4-20', isStarred: false,
+    id: '4.20', chapter: '4', number: '4-20',
     text_en: "To set (force to 1) all the bits of a bit pattern, make a mask of all 1s and then ________ the bit pattern and the mask.",
     text_zh: "要設定 (強制為 1) 位元模式的所有位元，請建立一個全為 1 的遮罩，然後將該位元模式與遮罩進行 ________ 運算。",
     options: [

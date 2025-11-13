@@ -1,14 +1,18 @@
+
+
 export const en = {
   // General
-  app_name: 'Intro to Computers\nQuestion Bank',
+  app_name: 'Interactive Learning Bank',
   cancel: 'Cancel',
 
-  // Sidebar
-  home: 'Overview',
+  // Sidebar & Home
+  home: 'Table of Contents',
+  table_of_contents: 'Table of Contents',
   modes: 'Modes',
+  practice_modes: 'Practice Modes',
   all_questions: 'All Questions',
-  shuffle_mode: 'Shuffle Mode',
-  flagged_for_review: 'Bookmarked Problems',
+  question_bank_quiz: 'Question Bank Quiz',
+  flagged_for_review: 'Bookmarks',
   tools: 'Tools',
   quiz_history: 'Quiz History',
   by_chapter: 'By Chapter',
@@ -23,6 +27,27 @@ export const en = {
   search_placeholder: 'Search problems...',
   flagged_toast: 'Added to Bookmarks',
   search: 'Search',
+  sidebar_toc_header: 'Table of Contents',
+  sidebar_quiz_nav_header: 'Quiz Navigator',
+  sidebar_problem_nav_header: 'Problem Navigator',
+  review_incorrect_questions: 'Review Incorrect',
+  sidebar_tab_current: 'Current',
+  sidebar_tab_navigate: 'Navigate',
+  sidebar_tab_tools: 'Tools',
+  sidebar_tab_settings: 'Settings',
+  navigate: 'Navigate',
+  recent_quizzes: 'Recent Quizzes',
+  no_recent_quizzes: 'Complete a quiz to see your history here.',
+  change_subject: 'Change Subject',
+
+  // Subject Selection
+  select_subject: 'Select a Subject',
+
+  // Bookmarks View
+  bookmarks_title: 'Bookmarks',
+  bookmarks_description: 'Review your bookmarked problems or start a quiz with them.',
+  bookmarks_no_problems: 'You haven\'t bookmarked any problems yet.',
+  bookmarks_start_quiz: 'Start Quiz with Bookmarked Problems',
 
   // Quiz View
   question: 'Question',
@@ -30,7 +55,6 @@ export const en = {
   show_explanation: 'Show Explanation',
   hide_explanation: 'Hide Explanation',
   explanation: 'Explanation',
-  ai_thinking: 'Your personal AI tutor is thinking...',
   next_question: 'Next',
   previous_question: 'Previous',
   results: 'Results',
@@ -39,26 +63,34 @@ export const en = {
   correct: 'Correct',
   incorrect: 'Incorrect',
   restart_quiz: 'Restart Quiz',
-  return_home: 'Return to Overview',
+  return_home: 'Return to Contents',
   select_question: 'Jump to...',
-  show_explanation_on_answer: 'Show explanation after answering',
-  auto_advance_on_answer: 'Auto-advance after answering',
+  show_explanation_on_answer: 'Auto-show explanation',
+  auto_advance_on_answer: 'Auto-advance',
   go_to_first: 'Go to First',
   go_to_last: 'Go to Last',
+  quiz_nav_all: 'All',
+  quiz_nav_incorrect: 'Incorrect',
+  quiz_nav_unanswered: 'Unanswered',
   
-  // Shuffle Modal
-  shuffle_settings: 'Shuffle Settings',
-  shuffle_description: 'Select chapters to include in the shuffle. If none are selected, all chapters will be included.',
+  // Question Bank Quiz Settings
+  quiz_settings: 'Quiz Settings',
+  quiz_description: 'Select chapters and configure the quiz mode.',
   select_all: 'Select All',
   deselect_all: 'Deselect All',
-  start_shuffled_quiz: 'Start Shuffled Quiz',
-  shuffle_num_questions: 'Number of Questions',
-  shuffle_all_questions: 'Max',
+  start_quiz: 'Start Quiz',
+  quiz_num_questions: 'Number of Questions',
+  quiz_all_questions: 'Max',
+  quiz_include_chapters: 'Chapters to Include',
+  quiz_mode: 'Quiz Mode',
+  quiz_mode_shuffled: 'Shuffled',
+  quiz_mode_sequential: 'Sequential',
   
   // Search Modal
   search_modal_title: 'Search Problems',
   search_modal_placeholder: 'Type to search questions...',
   search_no_results: 'No problems found.',
+  search_results_title: 'Search Results',
 
   // Glossary
   glossary_title: 'Glossary',
@@ -86,7 +118,16 @@ export const en = {
   key_problem: 'Key Problem',
   options: 'Options',
 
-  // FIX: Add missing translation keys for tool components.
-  number_converter: 'Number Converter',
-  kmap_solver: 'K-Map Solver',
+  // Textbook View
+  practice_questions_for_chapter: 'Practice Questions for Chapter',
+  next_chapter: 'Next Chapter',
+  previous_chapter: 'Previous Chapter',
+  reading_settings_font_size: 'Font Size',
+  reading_settings_line_height: 'Line Height',
+  reading_settings_page_width: 'Page Width',
+  reading_settings_theme: 'Theme',
+  reading_settings_formatting: 'Formatting',
+  reading_settings_format_mode_formatted: 'Formatted',
+  reading_settings_format_mode_unformatted: 'Unformatted',
+  reading_settings_format_mode_text_only: 'Text Only',
 };

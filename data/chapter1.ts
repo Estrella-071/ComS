@@ -2,7 +2,7 @@ import type { Problem } from '../types';
 
 export const problems: Problem[] = [
   {
-    id: '1.1', chapter: '1', number: '1-1', isStarred: false,
+    id: '1.1', chapter: '1', number: '1-1',
     text_en: "The ________ model is the basis for today's computers.",
     text_zh: "________ 模型是今日電腦的基礎。",
     options: [
@@ -15,7 +15,7 @@ export const problems: Problem[] = [
     explanation_zh: "馮·諾伊曼模型（von Neumann model）是現代電腦的基礎，其核心思想是將程式與資料儲存在同一個記憶體中，並依序執行指令。",
   },
   {
-    id: '1.2', chapter: '1', number: '1-2', isStarred: false,
+    id: '1.2', chapter: '1', number: '1-2',
     text_en: "In a computer, the ________ subsystem stores data and programs.",
     text_zh: "在電腦中，________ 子系統儲存資料和程式。",
     options: [
@@ -28,7 +28,7 @@ export const problems: Problem[] = [
     explanation_zh: "電腦的五大單元中，記憶體（memory）子系統負責儲存資料和程式。",
   },
   {
-    id: '1.3', chapter: '1', number: '1-3', isStarred: false,
+    id: '1.3', chapter: '1', number: '1-3',
     text_en: "In a computer, the ________ subsystem performs calculations and logical operations.",
     text_zh: "在電腦中，________ 子系統執行計算和邏輯運算。",
     options: [
@@ -41,7 +41,7 @@ export const problems: Problem[] = [
     explanation_zh: "算術邏輯單元（Arithmetic Logic Unit, ALU）是中央處理器（CPU）的一部分，專門負責執行算術運算（如加減）與邏輯運算（如 AND, OR）。",
   },
   {
-    id: '1.4', chapter: '1', number: '1-4', isStarred: false,
+    id: '1.4', chapter: '1', number: '1-4',
     text_en: "In a computer, the ________ subsystem accepts data and programs and sends processing results to output devices.",
     text_zh: "在電腦中，________ 子系統接收資料和程式，並將處理結果發送到輸出設備。",
     options: [
@@ -54,7 +54,7 @@ export const problems: Problem[] = [
     explanation_zh: "輸入/輸出（input/output）子系統負責電腦與外部世界的溝通，接收來自鍵盤、滑鼠等的輸入，並將結果輸出到螢幕、印表機等設備。",
   },
   {
-    id: '1.5', chapter: '1', number: '1-5', isStarred: false,
+    id: '1.5', chapter: '1', number: '1-5',
     text_en: "In a computer, the ________ subsystem serves as a manager of the other subsystems.",
     text_zh: "在電腦中，________ 子系統擔任其他子系統的管理員。",
     options: [
@@ -67,7 +67,7 @@ export const problems: Problem[] = [
     explanation_zh: "控制單元（Control Unit）是 CPU 的一部分，負責協調和管理電腦所有子系統的運作，如同電腦的大腦指揮官。",
   },
   {
-    id: '1.6', chapter: '1', number: '1-6', isStarred: false,
+    id: '1.6', chapter: '1', number: '1-6',
     text_en: "According to the von Neumann model, ________ are stored in memory.",
     text_zh: "根據馮·諾伊曼模型，________ 被儲存在記憶體中。",
     options: [
@@ -80,7 +80,7 @@ export const problems: Problem[] = [
     explanation_zh: "馮·諾伊曼模型的一個關鍵特點是程式和資料都以二進位形式儲存在同一個記憶體中。",
   },
   {
-    id: '1.7', chapter: '1', number: '1-7', isStarred: false,
+    id: '1.7', chapter: '1', number: '1-7',
     text_en: "A step-by-step solution to a problem is called ________.",
     text_zh: "解決問題的逐步方案稱為 ________。",
     options: [
@@ -93,7 +93,7 @@ export const problems: Problem[] = [
     explanation_zh: "演算法（algorithm）是為了解決特定問題而設計的一系列明確、有限的步驟。它是程式設計的基礎。",
   },
   {
-    id: '1.8', chapter: '1', number: '1-8', isStarred: false,
+    id: '1.8', chapter: '1', number: '1-8',
     text_en: "FORTRAN and COBOL are examples of ________.",
     text_zh: "FORTRAN 和 COBOL 是 ________ 的例子。",
     options: [
@@ -106,7 +106,7 @@ export const problems: Problem[] = [
     explanation_zh: "FORTRAN 和 COBOL 是早期的高階程式語言。FORTRAN 主要用於科學計算，COBOL 主要用於商業資料處理。",
   },
   {
-    id: '1.9', chapter: '1', number: '1-9', isStarred: false,
+    id: '1.9', chapter: '1', number: '1-9',
     text_en: "A 17th-century computing machine that could perform addition and subtraction was the ________.",
     text_zh: "17世紀能執行加減法運算的計算機器是 ________。",
     options: [
@@ -119,7 +119,7 @@ export const problems: Problem[] = [
     explanation_zh: "帕斯卡計算器（Pascaline）由布萊茲·帕斯卡於17世紀發明，是第一台能執行加法和減法的機械式計算器。",
   },
   {
-    id: '1.10', chapter: '1', number: '1-10', isStarred: false,
+    id: '1.10', chapter: '1', number: '1-10',
     text_en: "________ is a set of instructions in a computer language that tells the computer what to do with data.",
     text_zh: "________ 是一組用電腦語言寫成的指令，告訴電腦如何處理資料。",
     options: [
@@ -132,7 +132,7 @@ export const problems: Problem[] = [
     explanation_zh: "程式（program）是一系列電腦可以理解和執行的指令，它告訴電腦如何處理資料以完成特定任務。",
   },
   {
-    id: '1.11', chapter: '1', number: '1-11', isStarred: false,
+    id: '1.11', chapter: '1', number: '1-11',
     text_en: "________ is the design and writing of a program in structured form.",
     text_zh: "________ 是以結構化形式設計和編寫程式的過程。",
     options: [
@@ -145,7 +145,7 @@ export const problems: Problem[] = [
     explanation_zh: "軟體工程（Software engineering）是一門將系統化、紀律化、可量化的方法應用於軟體開發、運維和維護的學科。",
   },
   {
-    id: '1.12', chapter: '1', number: '1-12', isStarred: false,
+    id: '1.12', chapter: '1', number: '1-12',
     text_en: "The first electronic special-purpose computer was called ________.",
     text_zh: "第一台電子專用電腦被稱為 ________。",
     options: [
@@ -158,7 +158,7 @@ export const problems: Problem[] = [
     explanation_zh: "第一台電子專用電腦是阿塔納索夫-貝瑞電腦（Atanasoff-Berry Computer, ABC），於1937年設計，用於求解線性方程組。",
   },
   {
-    id: '1.13', chapter: '1', number: '1-13', isStarred: false,
+    id: '1.13', chapter: '1', number: '1-13',
     text_en: "One of the first computers based on the von Neumann model was called ________.",
     text_zh: "第一批基於馮·諾伊曼模型的電腦之一被稱為 ________。",
     options: [
@@ -171,7 +171,7 @@ export const problems: Problem[] = [
     explanation_zh: "EDVAC (Electronic Discrete Variable Automatic Computer) 是最早基於馮·諾伊曼儲存程式概念設計的電腦之一。",
   },
   {
-    id: '1.14', chapter: '1', number: '1-14', isStarred: false,
+    id: '1.14', chapter: '1', number: '1-14',
     text_en: "The first computing machine to use the idea of storage and programming was called ________.",
     text_zh: "第一台使用儲存和程式設計思想的計算機器被稱為 ________。",
     options: [
@@ -184,7 +184,7 @@ export const problems: Problem[] = [
     explanation_zh: "緹花織布機（Jacquard loom）由約瑟夫·瑪麗·雅卡爾於1801年發明，使用打孔卡片來控制織布圖案，被認為是程式設計和資料儲存概念的早期應用。",
   },
   {
-    id: '1.15', chapter: '1', number: '1-15', isStarred: false,
+    id: '1.15', chapter: '1', number: '1-15',
     text_en: "________ separated the programming task from computer operation tasks.",
     text_zh: "________ 將程式設計任務與電腦操作任務分開。",
     options: [

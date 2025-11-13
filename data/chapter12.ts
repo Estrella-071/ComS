@@ -2,7 +2,7 @@ import type { Problem } from '../types';
 
 export const problems: Problem[] = [
   {
-    id: '12.1', chapter: '12', number: '12-1', isStarred: false,
+    id: '12.1', chapter: '12', number: '12-1',
     text_en: "In an abstract data type, ________.",
     text_zh: "在抽象資料型別中，________。",
     options: [
@@ -15,7 +15,7 @@ export const problems: Problem[] = [
     explanation_zh: "抽象資料型別（Abstract Data Type, ADT）的核心思想是資訊隱藏（information hiding）。它只定義了資料的邏輯特性和操作介面，而將其底層的具體實作細節隱藏起來。",
   },
   {
-    id: '12.2', chapter: '12', number: '12-2', isStarred: false,
+    id: '12.2', chapter: '12', number: '12-2',
     text_en: "A stack is a ________ structure.",
     text_zh: "堆疊是 ________ 結構。",
     options: [
@@ -28,7 +28,7 @@ export const problems: Problem[] = [
     explanation_zh: "堆疊（Stack）是一種後進先出（Last-In, First-Out, LIFO）的資料結構。最後被放入堆疊的元素會是第一個被取出的。",
   },
   {
-    id: '12.3', chapter: '12', number: '12-3', isStarred: false,
+    id: '12.3', chapter: '12', number: '12-3',
     text_en: "A(n) ________ list is also known as a queue.",
     text_zh: "________ 列表也稱為佇列。",
     options: [
@@ -41,7 +41,7 @@ export const problems: Problem[] = [
     explanation_zh: "佇列（Queue）是一種先進先出（First-In, First-Out, FIFO）的資料結構。最早被放入佇列的元素會是第一個被取出的。",
   },
   {
-    id: '12.4', chapter: '12', number: '12-4', isStarred: false,
+    id: '12.4', chapter: '12', number: '12-4',
     text_en: "If A is the first data element input into a stack, followed by B, C, and D, then ________ is the first element to be removed.",
     text_zh: "如果 A 是第一個輸入到堆疊的資料元素，接著是 B、C 和 D，那麼 ________ 是第一個被移除的元素。",
     options: [
@@ -54,7 +54,7 @@ export const problems: Problem[] = [
     explanation_zh: "堆疊是後進先出（LIFO）。輸入順序是 A, B, C, D。D 是最後一個進入的，所以它會是第一個被移除的。",
   },
   {
-    id: '12.5', chapter: '12', number: '12-5', isStarred: false,
+    id: '12.5', chapter: '12', number: '12-5',
     text_en: "If A is the first data element input into a queue, followed by B, C, and D, then ________ is the first element to be removed.",
     text_zh: "如果 A 是第一個輸入到佇列的資料元素，接著是 B、C 和 D，那麼 ________ 是第一個被移除的元素。",
     options: [
@@ -67,7 +67,7 @@ export const problems: Problem[] = [
     explanation_zh: "佇列是先進先出（FIFO）。輸入順序是 A, B, C, D。A 是第一個進入的，所以它會是第一個被移除的。",
   },
   {
-    id: '12.6', chapter: '12', number: '12-6', isStarred: false,
+    id: '12.6', chapter: '12', number: '12-6',
     text_en: "The pop operation ________ of the stack.",
     text_zh: "pop 操作 ________ 堆疊。",
     options: [
@@ -80,7 +80,7 @@ export const problems: Problem[] = [
     explanation_zh: "pop 操作是指從堆疊的頂部（top）移除並返回元素。",
   },
   {
-    id: '12.7', chapter: '12', number: '12-7', isStarred: false,
+    id: '12.7', chapter: '12', number: '12-7',
     text_en: "The push operation ________ of the stack.",
     text_zh: "push 操作 ________ 堆疊。",
     options: [
@@ -93,7 +93,7 @@ export const problems: Problem[] = [
     explanation_zh: "push 操作是指將一個元素添加到堆疊的頂部（top）。",
   },
   {
-    id: '12.8', chapter: '12', number: '12-8', isStarred: false,
+    id: '12.8', chapter: '12', number: '12-8',
     text_en: "In a binary tree, each node has ________ two subtrees.",
     text_zh: "在二元樹中，每個節點最多有 ________ 兩個子樹。",
     options: [
@@ -106,7 +106,7 @@ export const problems: Problem[] = [
     explanation_zh: "根據定義，二元樹（Binary Tree）中的每個節點最多只能有兩個子節點（稱為左子節點和右子節點），也就是說，子節點的數量可以是 0、1 或 2。",
   },
   {
-    id: '12.9', chapter: '12', number: '12-9', isStarred: false,
+    id: '12.9', chapter: '12', number: '12-9',
     text_en: "In preorder traversal of a binary tree, the ________.",
     text_zh: "在二元樹的前序遍歷中，________。",
     options: [
@@ -119,7 +119,7 @@ export const problems: Problem[] = [
     explanation_zh: "前序遍歷（Preorder traversal）的順序是：根節點 -> 左子樹 -> 右子樹。因此，根節點總是第一個被處理。",
   },
   {
-    id: '12.10', chapter: '12', number: '12-10', isStarred: false,
+    id: '12.10', chapter: '12', number: '12-10',
     text_en: "In ________ traversal of a binary tree, the right subtree is processed last.",
     text_zh: "在二元樹的 ________ 遍歷中，右子樹是最後被處理的。",
     options: [
@@ -132,7 +132,7 @@ export const problems: Problem[] = [
     explanation_zh: "中序遍歷（Inorder traversal）的順序是：左子樹 -> 根節點 -> 右子樹。因此，右子樹在左子樹和根節點之後處理。",
   },
   {
-    id: '12.11', chapter: '12', number: '12-11', isStarred: false,
+    id: '12.11', chapter: '12', number: '12-11',
     text_en: "In postorder traversal of a binary tree, the root is processed ________.",
     text_zh: "在二元樹的後序遍歷中，根節點是 ________ 被處理的。",
     options: [
@@ -145,7 +145,7 @@ export const problems: Problem[] = [
     explanation_zh: "後序遍歷（Postorder traversal）的順序是：左子樹 -> 右子樹 -> 根節點。因此，根節點總是在其所有子節點都被處理完之後，最後一個被處理。",
   },
   {
-    id: '12.12', chapter: '12', number: '12-12', isStarred: false,
+    id: '12.12', chapter: '12', number: '12-12',
     text_en: "In postorder traversal of a binary tree, the left subtree is processed ________.",
     text_zh: "在二元樹的後序遍歷中，左子樹是 ________ 被處理的。",
     options: [
@@ -158,7 +158,7 @@ export const problems: Problem[] = [
     explanation_zh: "後序遍歷（Postorder traversal）的順序是：左子樹 -> 右子樹 -> 根節點。因此，左子樹是第一個被處理的。",
   },
   {
-    id: '12.13', chapter: '12', number: '12-13', isStarred: false,
+    id: '12.13', chapter: '12', number: '12-13',
     text_en: "In ________ traversal of a binary tree, the left subtree is processed last.",
     text_zh: "在二元樹的 ________ 遍歷中，左子樹是最後被處理的。",
     options: [
@@ -171,7 +171,7 @@ export const problems: Problem[] = [
     explanation_zh: "這個問題存在錯誤。在標準的前序、中序、後序遍歷中，左子樹總是在右子樹之前被處理。沒有一種標準遍歷是最後處理左子樹的。鑒於提供的答案是 c，這可能是一個錯誤的題目。",
   },
   {
-    id: '12.14', chapter: '12', number: '12-14', isStarred: false,
+    id: '12.14', chapter: '12', number: '12-14',
     text_en: "In an inorder traversal of a binary tree, the root is processed ________.",
     text_zh: "在二元樹的中序遍歷中，根節點是 ________ 被處理的。",
     options: [

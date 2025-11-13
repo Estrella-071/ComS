@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -10,6 +11,7 @@ import { useAppContext } from '../contexts/AppContext';
 import { Tooltip } from './Tooltip';
 import { CheckIcon, XMarkIcon, StarIcon, StarSolidIcon } from './icons';
 import { TextWithHighlights } from './TextWithHighlights';
+import { glossaryData } from '../data/glossary';
 
 interface QuestionCardProps {
   problem: Problem;
@@ -18,12 +20,40 @@ interface QuestionCardProps {
   shouldAutoShowExplanation: boolean;
 }
 
+const zhToEnMap = glossaryData.reduce<Record<string, string>>((acc, term) => {
+    if (term.chinese) {
+        acc[term.chinese] = term.term;
+    }
+    return acc;
+}, {});
+
+const glossaryZhTerms = Object.keys(zhToEnMap).sort((a, b) => b.length - a.length);
+const glossaryRegexForZh = new RegExp(`(${glossaryZhTerms.join('|')})`, 'g');
+
+const addBilingualAnnotations = (markdown: string) => {
+    if (!markdown) return '';
+    const parts = markdown.split(/(```[\s\S]*?```|`[^`]*?`)/);
+    const processedParts = parts.map((part, index) => {
+        if (index % 2 === 1) { 
+            return part;
+        }
+        return part.replace(glossaryRegexForZh, (match) => {
+            const englishTerm = zhToEnMap[match];
+            if (englishTerm) {
+                return `${match} (${englishTerm})`;
+            }
+            return match;
+        });
+    });
+    return processedParts.join('');
+};
+
 export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer, onAnswerSelected, shouldAutoShowExplanation }) => {
   const { t } = useTranslation();
   const { flaggedProblems, toggleFlaggedProblem } = useAppContext();
   const [showManualExplanation, setShowManualExplanation] = useState(false);
   const [showFlagToast, setShowFlagToast] = useState(false);
-  
+
   const isFlagged = flaggedProblems.includes(problem.id);
   const hasAnswered = userAnswer !== undefined;
   const isExplanationEffectivelyVisible = shouldAutoShowExplanation || showManualExplanation;
@@ -37,7 +67,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
   };
 
   return (
-    <div className="bg-[var(--bg-translucent)] backdrop-blur-xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] rounded-3xl p-4 sm:p-8 h-full overflow-y-auto">
+    <div className="glass-pane rounded-2xl p-4 sm:p-8 h-full overflow-y-auto">
       <div className="mb-4">
         <div className="flex justify-between items-center mb-3">
           <p className="text-sm font-semibold bg-[var(--accent-bg)] text-[var(--accent-text)] px-3 py-1 rounded-full inline-block">
@@ -50,8 +80,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
                         initial={{ opacity: 0, x: 10, scale: 0.9 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         exit={{ opacity: 0, x: 10, scale: 0.9 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-1/2 -translate-y-1/2 right-full mr-2 bg-amber-400 text-amber-900 text-xs font-semibold px-2 py-1 rounded-md whitespace-nowrap"
+                        className="absolute top-1/2 -translate-y-1/2 right-full mr-2 bg-[var(--warning-solid-bg)] text-[var(--warning-solid-text)] text-xs font-semibold px-2 py-1 rounded-md whitespace-nowrap"
                     >
                         {t('flagged_toast')}
                     </motion.div>
@@ -59,11 +88,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
             </AnimatePresence>
             <motion.button
                 onClick={handleFlagToggle}
-                className="text-amber-400 hover:text-amber-500 transition-colors p-2 -m-2"
+                className="text-[var(--warning-text)] hover:text-[var(--warning-text-hover)] transition-colors p-2 -m-2"
                 aria-label={isFlagged ? 'Unflag problem' : 'Flag problem'}
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 1.4, rotate: 15 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 10 }}
             >
                 {isFlagged ? <StarSolidIcon className="w-6 h-6" /> : <StarIcon className="w-6 h-6" />}
             </motion.button>
@@ -85,11 +113,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
           
           let stateStyles = 'bg-[var(--ui-bg)] border-transparent hover:bg-[var(--ui-bg-hover)]';
           if (hasAnswered) {
-              if (isCorrect) {
-                  stateStyles = 'bg-green-500/20 border-green-500/50';
-              } else if (isSelected && !isCorrect) {
-                  stateStyles = 'bg-red-500/20 border-red-500/50';
-              }
+              if (isCorrect) stateStyles = 'bg-[var(--success-bg)] border-[var(--success-border)]';
+              else if (isSelected && !isCorrect) stateStyles = 'bg-[var(--error-bg)] border-[var(--error-border)]';
           }
 
           return (
@@ -97,13 +122,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
               key={option.key}
               onClick={() => onAnswerSelected(option.key)}
               disabled={hasAnswered}
-              className={`w-full flex items-center gap-4 px-4 py-3 sm:py-4 rounded-xl border-2 text-left transition-all duration-200 ${stateStyles} ${!hasAnswered ? 'cursor-pointer' : 'cursor-default'}`}
+              className={`w-full flex items-center gap-4 px-4 py-3 sm:py-4 rounded-xl border-2 text-left transition-all ${stateStyles} ${!hasAnswered ? 'cursor-pointer' : 'cursor-default'}`}
               whileHover={!hasAnswered ? { scale: 1.02 } : {}}
               whileTap={!hasAnswered ? { scale: 0.98 } : {}}
             >
-              <div className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm text-white ${
-                hasAnswered && isCorrect ? 'bg-green-500' : 
-                hasAnswered && isSelected ? 'bg-red-500' :
+              <div className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm ${
+                hasAnswered && isCorrect ? 'bg-[var(--success-solid-bg)] text-[var(--success-solid-text)]' : 
+                hasAnswered && isSelected ? 'bg-[var(--error-solid-bg)] text-[var(--error-solid-text)]' :
                 'bg-[var(--text-subtle)] text-[var(--bg-color)]'
               }`}>
                 {hasAnswered && isCorrect && <CheckIcon className="w-5 h-5"/>}
@@ -111,20 +136,18 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
                 {!hasAnswered && option.key.toUpperCase()}
                 {hasAnswered && !isSelected && !isCorrect && option.key.toUpperCase()}
               </div>
-              <div className="flex-1">
-                  <Tooltip content={option.text_zh}>
-                    <p className={`text-[var(--text-primary)] cursor-help ${hasAnswered && isCorrect ? 'font-semibold' : ''}`}>
-                        <TextWithHighlights text={option.text_en} />
-                    </p>
-                </Tooltip>
-              </div>
+              <Tooltip content={option.text_zh}>
+                <p className={`text-[var(--text-primary)] cursor-help leading-relaxed ${hasAnswered && isCorrect ? 'font-semibold' : ''}`}>
+                    <TextWithHighlights text={option.text_en} />
+                </p>
+              </Tooltip>
             </motion.button>
           );
         })}
       </div>
       
        {hasAnswered && !shouldAutoShowExplanation && (
-        <div className="mt-4 pt-4 border-t border-[var(--ui-border)] text-center">
+        <div className="mt-4 pt-4 border-t border-[var(--ui-border)] flex justify-center">
             <button
                 onClick={() => setShowManualExplanation(!showManualExplanation)}
                 className="bg-[var(--ui-bg)] text-[var(--text-secondary)] font-semibold px-5 py-2 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors"
@@ -135,23 +158,12 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
        )}
 
       <AnimatePresence>
-        {hasAnswered && isExplanationEffectivelyVisible && (
-            <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="overflow-hidden"
-            >
+        {(hasAnswered && isExplanationEffectivelyVisible) && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
                 <div className="mt-4 pt-4 border-t border-[var(--ui-border)]">
                     <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{t('explanation')}</h3>
-                    <div className="prose prose-slate dark:prose-invert max-w-none text-left prose-headings:font-semibold prose-p:leading-loose prose-p:text-[var(--text-secondary)] prose-li:text-[var(--text-secondary)]">
-                        <ReactMarkdown
-                            remarkPlugins={[remarkGfm, remarkMath]}
-                            rehypePlugins={[rehypeKatex]}
-                        >
-                            {problem.explanation_zh}
-                        </ReactMarkdown>
+                    <div className="prose prose-slate dark:prose-invert max-w-none text-left prose-p:text-[var(--text-secondary)] prose-li:text-[var(--text-secondary)]">
+                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{addBilingualAnnotations(problem.explanation_zh)}</ReactMarkdown>
                     </div>
                 </div>
             </motion.div>

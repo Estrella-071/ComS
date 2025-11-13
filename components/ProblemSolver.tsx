@@ -9,10 +9,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { Problem } from '../types';
 import { CheckIcon, StarIcon, StarSolidIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
-import { useAppContext, addBilingualAnnotations } from '../contexts/AppContext';
+import { useAppContext } from '../contexts/AppContext';
 import { Tooltip } from './Tooltip';
 import { TextWithHighlights } from './TextWithHighlights';
 import type { View } from '../types';
+import { useBilingualAnnotation } from '../hooks/useBilingualAnnotation';
 
 
 interface ProblemSolverProps {
@@ -41,7 +42,8 @@ const variants = {
 export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSidebarOpen }) => {
   const [direction, setDirection] = useState(0);
   const { t } = useTranslation();
-  const { subjectData, glossaryMaps } = useAppContext();
+  const { subjectData } = useAppContext();
+  const annotate = useBilingualAnnotation();
 
   const problems = useMemo(() => subjectData?.problems || [], [subjectData]);
   
@@ -57,7 +59,7 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
     }
   };
 
-  const [showExplanation, setShowExplanation] = useState(true);
+  const [showExplanation, setShowExplanation] = useState(false);
   const [showFlagToast, setShowFlagToast] = useState(false);
   const { flaggedProblems, toggleFlaggedProblem } = useAppContext();
 
@@ -195,7 +197,7 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                               <div className="mt-4 pt-4 border-t border-[var(--ui-border)]">
                                 <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{t('explanation')}</h3>
                                 <div className="prose prose-slate dark:prose-invert max-w-none text-left prose-p:text-[var(--text-secondary)] prose-li:text-[var(--text-secondary)]">
-                                  <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{addBilingualAnnotations(problem.explanation_zh, glossaryMaps)}</ReactMarkdown>
+                                  <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{annotate(problem.explanation_zh)}</ReactMarkdown>
                                 </div>
                               </div>
                             </motion.div>

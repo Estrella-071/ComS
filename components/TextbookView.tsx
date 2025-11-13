@@ -11,8 +11,9 @@ import { Tooltip } from './Tooltip';
 import type { View, GlossaryTerm } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
 import { ChevronLeftIcon, XMarkIcon, PlusIcon, MinusIcon, EyeDropperIcon, ArrowsRightLeftIcon, CodeBracketIcon, ChevronUpIcon, GlobeAltIcon, PencilIcon } from './icons';
-import { useAppContext, addBilingualAnnotations } from '../contexts/AppContext';
+import { useAppContext } from '../contexts/AppContext';
 import { SegmentedControl } from './common/SegmentedControl';
+import { useBilingualAnnotation } from '../hooks/useBilingualAnnotation';
 
 interface TextbookViewProps {
   chapterId: string;
@@ -82,6 +83,7 @@ const renderWithGlossary = (node: React.ReactNode, glossaryMap: Record<string, G
 export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, setActiveTocId }) => {
     const { t } = useTranslation();
     const { subjectData, glossaryMaps, readingSettings, ...setters } = useAppContext();
+    const annotate = useBilingualAnnotation();
     const { fontSize, lineHeight, pageWidth, readTheme, formatMode, displayMode } = readingSettings;
     const contentRef = useRef<HTMLDivElement>(null);
     
@@ -125,12 +127,12 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
     }
     
     const contentToRender = useMemo(() => {
-        const annotatedZh = addBilingualAnnotations(chapterData.content.zh, glossaryMaps);
+        const annotatedZh = annotate(chapterData.content.zh);
         if (formatMode === 'text-only') {
             return { en: stripMarkdown(chapterData.content.en), zh: stripMarkdown(annotatedZh) };
         }
         return { en: chapterData.content.en, zh: annotatedZh };
-    }, [formatMode, chapterData.content, glossaryMaps]);
+    }, [formatMode, chapterData.content, annotate]);
     
     const interleavedContent = useMemo(() => {
       if (displayMode !== 'bilingual') return [];

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../contexts/AppContext';
@@ -12,19 +13,25 @@ interface SearchModalProps {
   onNavigate: (view: View) => void;
 }
 
+type SearchResultItem = 
+    | { type: 'problem'; data: Problem }
+    | { type: 'glossary'; data: GlossaryTerm };
+
 export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate }) => {
   const { subjectData } = useAppContext();
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
+  const [activeIndex, setActiveIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const { problems, glossary } = useMemo(() => ({
     problems: subjectData?.problems || [],
     glossary: subjectData?.glossaryData || [],
   }), [subjectData]);
 
-  const searchResults = useMemo(() => {
-    if (!query.trim()) return { problems: [], glossary: [] };
+  const allResults: SearchResultItem[] = useMemo(() => {
+    if (!query.trim()) return [];
 
     const lowerQuery = query.toLowerCase();
     
@@ -32,25 +39,58 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
       p.text_en.toLowerCase().includes(lowerQuery) ||
       p.text_zh.toLowerCase().includes(lowerQuery) ||
       p.number.includes(lowerQuery)
-    ).slice(0, 10);
+    ).slice(0, 10).map(p => ({ type: 'problem', data: p } as SearchResultItem));
 
     const filteredGlossary = glossary.filter(g =>
       g.term.toLowerCase().includes(lowerQuery) ||
       g.chinese.toLowerCase().includes(lowerQuery) ||
       g.definition.toLowerCase().includes(lowerQuery)
-    ).slice(0, 10);
+    ).slice(0, 10).map(g => ({ type: 'glossary', data: g } as SearchResultItem));
 
-    return { problems: filteredProblems, glossary: filteredGlossary };
+    return [...filteredProblems, ...filteredGlossary];
   }, [query, problems, glossary]);
 
   useEffect(() => {
     inputRef.current?.focus();
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+          onClose();
+          return;
+      }
+      if (allResults.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActiveIndex(prev => (prev + 1) % allResults.length);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActiveIndex(prev => (prev - 1 + allResults.length) % allResults.length);
+      } else if (e.key === 'Enter') {
+          if (activeIndex >= 0 && activeIndex < allResults.length) {
+              const item = allResults[activeIndex];
+              if (item.type === 'problem') {
+                  onNavigate({ type: 'problem', id: item.data.id });
+              } else {
+                  onNavigate({ type: 'glossary' });
+              }
+          }
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, [onClose, allResults, activeIndex, onNavigate]);
+
+  useEffect(() => {
+    setActiveIndex(-1);
+  }, [query]);
+
+  useEffect(() => {
+    const activeElement = resultsRef.current?.querySelector(`[data-active='true']`);
+    activeElement?.scrollIntoView({ block: 'nearest' });
+  }, [activeIndex]);
+
+  const problemResults = allResults.filter(r => r.type === 'problem') as Extract<SearchResultItem, {type: 'problem'}>[];
+  const glossaryResults = allResults.filter(r => r.type === 'glossary') as Extract<SearchResultItem, {type: 'glossary'}>[];
 
   return (
     <motion.div
@@ -83,32 +123,48 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
             <XMarkIcon className="w-6 h-6" />
           </button>
         </div>
-        <div className="overflow-y-auto max-h-[60vh]">
+        <div ref={resultsRef} className="overflow-y-auto max-h-[60vh]">
           <AnimatePresence>
             {query.trim() === '' ? (
               <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="p-12 text-center text-[var(--text-secondary)]">{t('search_modal_placeholder')}</motion.div>
-            ) : (searchResults.problems.length === 0 && searchResults.glossary.length === 0) ? (
+            ) : allResults.length === 0 ? (
               <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="p-12 text-center text-[var(--text-secondary)]">{t('search_no_results')}</motion.div>
             ) : (
               <div className="divide-y divide-[var(--ui-border)]">
-                {searchResults.problems.length > 0 && (
+                {problemResults.length > 0 && (
                   <ResultSection icon={<CodeBracketIcon className="w-5 h-5"/>} title={t('search_results_title')}>
-                    {searchResults.problems.map(p => (
-                      <ResultItem key={p.id} onClick={() => onNavigate({ type: 'problem', id: p.id })}>
-                        <p className="font-semibold"><TextWithHighlights text={`Problem ${p.number}`} highlight={query} /></p>
-                        <p className="text-sm text-[var(--text-secondary)] line-clamp-2"><TextWithHighlights text={p.text_en} highlight={query} /></p>
-                      </ResultItem>
-                    ))}
+                    {problemResults.map((r) => {
+                       const index = allResults.findIndex(item => item.type === 'problem' && item.data.id === r.data.id);
+                       return (
+                        <ResultItem 
+                          key={r.data.id} 
+                          onClick={() => onNavigate({ type: 'problem', id: r.data.id })}
+                          isActive={index === activeIndex}
+                          onMouseEnter={() => setActiveIndex(index)}
+                        >
+                          <p className="font-semibold"><TextWithHighlights text={`Problem ${r.data.number}`} highlight={query} /></p>
+                          <p className="text-sm text-[var(--text-secondary)] line-clamp-2"><TextWithHighlights text={r.data.text_en} highlight={query} /></p>
+                        </ResultItem>
+                       )
+                    })}
                   </ResultSection>
                 )}
-                {searchResults.glossary.length > 0 && (
+                {glossaryResults.length > 0 && (
                   <ResultSection icon={<BookOpenIcon className="w-5 h-5"/>} title={t('glossary')}>
-                    {searchResults.glossary.map(g => (
-                       <ResultItem key={g.term} onClick={() => onNavigate({ type: 'glossary' })}>
-                         <p className="font-semibold"><TextWithHighlights text={g.term} highlight={query} /> <span className="text-[var(--text-subtle)] font-normal">({g.chinese})</span></p>
-                        <p className="text-sm text-[var(--text-secondary)] line-clamp-2"><TextWithHighlights text={g.definition} highlight={query} /></p>
+                    {glossaryResults.map(r => {
+                      const index = allResults.findIndex(item => item.type === 'glossary' && item.data.term === r.data.term);
+                       return (
+                       <ResultItem 
+                        key={r.data.term} 
+                        onClick={() => onNavigate({ type: 'glossary' })}
+                        isActive={index === activeIndex}
+                        onMouseEnter={() => setActiveIndex(index)}
+                       >
+                         <p className="font-semibold"><TextWithHighlights text={r.data.term} highlight={query} /> <span className="text-[var(--text-subtle)] font-normal">({r.data.chinese})</span></p>
+                        <p className="text-sm text-[var(--text-secondary)] line-clamp-2"><TextWithHighlights text={r.data.definition} highlight={query} /></p>
                       </ResultItem>
-                    ))}
+                       )
+                    })}
                   </ResultSection>
                 )}
               </div>
@@ -127,8 +183,20 @@ const ResultSection: React.FC<{icon: React.ReactNode, title: string, children: R
   </div>
 );
 
-const ResultItem: React.FC<{onClick: () => void, children: React.ReactNode}> = ({onClick, children}) => (
-    <button onClick={onClick} className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors flex justify-between items-center group">
+interface ResultItemProps {
+  onClick: () => void;
+  children: React.ReactNode;
+  isActive?: boolean;
+  onMouseEnter?: () => void;
+}
+
+const ResultItem: React.FC<ResultItemProps> = ({onClick, children, isActive, onMouseEnter}) => (
+    <button 
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      data-active={isActive}
+      className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors flex justify-between items-center group ${isActive ? 'bg-[var(--ui-bg-hover)]' : 'hover:bg-[var(--ui-bg-hover)]'}`}
+    >
       <div className="min-w-0">{children}</div>
       <ChevronRightIcon className="w-5 h-5 text-[var(--text-subtle)] flex-shrink-0 ml-4 transition-transform group-hover:translate-x-1"/>
     </button>

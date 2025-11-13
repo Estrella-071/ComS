@@ -8,10 +8,11 @@ import rehypeKatex from 'rehype-katex';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Problem } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
-import { useAppContext, addBilingualAnnotations } from '../contexts/AppContext';
+import { useAppContext } from '../contexts/AppContext';
 import { Tooltip } from './Tooltip';
 import { CheckIcon, XMarkIcon, StarIcon, StarSolidIcon } from './icons';
 import { TextWithHighlights } from './TextWithHighlights';
+import { useBilingualAnnotation } from '../hooks/useBilingualAnnotation';
 
 interface QuestionCardProps {
   problem: Problem;
@@ -22,7 +23,8 @@ interface QuestionCardProps {
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer, onAnswerSelected, shouldAutoShowExplanation }) => {
   const { t } = useTranslation();
-  const { flaggedProblems, toggleFlaggedProblem, glossaryMaps } = useAppContext();
+  const { flaggedProblems, toggleFlaggedProblem } = useAppContext();
+  const annotate = useBilingualAnnotation();
   const [showManualExplanation, setShowManualExplanation] = useState(false);
   const [showFlagToast, setShowFlagToast] = useState(false);
 
@@ -135,7 +137,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
                 <div className="mt-4 pt-4 border-t border-[var(--ui-border)]">
                     <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{t('explanation')}</h3>
                     <div className="prose prose-slate dark:prose-invert max-w-none text-left prose-p:text-[var(--text-secondary)] prose-li:text-[var(--text-secondary)]">
-                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{addBilingualAnnotations(problem.explanation_zh, glossaryMaps)}</ReactMarkdown>
+                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{annotate(problem.explanation_zh)}</ReactMarkdown>
                     </div>
                 </div>
             </motion.div>

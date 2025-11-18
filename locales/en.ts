@@ -4,18 +4,20 @@ export const en = {
   // General
   app_name: 'Interactive Learning Bank',
   cancel: 'Cancel',
+  go_back: 'Back',
 
   // Sidebar & Home
-  home: 'Table of Contents',
+  home: 'Home',
   table_of_contents: 'Table of Contents',
   modes: 'Modes',
   practice_modes: 'Practice Modes',
   all_questions: 'All Questions',
   question_bank_quiz: 'Question Bank Quiz',
+  programming_exercises: 'Programming Exercises',
   flagged_for_review: 'Bookmarks',
   tools: 'Tools',
   quiz_history: 'Quiz History',
-  by_chapter: 'By Chapter',
+  by_chapter: 'Chapters',
   glossary: 'Glossary',
   chapter: 'Chapter',
   chapter_short: 'Ch',
@@ -24,29 +26,48 @@ export const en = {
   toggle_light_mode: 'Switch to Light Mode',
   enter_fullscreen: 'Enter Fullscreen',
   exit_fullscreen: 'Exit Fullscreen',
-  search_placeholder: 'Search problems...',
+  search_placeholder: 'Search content...',
   flagged_toast: 'Added to Bookmarks',
   search: 'Search',
   sidebar_toc_header: 'Table of Contents',
   sidebar_quiz_nav_header: 'Quiz Navigator',
   sidebar_problem_nav_header: 'Problem Navigator',
+  sidebar_exercise_nav_header: 'Exercise Navigator',
   review_incorrect_questions: 'Review Incorrect',
   sidebar_tab_current: 'Current',
   sidebar_tab_navigate: 'Navigate',
   sidebar_tab_tools: 'Tools',
   sidebar_tab_settings: 'Settings',
+  sidebar_tab_chapters: 'Chapters',
+  sidebar_tab_practice: 'Practice',
   navigate: 'Navigate',
   recent_quizzes: 'Recent Quizzes',
   no_recent_quizzes: 'Complete a quiz to see your history here.',
   change_subject: 'Change Subject',
+  my_tools: 'My Tools',
+  
+  // New Home Screen
+  mode_reading: 'Reading',
+  mode_practice: 'Practice',
+  start_chapter_quiz: 'Start Quiz',
+  view_chapter_problems: 'View Problems',
+  quick_actions: 'Quick Actions',
+  welcome_back: 'Welcome back!',
+  subject_selection_title: 'Select a Subject',
+  subject_selection_subtitle: 'Choose a course to begin your learning journey.',
+  subtitle_randomized_practice: 'Randomized practice',
+  subtitle_coding_practice: 'Hands-on coding practice',
+  browse: 'Browse',
+  questions_suffix: 'questions',
+  saved_items_suffix: 'saved items',
 
   // Subject Selection
   select_subject: 'Select a Subject',
 
   // Bookmarks View
   bookmarks_title: 'Bookmarks',
-  bookmarks_description: 'Review your bookmarked problems or start a quiz with them.',
-  bookmarks_no_problems: 'You haven\'t bookmarked any problems yet.',
+  bookmarks_description: 'Review your bookmarked items or start a quiz with them.',
+  bookmarks_no_problems: 'You haven\'t bookmarked any items yet.',
   bookmarks_start_quiz: 'Start Quiz with Bookmarked Problems',
 
   // Quiz View
@@ -87,10 +108,11 @@ export const en = {
   quiz_mode_sequential: 'Sequential',
   
   // Search Modal
-  search_modal_title: 'Search Problems',
-  search_modal_placeholder: 'Type to search questions...',
-  search_no_results: 'No problems found.',
+  search_modal_title: 'Search',
+  search_modal_placeholder: 'Type to search...',
+  search_no_results: 'No results found.',
   search_results_title: 'Search Results',
+  exercise_results_title: 'Programming Exercises',
 
   // Glossary
   glossary_title: 'Glossary',
@@ -115,6 +137,7 @@ export const en = {
   
   // Problem Solver / Question Card
   problem_header: 'Problem',
+  exercise_header: 'Exercise',
   key_problem: 'Key Problem',
   options: 'Options',
 
@@ -122,12 +145,32 @@ export const en = {
   practice_questions_for_chapter: 'Practice Questions for Chapter',
   next_chapter: 'Next Chapter',
   previous_chapter: 'Previous Chapter',
+  reading_settings_title: 'Reading Settings',
   reading_settings_font_size: 'Font Size',
   reading_settings_line_height: 'Line Height',
   reading_settings_page_width: 'Page Width',
   reading_settings_theme: 'Theme',
-  reading_settings_formatting: 'Formatting',
-  reading_settings_format_mode_formatted: 'Formatted',
-  reading_settings_format_mode_unformatted: 'Unformatted',
-  reading_settings_format_mode_text_only: 'Text Only',
+  reading_settings_formatting: 'Initial Mode',
+  // FIX: Added missing translation keys for reading settings language options to fix TypeScript errors in TextbookView.tsx.
+  reading_settings_language: 'Display Language',
+  reading_settings_lang_en: 'EN',
+  reading_settings_lang_zh: 'ZH',
+  reading_settings_lang_bilingual: 'Bilingual',
+
+  // IDE / Exercise Solver
+  code_editor: 'Code Editor',
+  run_code: 'Run Code',
+  submit_code: 'Submit',
+  reset_code: 'Reset',
+  output: 'Output',
+  sample_output: 'Sample Output',
+  running_code: 'Running...',
+  code_submitted: 'Submitted!',
+  code_reset: 'Code has been reset.',
+
+  // Exercise Filters
+  filter_all: 'All',
+  filter_programming: 'Programming',
+  filter_short_answer: 'Short Answer',
+  filter_making_a_difference: 'Making a Difference',
 };

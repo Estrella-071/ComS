@@ -1,11 +1,11 @@
-
-import type { Subject, Problem, GlossaryTerm } from '../types';
+import type { Subject, Problem, GlossaryTerm, ProgrammingExercise } from '../types';
 
 export interface SubjectData {
   problems: Problem[];
   textbookData: any; // Can be different structures
   chapterList: any[]; // Can be different structures
   glossaryData: GlossaryTerm[];
+  exercises?: ProgrammingExercise[];
 }
 
 interface AllData {
@@ -13,6 +13,7 @@ interface AllData {
     name: { en: string; zh: string; };
     description: { en: string; zh: string; };
     enabled: boolean;
+    type: 'quiz' | 'programming';
     loader: () => Promise<SubjectData>;
   };
 }
@@ -22,6 +23,7 @@ export const allData: AllData = {
     name: { en: 'Introduction to Computers', zh: '計算機概論' },
     description: { en: 'An interactive textbook and question bank for an introductory computer science course.', zh: '一本為計算機科學入門課程設計的互動式教科書與題庫。' },
     enabled: true,
+    type: 'quiz',
     loader: async (): Promise<SubjectData> => {
       const [
         { problems },
@@ -39,9 +41,10 @@ export const allData: AllData = {
     name: { en: 'C How to Program', zh: 'C 語言程式設計' },
     description: { en: 'The complete textbook for "C How to Program, 8th Edition". Explore C and C++ programming concepts.', zh: '《C 語言程式設計，第八版》完整教科書內容。探索 C 與 C++ 程式設計概念。' },
     enabled: true,
+    type: 'programming',
     loader: async (): Promise<SubjectData> => {
-      const { problems, textbookData, chapterList, glossaryData } = await import('./c_programming');
-      return { problems, textbookData, chapterList, glossaryData };
+      const { problems, exercises, textbookData, chapterList, glossaryData } = await import('./c_programming');
+      return { problems, exercises, textbookData, chapterList, glossaryData };
     }
   }
 };
@@ -51,4 +54,5 @@ export const subjects: Subject[] = Object.entries(allData).map(([id, details]) =
     name: details.name,
     description: details.description,
     enabled: details.enabled,
+    type: details.type,
 }));

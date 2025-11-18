@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 
 export const BookOpenIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -215,13 +216,15 @@ export const WrenchScrewdriverIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export const Cog6ToothIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12a7.5 7.5 0 0 0 15 0m-15 0a7.5 7.5 0 1 1 15 0m-15 0H3m18 0h-1.5m-15 0H3.75m16.5 0h-1.5m-1.5 0a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM12 19.5v-1.5m0-15V3" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213.852c.079.317.36.563.68.656.32.092.658.026 1.03-.178l.62-.358a1.125 1.125 0 0 1 1.45.12l1.83 1.83c.39.39.44 1.022.12 1.45l-.358.62c-.204.372-.27.81-.178 1.03l.852.213c.542.09.94.56.94 1.11v2.593c0 .55-.398 1.02-.94 1.11l-.852.213c-.092.32-.026.658.178 1.03l.358.62c.32.427.27 1.06-.12 1.45l-1.83 1.83a1.125 1.125 0 0 1-1.45.12l-.62-.358c-.372-.204-.81-.27-1.03-.178-.317.079-.563.36-.656.68l-.213.852c-.09.542-.56.94-1.11.94h-2.593c-.55 0-1.02-.398-1.11-.94l-.213-.852c-.079-.317-.36-.563-.68-.656-.32-.092-.658-.026-1.03.178l-.62.358a1.125 1.125 0 0 1-1.45-.12l-1.83-1.83a1.125 1.125 0 0 1-.12-1.45l.358-.62c.204-.372.27-.81.178-1.03l-.852-.213c-.542-.09-.94-.56-.94-1.11v-2.593c0-.55.398-1.02.94-1.11l.852-.213c.092-.32.026-.658-.178-1.03l-.358-.62a1.125 1.125 0 0 1 .12-1.45l1.83-1.83a1.125 1.125 0 0 1 1.45-.12l.62.358c.372.204.81.27 1.03.178.317-.079.563-.36.656-.68l.213-.852z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
   </svg>
 );
 
 export const GlobeAltIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c1.355 0 2.707-.157 4.018-.452M12 21c-1.355 0-2.707-.157-4.018-.452M3.27 14.252A9.004 9.004 0 0 1 12 3c3.18 0 6.033 1.63 7.73 4.125M3.27 14.252c-1.355-.93-2.27-2.43-2.27-4.125a9.002 9.002 0 0 1 1.637-5.228M12 3c-1.355 0-2.707.157-4.018.452M12 3c1.355 0-2.707.157 4.018.452M12 3v18M12 3a9.004 9.004 0 0 0-8.716 6.747M12 3a9.004 9.004 0 0 1 8.716 6.747m-16.143 0a9.002 9.002 0 0 0 16.143 0" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 0a8.96 8.96 0 001.036 4.225M20.25 12a8.96 8.96 0 01-1.036 4.225m-14.178-8.45a8.962 8.962 0 0114.178 0" />
     </svg>
 );
 
@@ -247,5 +250,23 @@ export const PencilIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export const ArrowUturnLeftIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+    </svg>
+);
+
+export const ArrowPathIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 11.667 0l3.181-3.183m-3.181 4.991-3.181-3.183a8.25 8.25 0 0 0-11.667 0l3.181 3.183" />
+    </svg>
+);
+
+export const PlayIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.279 20.01c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
+    </svg>
+);
+
+export const PaperAirplaneIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
     </svg>
 );

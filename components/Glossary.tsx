@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import { BookOpenIcon, ChevronUpIcon } from './icons';
@@ -118,6 +119,7 @@ export const Glossary: React.FC<GlossaryProps> = ({ setView }) => {
                                         <div key={item.term} className="glass-pane p-5 rounded-2xl">
                                             <h3 className="text-lg font-semibold text-[var(--text-primary)]">{item.term} <span className="text-[var(--text-subtle)] font-normal">({item.chinese})</span></h3>
                                             <p className="text-[var(--text-secondary)] mt-2 leading-relaxed">{item.definition}</p>
+                                            <p className="text-[var(--text-subtle)] mt-1 leading-relaxed">{item.definition_zh}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -135,7 +137,7 @@ export const Glossary: React.FC<GlossaryProps> = ({ setView }) => {
                 {showBackToTop && (
                     <motion.button
                         onClick={scrollToTop}
-                        className="fixed bottom-6 right-6 w-14 h-14 bg-[var(--ui-bg)] rounded-full text-[var(--text-primary)] flex items-center justify-center shadow-lg z-[var(--z-fab)]"
+                        className="fixed bottom-6 left-6 w-14 h-14 bg-[var(--ui-bg)] rounded-full text-[var(--text-primary)] flex items-center justify-center shadow-lg z-[var(--z-fab)]"
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}

@@ -1,4 +1,6 @@
+
 import React, { useEffect, useRef } from 'react';
+import { useAppContext } from '../contexts/AppContext';
 
 // --- Constants ---
 const GRID_SIZE = 32;
@@ -108,12 +110,27 @@ interface Ripple {
 
 // --- Main Component ---
 export const BackgroundCanvas: React.FC = () => {
+    const { theme } = useAppContext();
     const animationFrameId = useRef<number | null>(null);
     const dots = useRef<Dot[]>([]);
     const ripples = useRef<Ripple[]>([]);
     const uiRects = useRef<DOMRect[]>([]);
     const offsetX = useRef(0);
     const offsetY = useRef(0);
+    
+    // Cache colors to avoid getComputedStyle in loop
+    const colors = useRef({ dot: '#1c1917', glow: 'rgba(0, 0, 0, 0.5)' });
+
+    // Update colors when theme changes
+    useEffect(() => {
+        // Small delay to allow CSS transition to start/finish or DOM to update
+        const timer = setTimeout(() => {
+            const style = getComputedStyle(document.documentElement);
+            colors.current.dot = style.getPropertyValue('--bg-dot-color').trim();
+            colors.current.glow = style.getPropertyValue('--bg-glow-color').trim();
+        }, 50);
+        return () => clearTimeout(timer);
+    }, [theme]);
 
     useEffect(() => {
         const canvas = document.getElementById('background-canvas') as HTMLCanvasElement;
@@ -127,6 +144,11 @@ export const BackgroundCanvas: React.FC = () => {
         };
 
         const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+            // On smaller viewports (likely mobile/tablet), disable the ripple effect for performance.
+            if (window.innerWidth < 1024) {
+                return;
+            }
+
             let x, y;
             if ('touches' in event) {
                 x = event.touches[0].clientX;
@@ -139,9 +161,11 @@ export const BackgroundCanvas: React.FC = () => {
         };
         
         const updateUIRects = () => {
-             const elements = document.querySelectorAll('aside, .relative.flex-1.flex.flex-col.overflow-hidden');
+             const elements = document.querySelectorAll('aside, .glass-pane');
              uiRects.current = Array.from(elements).map(el => el.getBoundingClientRect());
         };
+        // Update rects initially and on resize
+        updateUIRects();
         const resizeObserver = new ResizeObserver(updateUIRects);
 
         const setup = () => {
@@ -169,14 +193,21 @@ export const BackgroundCanvas: React.FC = () => {
             const easedProgress = 1 - Math.pow(1 - progress, 2);
             const leadingEdge = easedProgress * RIPPLE_MAX_RADIUS;
             
+            // Optimization: Simple bounding box check before detailed rect check could go here
+            // For now, we keep it simple as number of rects is low
+            
             let isInsideAnyRect = false;
             let minEdgeDist = Infinity;
+            
             for (const rect of rects) {
-                if (isPointInRect(drawX, drawY, rect)) {
+                // Quick bounding box check
+                if (drawX >= rect.left && drawX <= rect.right && drawY >= rect.top && drawY <= rect.bottom) {
                     isInsideAnyRect = true;
                     break;
                 }
-                minEdgeDist = Math.min(minEdgeDist, distanceToNearestEdge(drawX, drawY, rect));
+                // Only calculate distance if we might need glow (optional optimization)
+                 const d = distanceToNearestEdge(drawX, drawY, rect);
+                 if (d < minEdgeDist) minEdgeDist = d;
             }
             
             let effectiveDist = distFromCenter;
@@ -212,10 +243,6 @@ export const BackgroundCanvas: React.FC = () => {
             const now = Date.now();
             ripples.current = ripples.current.filter(ripple => now - ripple.createdAt < RIPPLE_DURATION);
 
-            const style = getComputedStyle(document.documentElement);
-            const dotColor = style.getPropertyValue('--bg-dot-color').trim();
-            const glowColor = style.getPropertyValue('--bg-glow-color').trim();
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.font = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
             ctx.textAlign = 'center';
@@ -225,15 +252,24 @@ export const BackgroundCanvas: React.FC = () => {
             offsetY.current = (offsetY.current + SCROLL_SPEED) % GRID_SIZE;
             
             const currentRects = uiRects.current;
+            const { dot: dotColor, glow: glowColor } = colors.current;
 
             dots.current.forEach(dot => {
                 const drawX = dot.x + offsetX.current;
                 const drawY = dot.y + offsetY.current;
                 
+                // Skip drawing if out of bounds (plus some buffer for text size)
+                if (drawX < -20 || drawX > canvas.width + 20 || drawY < -20 || drawY > canvas.height + 20) {
+                    return;
+                }
+
                 let totalInfluence = 0;
-                ripples.current.forEach(ripple => {
-                    totalInfluence += calculateInfluenceForDot(ripple, drawX, drawY, currentRects);
-                });
+                // Optimization: Only calculate influence if there are active ripples
+                if (ripples.current.length > 0) {
+                    ripples.current.forEach(ripple => {
+                        totalInfluence += calculateInfluenceForDot(ripple, drawX, drawY, currentRects);
+                    });
+                }
                 
                 dot.displayInfluence = lerp(dot.displayInfluence, totalInfluence, LERP_FACTOR);
 
@@ -264,7 +300,7 @@ export const BackgroundCanvas: React.FC = () => {
             document.removeEventListener('touchstart', handlePointerDown);
             resizeObserver.disconnect();
         };
-    }, []);
+    }, []); // Empty dependency array ensures setup runs once. Theme changes handled by separate useEffect.
 
     return null;
 };

@@ -23,12 +23,12 @@ interface QuestionCardProps {
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer, onAnswerSelected, shouldAutoShowExplanation }) => {
   const { t } = useTranslation();
-  const { flaggedProblems, toggleFlaggedProblem } = useAppContext();
+  const { flaggedItems, toggleFlaggedItem, language } = useAppContext();
   const annotate = useBilingualAnnotation();
   const [showManualExplanation, setShowManualExplanation] = useState(false);
   const [showFlagToast, setShowFlagToast] = useState(false);
 
-  const isFlagged = flaggedProblems.includes(problem.id);
+  const isFlagged = flaggedItems.includes(problem.id);
   const hasAnswered = userAnswer !== undefined;
   const isExplanationEffectivelyVisible = shouldAutoShowExplanation || showManualExplanation;
 
@@ -37,8 +37,12 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
         setShowFlagToast(true);
         setTimeout(() => setShowFlagToast(false), 2000);
     }
-    toggleFlaggedProblem(problem.id);
+    toggleFlaggedItem(problem.id);
   };
+
+  // Determine text based on language
+  const questionText = language === 'zh' ? problem.text_zh : problem.text_en;
+  const tooltipText = language === 'zh' ? problem.text_en : problem.text_zh;
 
   return (
     <div className="glass-pane rounded-2xl p-4 sm:p-8 h-full overflow-y-auto">
@@ -72,9 +76,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
           </div>
         </div>
         <div className="text-base sm:text-lg leading-relaxed text-[var(--text-secondary)]">
-            <Tooltip content={problem.text_zh}>
+            <Tooltip content={tooltipText}>
                 <p className="border-b border-dashed border-slate-400 dark:border-slate-600 cursor-help inline">
-                    <TextWithHighlights text={problem.text_en} />
+                    <TextWithHighlights text={questionText} />
                 </p>
             </Tooltip>
         </div>
@@ -84,6 +88,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
         {problem.options.map((option) => {
           const isSelected = userAnswer === option.key;
           const isCorrect = problem.answer === option.key;
+          const optionText = language === 'zh' ? option.text_zh : option.text_en;
+          const optionTooltip = language === 'zh' ? option.text_en : option.text_zh;
           
           let stateStyles = 'bg-[var(--ui-bg)] border-transparent hover:bg-[var(--ui-bg-hover)]';
           if (hasAnswered) {
@@ -110,9 +116,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
                 {!hasAnswered && option.key.toUpperCase()}
                 {hasAnswered && !isSelected && !isCorrect && option.key.toUpperCase()}
               </div>
-              <Tooltip content={option.text_zh}>
+              <Tooltip content={optionTooltip}>
                 <p className={`text-[var(--text-primary)] cursor-help leading-relaxed ${hasAnswered && isCorrect ? 'font-semibold' : ''}`}>
-                    <TextWithHighlights text={option.text_en} />
+                    <TextWithHighlights text={optionText} />
                 </p>
               </Tooltip>
             </motion.button>

@@ -1,5 +1,8 @@
 
 
+
+
+
 import React, { createContext, useState, useContext, useCallback, ReactNode } from 'react';
 import type { Problem, View, AnsweredQuestion, QuizResult } from '../types';
 import { LOCAL_STORAGE_KEYS } from '../types';
@@ -20,7 +23,7 @@ interface QuizContextType {
   answers: Map<string, string>;
   currentIndex: number;
   isFinished: boolean;
-  startQuiz: (quizInfo: QuizConfig, onNavigate: (view: View) => void) => void;
+  startQuiz: (quizInfo: QuizConfig) => void;
   answerQuestion: (problemId: string, answer: string) => void;
   goToProblem: (index: number) => void;
   finishQuiz: () => void;
@@ -37,7 +40,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isFinished, setIsFinished] = useState(false);
   const { subject } = useAppContext();
 
-  const startQuiz = useCallback((quizInfo: QuizConfig, onNavigate: (view: View) => void) => {
+  const startQuiz = useCallback((quizInfo: QuizConfig) => {
     const newQuizId = `${quizInfo.title.replace(/\s+/g, '-')}-${Date.now()}`;
     const newQuizState = { ...quizInfo, id: newQuizId };
 
@@ -67,7 +70,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const finishQuiz = useCallback(() => {
     if (isFinished || !quizState || !subject) return;
 
-    const score = Array.from(answers).reduce((count, [id, answer]) => {
+    const score = Array.from(answers).reduce((count: number, [id, answer]) => {
         const problem = quizState.problems.find(p => p.id === id);
         return problem && problem.answer === answer ? count + 1 : count;
     }, 0);

@@ -7,6 +7,7 @@ import { useTranslation } from '../hooks/useTranslation';
 import { CheckBadgeIcon, ClockIcon, XMarkIcon, CheckIcon, ChevronUpIcon } from './icons';
 import type { View } from '../types';
 import { allData } from '../data/subjects';
+import { useAppContext } from '../contexts/AppContext';
 
 interface QuizHistoryProps {
   setView: (view: View) => void;
@@ -16,6 +17,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
   const [history, setHistory] = useState<QuizResult[]>([]);
   const [selectedResult, setSelectedResult] = useState<QuizResult | null>(null);
   const { t } = useTranslation();
+  const { subject } = useAppContext();
   const contentRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({ container: contentRef });
@@ -35,12 +37,17 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
     try {
       const storedHistory = localStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY);
       if (storedHistory) {
-        setHistory(JSON.parse(storedHistory));
+        const allHistory: QuizResult[] = JSON.parse(storedHistory);
+        if (subject) {
+            setHistory(allHistory.filter(r => r.subjectId === subject.id));
+        } else {
+            setHistory([]);
+        }
       }
     } catch (error) {
       console.error("Failed to parse quiz history from localStorage", error);
     }
-  }, []);
+  }, [subject]);
 
   if (selectedResult) {
     return <QuizDetailView result={selectedResult} onBack={() => setSelectedResult(null)} setView={setView} />;
@@ -99,7 +106,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
             {showBackToTop && (
                 <motion.button
                     onClick={scrollToTop}
-                    className="fixed bottom-6 right-6 w-14 h-14 bg-[var(--ui-bg)] rounded-full text-[var(--text-primary)] flex items-center justify-center shadow-lg z-[var(--z-fab)]"
+                    className="fixed bottom-6 left-6 w-14 h-14 bg-[var(--ui-bg)] rounded-full text-[var(--text-primary)] flex items-center justify-center shadow-lg z-[var(--z-fab)]"
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0, opacity: 0 }}
@@ -117,19 +124,23 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
 
 const QuizDetailView: React.FC<{ result: QuizResult; onBack: () => void; setView: (view: View) => void }> = ({ result, onBack, setView }) => {
     const { t } = useTranslation();
-    // FIX: Replaced synchronous useMemo with useState and useEffect to handle asynchronous loading of subject data. This resolves the error from trying to access a non-existent 'data' property.
     const [problemsById, setProblemsById] = useState<Record<string, Problem> | null>(null);
 
     useEffect(() => {
         const fetchProblems = async () => {
             const subjectLoader = allData[result.subjectId]?.loader;
             if (subjectLoader) {
-                const subjectData = await subjectLoader();
-                const problemMap = subjectData.problems.reduce<Record<string, Problem>>((acc, p) => {
-                    acc[p.id] = p;
-                    return acc;
-                }, {});
-                setProblemsById(problemMap);
+                try {
+                    const subjectData = await subjectLoader();
+                    const problemMap = (subjectData.problems || []).reduce<Record<string, Problem>>((acc, p) => {
+                        acc[p.id] = p;
+                        return acc;
+                    }, {});
+                    setProblemsById(problemMap);
+                } catch (error) {
+                    console.error("Failed to load problems for quiz history", error);
+                    setProblemsById({});
+                }
             } else {
                 setProblemsById({});
             }

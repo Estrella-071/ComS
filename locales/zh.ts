@@ -4,18 +4,20 @@ export const zh = {
   // General
   app_name: '互動學習題庫',
   cancel: '取消',
+  go_back: '返回',
   
   // Sidebar & Home
-  home: '目錄',
+  home: '首頁',
   table_of_contents: '目錄',
   modes: '測驗模式',
   practice_modes: '練習模式',
   all_questions: '全部題目',
   question_bank_quiz: '題庫測驗',
+  programming_exercises: '程式設計習題',
   flagged_for_review: '書籤',
   tools: '工具',
   quiz_history: '測驗紀錄',
-  by_chapter: '分章節閱讀',
+  by_chapter: '章節',
   glossary: '詞彙表',
   chapter: '第',
   chapter_short: '第',
@@ -24,29 +26,48 @@ export const zh = {
   toggle_light_mode: '切換為淺色模式',
   enter_fullscreen: '進入全螢幕',
   exit_fullscreen: '退出全螢幕',
-  search_placeholder: '搜尋題目內容...',
+  search_placeholder: '搜尋內容...',
   flagged_toast: '已新增至書籤',
-  search: '搜尋題目',
+  search: '搜尋',
   sidebar_toc_header: '本章目錄',
   sidebar_quiz_nav_header: '測驗導航',
   sidebar_problem_nav_header: '題目導航',
+  sidebar_exercise_nav_header: '習題導航',
   review_incorrect_questions: '複習錯題',
   sidebar_tab_current: '當前',
   sidebar_tab_navigate: '導航',
   sidebar_tab_tools: '工具',
   sidebar_tab_settings: '設定',
+  sidebar_tab_chapters: '閱讀',
+  sidebar_tab_practice: '練習',
   navigate: '導航',
   recent_quizzes: '近期測驗',
   no_recent_quizzes: '完成一次測驗後，紀錄將會顯示於此。',
   change_subject: '更換科目',
+  my_tools: '個人工具',
+  
+  // New Home Screen
+  mode_reading: '閱讀模式',
+  mode_practice: '練習模式',
+  start_chapter_quiz: '開始測驗',
+  view_chapter_problems: '查看題目',
+  quick_actions: '快速行動',
+  welcome_back: '歡迎回來！',
+  subject_selection_title: '選擇科目',
+  subject_selection_subtitle: '選擇一門課程以開始您的學習旅程。',
+  subtitle_randomized_practice: '隨機題目練習',
+  subtitle_coding_practice: '動手寫程式練習',
+  browse: '瀏覽',
+  questions_suffix: '道題目',
+  saved_items_suffix: '個已儲存項目',
 
   // Subject Selection
   select_subject: '選擇科目',
 
   // Bookmarks View
   bookmarks_title: '書籤',
-  bookmarks_description: '檢視您已加入書籤的題目，或使用這些題目進行測驗。',
-  bookmarks_no_problems: '您尚未將任何題目加入書籤。',
+  bookmarks_description: '檢視您已加入書籤的項目，或使用這些項目進行測驗。',
+  bookmarks_no_problems: '您尚未將任何項目加入書籤。',
   bookmarks_start_quiz: '使用已加入書籤的題目進行測驗',
   
   // Quiz View
@@ -88,10 +109,11 @@ export const zh = {
 
   
   // Search Modal
-  search_modal_title: '搜尋題目',
-  search_modal_placeholder: '輸入關鍵字搜尋題目...',
-  search_no_results: '找不到相關題目。',
+  search_modal_title: '搜尋',
+  search_modal_placeholder: '輸入關鍵字搜尋...',
+  search_no_results: '找不到相關結果。',
   search_results_title: '搜尋結果',
+  exercise_results_title: '程式設計習題',
 
   // Glossary
   glossary_title: '詞彙表',
@@ -116,6 +138,7 @@ export const zh = {
   
   // Problem Solver / Question Card
   problem_header: '問題',
+  exercise_header: '習題',
   key_problem: '重點問題',
   options: '選項',
 
@@ -123,16 +146,31 @@ export const zh = {
   practice_questions_for_chapter: '練習本章題目',
   next_chapter: '下一章',
   previous_chapter: '上一章',
+  reading_settings_title: '閱讀設定',
   reading_settings_font_size: '字體大小',
   reading_settings_line_height: '行高',
   reading_settings_page_width: '頁面寬度',
   reading_settings_theme: '主題',
-  reading_settings_formatting: '格式',
-  reading_settings_format_mode_formatted: '顯示格式',
-  reading_settings_format_mode_unformatted: '隱藏格式',
-  reading_settings_format_mode_text_only: '純文字',
+  reading_settings_formatting: '初始模式',
   reading_settings_language: '顯示語言',
-  reading_settings_lang_en: '英文',
-  reading_settings_lang_zh: '中文',
-  reading_settings_lang_bilingual: '中英對照',
+  reading_settings_lang_en: 'EN',
+  reading_settings_lang_zh: '中',
+  reading_settings_lang_bilingual: '中英',
+
+  // IDE / Exercise Solver
+  code_editor: '程式碼編輯器',
+  run_code: '執行程式碼',
+  submit_code: '提交',
+  reset_code: '重設',
+  output: '輸出',
+  sample_output: '範例輸出',
+  running_code: '執行中...',
+  code_submitted: '已提交！',
+  code_reset: '程式碼已重設。',
+  
+  // Exercise Filters
+  filter_all: '全部',
+  filter_programming: '程式設計',
+  filter_short_answer: '簡答題',
+  filter_making_a_difference: '專題應用',
 };

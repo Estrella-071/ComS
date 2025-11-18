@@ -1,8 +1,7 @@
 
-
 export const LOCAL_STORAGE_KEYS = {
   THEME: 'theme',
-  FLAGGED_PROBLEMS: 'flaggedProblems',
+  FLAGGED_ITEMS: 'flaggedItems',
   AUTO_SHOW_EXPLANATION: 'autoShowExplanation',
   AUTO_ADVANCE: 'autoAdvance',
   QUIZ_HISTORY: 'quizHistory',
@@ -24,11 +23,26 @@ export interface Problem {
   explanation_zh: string;
 }
 
+export interface ProgrammingExercise {
+  id: string;
+  chapter: string;
+  number: string;
+  title_en: string;
+  title_zh: string;
+  description_en: string;
+  description_zh: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  type: 'programming' | 'short_answer' | 'making_a_difference';
+  templateCode?: string;
+  sampleOutput?: string;
+}
+
 export interface GlossaryTerm {
   term: string;
   chinese: string;
   definition: string;
-  category: 'Computer Basics' | 'Number Systems' | 'Data Representation' | 'Computer Architecture' | 'Networking' | 'Operating Systems' | 'Algorithms' | 'Programming Languages' | 'Software Engineering' | 'Data Structures' | 'File Structures';
+  definition_zh: string;
+  category: 'Computer Basics' | 'Number Systems' | 'Data Representation' | 'Computer Architecture' | 'Networking' | 'Operating Systems' | 'Algorithms' | 'Programming Languages' | 'Software Engineering' | 'Data Structures' | 'File Structures' | 'Databases' | 'Data Compression' | 'Security' | 'Theory of Computation' | 'Artificial Intelligence' | 'Social Media' | 'Social & Ethical Issues';
   chapter: string;
   importance: number; // 1 (low) - 3 (high)
 }
@@ -68,6 +82,7 @@ export interface Subject {
     zh: string;
   };
   enabled: boolean;
+  type: 'quiz' | 'programming';
 }
 
 export type View =
@@ -79,4 +94,6 @@ export type View =
   | { type: 'history' }
   | { type: 'problem'; id: string }
   | { type: 'question_bank_quiz' }
-  | { type: 'bookmarks' };
+  | { type: 'bookmarks' }
+  | { type: 'programming' }
+  | { type: 'exercise'; id: string };

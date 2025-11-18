@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import type { Problem, View } from '../types';
@@ -13,7 +14,7 @@ interface OverviewProps {
 
 export const Overview: React.FC<OverviewProps> = ({ setView }) => {
     const { t } = useTranslation();
-    const { flaggedProblems, subjectData } = useAppContext();
+    const { flaggedItems, subjectData } = useAppContext();
     const [searchQuery, setSearchQuery] = useState('');
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -92,7 +93,7 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {chapterProblems.map(p => {
                                     const correctOption = p.options.find(opt => opt.key === p.answer);
-                                    const isFlagged = flaggedProblems.includes(p.id);
+                                    const isFlagged = flaggedItems.includes(p.id);
                                     return (
                                         <motion.button 
                                             key={p.id}
@@ -129,7 +130,7 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                 {showBackToTop && (
                      <motion.button
                         onClick={scrollToTop}
-                        className={`fixed bottom-6 right-6 w-14 h-14 bg-[var(--ui-bg)] rounded-full text-[var(--text-primary)] flex items-center justify-center shadow-lg z-[var(--z-fab)]`}
+                        className={`fixed bottom-6 left-6 w-14 h-14 bg-[var(--ui-bg)] rounded-full text-[var(--text-primary)] flex items-center justify-center shadow-lg z-[var(--z-fab)]`}
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}

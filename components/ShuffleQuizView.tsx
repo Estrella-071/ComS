@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '../hooks/useTranslation';
@@ -125,9 +126,8 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
                     </SettingRow>
 
                     {/* Number of Questions */}
-                    <div>
-                    <label htmlFor="question-count" className="block text-md font-medium text-[var(--text-secondary)] mb-3">{t('quiz_num_questions')} ({count} / {maxQuestions || problems.length})</label>
-                    <div className="flex items-center gap-4">
+                    <SettingRow label={t('quiz_num_questions')}>
+                        <div className="flex items-center gap-2 w-full">
                             <input
                                 id="question-count"
                                 type="range"
@@ -138,19 +138,22 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
                                 onChange={e => setCount(parseInt(e.target.value, 10))}
                                 className="w-full cursor-pointer disabled:opacity-50"
                             />
-                            <button 
-                                onClick={() => setCount(maxQuestions)}
-                                className="px-4 py-2 rounded-lg bg-[var(--ui-bg)] text-[var(--text-secondary)] text-sm font-semibold hover:bg-[var(--ui-bg-hover)] transition-colors"
-                            >
-                                {t('quiz_all_questions')}
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold w-12 text-center tabular-nums">{count} / {maxQuestions || problems.length}</span>
+                                <button 
+                                    onClick={() => setCount(maxQuestions)}
+                                    className="px-3 py-2 rounded-lg bg-[var(--ui-bg)] text-[var(--text-secondary)] text-xs font-semibold hover:bg-[var(--ui-bg-hover)] transition-colors"
+                                >
+                                    {t('quiz_all_questions')}
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    </SettingRow>
 
                     {/* Chapters */}
                     <div>
                         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-3 gap-2">
-                            <h3 className="text-md font-medium text-[var(--text-secondary)]">{t('quiz_include_chapters')}</h3>
+                            <h3 className="text-md font-medium text-[var(--text-primary)]">{t('quiz_include_chapters')}</h3>
                             <div className="flex-shrink-0 space-x-2">
                                 <button onClick={handleSelectAll} className="text-sm font-semibold bg-[var(--ui-bg)] hover:bg-[var(--ui-bg-hover)] text-[var(--text-secondary)] px-3 py-1.5 rounded-md transition-colors">{t('select_all')}</button>
                                 <button onClick={handleDeselectAll} className="text-sm font-semibold bg-[var(--ui-bg)] hover:bg-[var(--ui-bg-hover)] text-[var(--text-secondary)] px-3 py-1.5 rounded-md transition-colors">{t('deselect_all')}</button>
@@ -186,9 +189,9 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
 };
 
 const SettingRow: React.FC<{label: string, children: React.ReactNode}> = ({ label, children }) => (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <span className="text-md font-medium text-[var(--text-secondary)] flex-shrink-0">{label}</span>
-        <div className="flex items-center justify-start sm:justify-end w-full">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <label className="text-md font-medium text-[var(--text-primary)] sm:w-1/3 flex-shrink-0">{label}</label>
+        <div className="flex items-center justify-start sm:justify-start w-full">
             {children}
         </div>
     </div>

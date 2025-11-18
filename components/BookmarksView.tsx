@@ -1,24 +1,56 @@
 
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppContext } from '../contexts/AppContext';
-import type { View } from '../types';
+import type { View, Problem, ProgrammingExercise } from '../types';
 import { BookmarkSquareIcon, ChevronRightIcon, StarSolidIcon } from './icons';
 
 interface BookmarksViewProps {
     setView: (view: View) => void;
 }
 
+type BookmarkedItem = 
+    | { type: 'problem'; data: Problem }
+    | { type: 'exercise'; data: ProgrammingExercise };
+
+
 export const BookmarksView: React.FC<BookmarksViewProps> = ({ setView }) => {
     const { t } = useTranslation();
-    const { flaggedProblems, subjectData } = useAppContext();
+    const { flaggedItems, subjectData, subject } = useAppContext();
 
-    const bookmarkedProblems = React.useMemo(() => {
+    const bookmarkedItems = React.useMemo(() => {
         if (!subjectData) return [];
-        return subjectData.problems.filter(p => flaggedProblems.includes(p.id))
-            .sort((a, b) => parseInt(a.chapter) - parseInt(b.chapter) || parseInt(a.number.split('-')[1]) - parseInt(b.number.split('-')[1]));
-    }, [flaggedProblems, subjectData]);
+        const items: BookmarkedItem[] = [];
+
+        if (subjectData.problems) {
+            subjectData.problems.forEach(p => {
+                if (flaggedItems.includes(p.id)) {
+                    items.push({ type: 'problem', data: p });
+                }
+            });
+        }
+        if (subjectData.exercises) {
+            subjectData.exercises.forEach(e => {
+                if (flaggedItems.includes(e.id)) {
+                    items.push({ type: 'exercise', data: e });
+                }
+            });
+        }
+
+        return items.sort((a, b) => {
+            const chapA = parseInt(a.data.chapter);
+            const chapB = parseInt(b.data.chapter);
+            if (chapA !== chapB) return chapA - chapB;
+            const numA = parseInt(a.data.number.split('.').pop() || '0');
+            const numB = parseInt(b.data.number.split('.').pop() || '0');
+            return numA - numB;
+        });
+
+    }, [flaggedItems, subjectData]);
+    
+    const bookmarkedProblems = bookmarkedItems.filter(item => item.type === 'problem').map(item => item.data as Problem);
 
     const handleStartQuiz = () => {
         if (bookmarkedProblems.length > 0) {
@@ -60,7 +92,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ setView }) => {
                     </div>
                 </div>
 
-                {bookmarkedProblems.length > 0 && (
+                {subject?.type === 'quiz' && bookmarkedProblems.length > 0 && (
                     <div className="mb-6">
                         <button onClick={handleStartQuiz} className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[var(--accent-solid)] text-[var(--accent-solid-text)] font-semibold hover:bg-[var(--accent-solid-hover)] transition-colors">
                            {t('bookmarks_start_quiz')} ({bookmarkedProblems.length})
@@ -68,7 +100,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ setView }) => {
                     </div>
                 )}
 
-                {bookmarkedProblems.length === 0 ? (
+                {bookmarkedItems.length === 0 ? (
                     <div className="text-center py-20 glass-pane rounded-2xl">
                         <StarSolidIcon className="w-12 h-12 text-[var(--text-subtle)] mx-auto mb-4" />
                         <p className="text-[var(--text-secondary)]">{t('bookmarks_no_problems')}</p>
@@ -80,19 +112,19 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ setView }) => {
                         animate="visible"
                         className="space-y-3 pb-16"
                     >
-                        {bookmarkedProblems.map(problem => (
+                        {bookmarkedItems.map(item => (
                             <motion.button
-                                key={problem.id}
+                                key={item.data.id}
                                 variants={itemVariants}
-                                onClick={() => setView({ type: 'problem', id: problem.id })}
+                                onClick={() => setView({ type: item.type, id: item.data.id })}
                                 className="w-full glass-pane p-4 rounded-xl text-left transition-all hover:border-[var(--accent-text)]/50"
                             >
                                <div className="flex justify-between items-center">
                                  <div className="min-w-0">
                                     <p className="text-xs font-semibold bg-[var(--accent-bg)] text-[var(--accent-text)] px-2 py-0.5 rounded-full inline-block">
-                                        {t('problem_header')} {problem.number}
+                                        {item.type === 'problem' ? t('problem_header') : t('exercise_header')} {item.data.number}
                                     </p>
-                                    <p className="mt-2 text-sm text-[var(--text-primary)] line-clamp-2 pr-4">{problem.text_en}</p>
+                                    <p className="mt-2 text-sm text-[var(--text-primary)] line-clamp-2 pr-4">{item.type === 'problem' ? item.data.text_en : item.data.title_en}</p>
                                  </div>
                                  <ChevronRightIcon className="w-6 h-6 text-[var(--text-subtle)] flex-shrink-0 ml-4"/>
                                </div>

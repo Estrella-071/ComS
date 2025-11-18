@@ -42,8 +42,10 @@ const variants = {
 export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSidebarOpen }) => {
   const [direction, setDirection] = useState(0);
   const { t } = useTranslation();
-  const { subjectData } = useAppContext();
+  const { subjectData, flaggedItems, toggleFlaggedItem, language } = useAppContext();
   const annotate = useBilingualAnnotation();
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [showFlagToast, setShowFlagToast] = useState(false);
 
   const problems = useMemo(() => subjectData?.problems || [], [subjectData]);
   
@@ -59,29 +61,40 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
     }
   };
 
-  const [showExplanation, setShowExplanation] = useState(false);
-  const [showFlagToast, setShowFlagToast] = useState(false);
-  const { flaggedProblems, toggleFlaggedProblem } = useAppContext();
-
   if (!problem) {
     return <div className="text-center py-10">Problem not found.</div>;
   }
   
-  const isFlagged = flaggedProblems.includes(problem.id);
+  const isFlagged = flaggedItems.includes(problem.id);
 
   const handleFlagToggle = () => {
     if (!problem) return;
-    const isCurrentlyFlagged = flaggedProblems.includes(problem.id);
+    const isCurrentlyFlagged = flaggedItems.includes(problem.id);
     if (!isCurrentlyFlagged) {
       setShowFlagToast(true);
       setTimeout(() => setShowFlagToast(false), 2000);
     }
-    toggleFlaggedProblem(problem.id);
+    toggleFlaggedItem(problem.id);
   };
+
+  const questionText = language === 'zh' ? problem.text_zh : problem.text_en;
+  const tooltipText = language === 'zh' ? problem.text_en : problem.text_zh;
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-1 w-full flex justify-center items-center relative min-h-0">
+       <div className="flex-shrink-0 px-4 sm:px-8 pt-4">
+            <div className="w-full max-w-4xl mx-auto">
+                <p className="text-sm font-semibold text-center text-[var(--text-secondary)] mb-2">{t('problem_header')} {problem.number} ({problemIndex + 1} / {problems.length})</p>
+                <div className="w-full bg-[var(--ui-bg)] rounded-full h-1.5">
+                    <motion.div
+                        className="bg-[var(--accent-solid)] h-1.5 rounded-full"
+                        animate={{ width: `${((problemIndex + 1) / problems.length) * 100}%` }}
+                        transition={{ type: 'spring' as const, stiffness: 200, damping: 25 }}
+                    />
+                </div>
+            </div>
+        </div>
+      <div className="flex-1 w-full flex justify-center items-center relative min-h-0 pt-4">
         
         <div className="relative w-full max-w-4xl">
             {/* Desktop side navigation */}
@@ -109,7 +122,7 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                    transition={{ type: 'spring' as const, stiffness: 400, damping: 35 }}
                     drag={!isSidebarOpen ? 'x' : false}
                     dragConstraints={{ left: 0, right: 0 }}
                     dragElastic={0.25}
@@ -120,7 +133,7 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                       else if (offset.x > swipeDistanceThreshold || velocity.x > 400) navigate(-1);
                     }}
                   >
-                    <div className="h-full overflow-y-auto pb-24 lg:pb-0">
+                    <div className="h-full overflow-y-auto pb-24 lg:pb-0 px-4">
                       <div className="glass-pane rounded-2xl p-4 sm:p-8 mb-6">
                         <div className="flex justify-between items-start">
                           <span className="text-sm font-semibold bg-[var(--accent-bg)] text-[var(--accent-text)] px-3 py-1 rounded-full">
@@ -149,9 +162,9 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                           </div>
                         </div>
                         <div className="text-base sm:text-lg leading-relaxed text-[var(--text-secondary)] mt-4">
-                          <Tooltip content={problem.text_zh}>
+                          <Tooltip content={tooltipText}>
                             <p className="border-b border-dashed border-slate-400 dark:border-slate-600 cursor-help inline">
-                              <TextWithHighlights text={problem.text_en} />
+                              <TextWithHighlights text={questionText} />
                             </p>
                           </Tooltip>
                         </div>
@@ -160,7 +173,11 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                       <div className="glass-pane rounded-2xl p-4 sm:p-8">
                         <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">{t('options')}</h2>
                         <div className="space-y-3">
-                          {problem.options.map((option) => (
+                          {problem.options.map((option) => {
+                            const optionText = language === 'zh' ? option.text_zh : option.text_en;
+                            const optionTooltip = language === 'zh' ? option.text_en : option.text_zh;
+
+                            return (
                             <div key={option.key} className={`flex items-start gap-4 p-3 sm:p-4 rounded-xl border-2 transition-all ${
                                 option.key === problem.answer
                                   ? 'bg-[var(--success-bg)] border-[var(--success-border)]'
@@ -174,13 +191,13 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                               }`}>
                                 {option.key === problem.answer ? <CheckIcon className="w-4 h-4" /> : option.key.toUpperCase()}
                               </div>
-                              <Tooltip content={option.text_zh}>
+                              <Tooltip content={optionTooltip}>
                                 <p className={`text-[var(--text-primary)] cursor-help ${option.key === problem.answer ? 'font-semibold' : ''}`}>
-                                  <TextWithHighlights text={option.text_en} />
+                                  <TextWithHighlights text={optionText} />
                                 </p>
                               </Tooltip>
                             </div>
-                          ))}
+                          )})}
                         </div>
                         <div className="mt-4 pt-4 border-t border-[var(--ui-border)] flex justify-center">
                           <button

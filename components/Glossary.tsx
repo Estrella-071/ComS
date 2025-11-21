@@ -1,11 +1,11 @@
 
-
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
-import { BookOpenIcon, ChevronUpIcon } from './icons';
+import { BookOpenIcon } from './icons';
 import type { GlossaryTerm, View } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppContext } from '../contexts/AppContext';
+import { BackToTopButton } from './common/BackToTopButton';
 
 interface GlossaryProps {
     setView: (view: View) => void;
@@ -81,74 +81,60 @@ export const Glossary: React.FC<GlossaryProps> = ({ setView }) => {
     if (!subjectData) return null;
 
     return (
-        <div ref={contentRef} className="h-full overflow-y-auto px-4 sm:px-6 lg:p-8 relative">
-            <div className="max-w-4xl mx-auto">
-                <div className="flex items-center gap-4 my-8">
-                    <div className="w-12 h-12 rounded-2xl glass-pane flex items-center justify-center">
-                        <BookOpenIcon className="w-7 h-7 text-[var(--accent-text)]" />
-                    </div>
-                    <h1 className="text-3xl font-bold text-[var(--text-primary)]">{t('glossary_title')}</h1>
-                </div>
-
-                <div className="mb-8 sticky top-0 md:top-6 z-[var(--z-content-overlay)] flex flex-col md:flex-row gap-4 bg-[var(--bg-color)]/80 backdrop-blur-md -mx-4 sm:-mx-6 px-4 sm:px-6 py-4">
-                    <input
-                        type="text"
-                        placeholder={t('glossary_search')}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full glass-pane rounded-2xl px-4 py-3 text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent-solid)] outline-none transition-all"
-                    />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <select value={filterChapter} onChange={e => setFilterChapter(e.target.value)} className="w-full glass-pane rounded-2xl px-4 py-3 text-[var(--text-secondary)] focus:ring-2 focus:ring-[var(--accent-solid)] outline-none transition-all appearance-none text-center">
-                            {chapters.map(ch => <option key={ch} value={ch}>{ch === 'all' ? t('glossary_all_chapters') : `${t('chapter')} ${ch}${t('chapter_unit')}`}</option>)}
-                        </select>
-                        <select value={sortBy} onChange={e => setSortBy(e.target.value as any)} className="w-full glass-pane rounded-2xl px-4 py-3 text-[var(--text-secondary)] focus:ring-2 focus:ring-[var(--accent-solid)] outline-none transition-all appearance-none text-center">
-                            <option value="alphabetical">{t('glossary_alphabetical')}</option>
-                            <option value="importance">{t('glossary_importance')}</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div className="space-y-12 pb-16">
-                    {Object.entries(termsByCategory).length > 0 ? (
-                        Object.entries(termsByCategory).map(([category, terms]: [string, GlossaryTerm[]]) => (
-                            <div key={category}>
-                                <h2 className="text-xl font-bold text-[var(--accent-text)] border-b border-[var(--ui-border)] pb-2 mb-4">{category}</h2>
-                                <div className="space-y-4">
-                                    {terms.map(item => (
-                                        <div key={item.term} className="glass-pane p-5 rounded-2xl">
-                                            <h3 className="text-lg font-semibold text-[var(--text-primary)]">{item.term} <span className="text-[var(--text-subtle)] font-normal">({item.chinese})</span></h3>
-                                            <p className="text-[var(--text-secondary)] mt-2 leading-relaxed">{item.definition}</p>
-                                            <p className="text-[var(--text-subtle)] mt-1 leading-relaxed">{item.definition_zh}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="text-center py-10 glass-pane rounded-2xl">
-                            <p className="text-[var(--text-secondary)]">{t('glossary_not_found')} "{searchTerm}".</p>
+        <>
+            <div ref={contentRef} className="h-full overflow-y-auto px-4 sm:px-6 lg:p-8 relative">
+                <div className="max-w-4xl mx-auto">
+                    <div className="flex items-center gap-4 my-8">
+                        <div className="w-12 h-12 rounded-2xl glass-pane flex items-center justify-center">
+                            <BookOpenIcon className="w-7 h-7 text-[var(--accent-text)]" />
                         </div>
-                    )}
+                        <h1 className="text-3xl font-bold text-[var(--text-primary)]">{t('glossary_title')}</h1>
+                    </div>
+
+                    <div className="mb-8 sticky top-0 md:top-6 z-[var(--z-content-overlay)] flex flex-col md:flex-row gap-4 bg-[var(--bg-color)]/80 backdrop-blur-md -mx-4 sm:-mx-6 px-4 sm:px-6 py-4">
+                        <input
+                            type="text"
+                            placeholder={t('glossary_search')}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full glass-pane rounded-2xl px-4 py-3 text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent-solid)] outline-none transition-all"
+                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <select value={filterChapter} onChange={e => setFilterChapter(e.target.value)} className="w-full glass-pane rounded-2xl px-4 py-3 text-[var(--text-secondary)] focus:ring-2 focus:ring-[var(--accent-solid)] outline-none transition-all appearance-none text-center">
+                                {chapters.map(ch => <option key={ch} value={ch}>{ch === 'all' ? t('glossary_all_chapters') : `${t('chapter')} ${ch}${t('chapter_unit')}`}</option>)}
+                            </select>
+                            <select value={sortBy} onChange={e => setSortBy(e.target.value as any)} className="w-full glass-pane rounded-2xl px-4 py-3 text-[var(--text-secondary)] focus:ring-2 focus:ring-[var(--accent-solid)] outline-none transition-all appearance-none text-center">
+                                <option value="alphabetical">{t('glossary_alphabetical')}</option>
+                                <option value="importance">{t('glossary_importance')}</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-12 pb-16">
+                        {Object.entries(termsByCategory).length > 0 ? (
+                            Object.entries(termsByCategory).map(([category, terms]: [string, GlossaryTerm[]]) => (
+                                <div key={category}>
+                                    <h2 className="text-xl font-bold text-[var(--accent-text)] border-b border-[var(--ui-border)] pb-2 mb-4">{category}</h2>
+                                    <div className="space-y-4">
+                                        {terms.map(item => (
+                                            <div key={item.term} className="glass-pane p-5 rounded-2xl">
+                                                <h3 className="text-lg font-semibold text-[var(--text-primary)]">{item.term} <span className="text-[var(--text-subtle)] font-normal">({item.chinese})</span></h3>
+                                                <p className="text-[var(--text-secondary)] mt-2 leading-relaxed">{item.definition}</p>
+                                                <p className="text-[var(--text-subtle)] mt-1 leading-relaxed">{item.definition_zh}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-10 glass-pane rounded-2xl">
+                                <p className="text-[var(--text-secondary)]">{t('glossary_not_found')} "{searchTerm}".</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-
-            <AnimatePresence>
-                {showBackToTop && (
-                    <motion.button
-                        onClick={scrollToTop}
-                        className="fixed bottom-6 left-6 w-14 h-14 bg-[var(--ui-bg)] rounded-full text-[var(--text-primary)] flex items-center justify-center shadow-lg z-[var(--z-fab)]"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        aria-label="Back to top"
-                    >
-                        <ChevronUpIcon className="w-7 h-7" />
-                    </motion.button>
-                )}
-            </AnimatePresence>
-        </div>
+            <BackToTopButton show={showBackToTop} onClick={scrollToTop} />
+        </>
     );
 };

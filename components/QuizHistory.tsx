@@ -4,10 +4,11 @@ import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import type { QuizResult, Problem } from '../types';
 import { LOCAL_STORAGE_KEYS } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
-import { CheckBadgeIcon, ClockIcon, XMarkIcon, CheckIcon, ChevronUpIcon } from './icons';
+import { CheckBadgeIcon, ClockIcon, XMarkIcon, CheckIcon } from './icons';
 import type { View } from '../types';
 import { allData } from '../data/subjects';
 import { useAppContext } from '../contexts/AppContext';
+import { BackToTopButton } from './common/BackToTopButton';
 
 interface QuizHistoryProps {
   setView: (view: View) => void;
@@ -54,71 +55,58 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
   }
 
   return (
-    <div ref={contentRef} className="h-full overflow-y-auto px-4 sm:px-6 lg:p-8 relative">
-        <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-4 my-8">
-                <div className="w-12 h-12 rounded-2xl glass-pane flex items-center justify-center">
-                    <ClockIcon className="w-7 h-7 text-[var(--accent-text)]" />
+    <>
+        <div ref={contentRef} className="h-full overflow-y-auto px-4 sm:px-6 lg:p-8 relative">
+            <div className="max-w-4xl mx-auto">
+                <div className="flex items-center gap-4 my-8">
+                    <div className="w-12 h-12 rounded-2xl glass-pane flex items-center justify-center">
+                        <ClockIcon className="w-7 h-7 text-[var(--accent-text)]" />
+                    </div>
+                    <h1 className="text-3xl font-bold text-[var(--text-primary)]">{t('history_title')}</h1>
                 </div>
-                <h1 className="text-3xl font-bold text-[var(--text-primary)]">{t('history_title')}</h1>
-            </div>
 
-            {history.length === 0 ? (
-                <div className="text-center py-10 glass-pane p-4 rounded-2xl">
-                    <p className="text-[var(--text-secondary)]">{t('history_no_quizzes')}</p>
-                </div>
-            ) : (
-                <div className="space-y-4 pb-16">
-                    {history.map(result => (
-                        <motion.div
-                            key={result.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="glass-pane p-4 rounded-2xl"
-                        >
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                                <div className="flex-1 mb-4 sm:mb-0">
-                                    <h2 className="font-bold text-[var(--text-primary)]">{result.quizTitle}</h2>
-                                    <p className="text-sm text-[var(--text-secondary)]">
-                                        {new Date(result.date).toLocaleString()}
-                                    </p>
-                                </div>
-                                <div className="flex items-center justify-between sm:justify-end gap-4">
-                                    <div className="text-center">
-                                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold">{t('history_score')}</p>
-                                        <p className="font-bold text-lg text-[var(--accent-text)]">{result.score} / {result.totalQuestions}</p>
+                {history.length === 0 ? (
+                    <div className="text-center py-10 glass-pane p-4 rounded-2xl">
+                        <p className="text-[var(--text-secondary)]">{t('history_no_quizzes')}</p>
+                    </div>
+                ) : (
+                    <div className="space-y-4 pb-16">
+                        {history.map(result => (
+                            <motion.div
+                                key={result.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="glass-pane p-4 rounded-2xl"
+                            >
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                    <div className="flex-1 mb-4 sm:mb-0">
+                                        <h2 className="font-bold text-[var(--text-primary)]">{result.quizTitle}</h2>
+                                        <p className="text-sm text-[var(--text-secondary)]">
+                                            {new Date(result.date).toLocaleString()}
+                                        </p>
                                     </div>
-                                    <button 
-                                        onClick={() => setSelectedResult(result)}
-                                        className="bg-[var(--ui-bg)] text-[var(--text-secondary)] font-semibold px-4 py-2 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors"
-                                    >
-                                        {t('history_view_details')}
-                                    </button>
+                                    <div className="flex items-center justify-between sm:justify-end gap-4">
+                                        <div className="text-center">
+                                            <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold">{t('history_score')}</p>
+                                            <p className="font-bold text-lg text-[var(--accent-text)]">{result.score} / {result.totalQuestions}</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => setSelectedResult(result)}
+                                            className="bg-[var(--ui-bg)] text-[var(--text-secondary)] font-semibold px-4 py-2 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors"
+                                        >
+                                            {t('history_view_details')}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
-            )}
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
-        <AnimatePresence>
-            {showBackToTop && (
-                <motion.button
-                    onClick={scrollToTop}
-                    className="fixed bottom-6 left-6 w-14 h-14 bg-[var(--ui-bg)] rounded-full text-[var(--text-primary)] flex items-center justify-center shadow-lg z-[var(--z-fab)]"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    aria-label="Back to top"
-                >
-                    <ChevronUpIcon className="w-7 h-7" />
-                </motion.button>
-            )}
-        </AnimatePresence>
-    </div>
+        <BackToTopButton show={showBackToTop} onClick={scrollToTop} />
+    </>
   );
 };
 

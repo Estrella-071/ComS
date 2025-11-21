@@ -1,11 +1,11 @@
 
-
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, useScroll } from 'framer-motion';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppContext } from '../contexts/AppContext';
 import type { View, Problem, ProgrammingExercise } from '../types';
 import { BookmarkSquareIcon, ChevronRightIcon, StarSolidIcon } from './icons';
+import { BackToTopButton } from './common/BackToTopButton';
 
 interface BookmarksViewProps {
     setView: (view: View) => void;
@@ -19,6 +19,19 @@ type BookmarkedItem =
 export const BookmarksView: React.FC<BookmarksViewProps> = ({ setView }) => {
     const { t } = useTranslation();
     const { flaggedItems, subjectData, subject } = useAppContext();
+    const contentRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({ container: contentRef });
+    const [showBackToTop, setShowBackToTop] = useState(false);
+
+    useEffect(() => {
+        return scrollYProgress.onChange((latest) => {
+            setShowBackToTop(latest > 0.1);
+        });
+    }, [scrollYProgress]);
+
+    const scrollToTop = () => {
+        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     const bookmarkedItems = React.useMemo(() => {
         if (!subjectData) return [];
@@ -80,59 +93,62 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ setView }) => {
     if (!subjectData) return null;
 
     return (
-        <div className="h-full overflow-y-auto px-4 sm:px-6 lg:p-8 relative">
-            <div className="max-w-4xl mx-auto">
-                <div className="flex items-center gap-4 my-8">
-                    <div className="w-12 h-12 rounded-2xl glass-pane flex items-center justify-center">
-                        <BookmarkSquareIcon className="w-7 h-7 text-[var(--accent-text)]" />
+        <>
+            <div ref={contentRef} className="h-full overflow-y-auto px-4 sm:px-6 lg:p-8 relative">
+                <div className="max-w-4xl mx-auto">
+                    <div className="flex items-center gap-4 my-8">
+                        <div className="w-12 h-12 rounded-2xl glass-pane flex items-center justify-center">
+                            <BookmarkSquareIcon className="w-7 h-7 text-[var(--accent-text)]" />
+                        </div>
+                        <div>
+                            <h1 className="text-3xl font-bold text-[var(--text-primary)]">{t('bookmarks_title')}</h1>
+                            <p className="text-md text-[var(--text-secondary)] mt-1">{t('bookmarks_description')}</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-3xl font-bold text-[var(--text-primary)]">{t('bookmarks_title')}</h1>
-                        <p className="text-md text-[var(--text-secondary)] mt-1">{t('bookmarks_description')}</p>
-                    </div>
+
+                    {subject?.type === 'quiz' && bookmarkedProblems.length > 0 && (
+                        <div className="mb-6">
+                            <button onClick={handleStartQuiz} className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[var(--accent-solid)] text-[var(--accent-solid-text)] font-semibold hover:bg-[var(--accent-solid-hover)] transition-colors">
+                            {t('bookmarks_start_quiz')} ({bookmarkedProblems.length})
+                            </button>
+                        </div>
+                    )}
+
+                    {bookmarkedItems.length === 0 ? (
+                        <div className="text-center py-20 glass-pane rounded-2xl">
+                            <StarSolidIcon className="w-12 h-12 text-[var(--text-subtle)] mx-auto mb-4" />
+                            <p className="text-[var(--text-secondary)]">{t('bookmarks_no_problems')}</p>
+                        </div>
+                    ) : (
+                        <motion.div
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="space-y-3 pb-16"
+                        >
+                            {bookmarkedItems.map(item => (
+                                <motion.button
+                                    key={item.data.id}
+                                    variants={itemVariants}
+                                    onClick={() => setView({ type: item.type, id: item.data.id })}
+                                    className="w-full glass-pane p-4 rounded-xl text-left transition-all hover:border-[var(--accent-text)]/50"
+                                >
+                                <div className="flex justify-between items-center">
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-semibold bg-[var(--accent-bg)] text-[var(--accent-text)] px-2 py-0.5 rounded-full inline-block">
+                                            {item.type === 'problem' ? t('problem_header') : t('exercise_header')} {item.data.number}
+                                        </p>
+                                        <p className="mt-2 text-sm text-[var(--text-primary)] line-clamp-2 pr-4">{item.type === 'problem' ? item.data.text_en : item.data.title_en}</p>
+                                    </div>
+                                    <ChevronRightIcon className="w-6 h-6 text-[var(--text-subtle)] flex-shrink-0 ml-4"/>
+                                </div>
+                                </motion.button>
+                            ))}
+                        </motion.div>
+                    )}
                 </div>
-
-                {subject?.type === 'quiz' && bookmarkedProblems.length > 0 && (
-                    <div className="mb-6">
-                        <button onClick={handleStartQuiz} className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[var(--accent-solid)] text-[var(--accent-solid-text)] font-semibold hover:bg-[var(--accent-solid-hover)] transition-colors">
-                           {t('bookmarks_start_quiz')} ({bookmarkedProblems.length})
-                        </button>
-                    </div>
-                )}
-
-                {bookmarkedItems.length === 0 ? (
-                    <div className="text-center py-20 glass-pane rounded-2xl">
-                        <StarSolidIcon className="w-12 h-12 text-[var(--text-subtle)] mx-auto mb-4" />
-                        <p className="text-[var(--text-secondary)]">{t('bookmarks_no_problems')}</p>
-                    </div>
-                ) : (
-                    <motion.div
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                        className="space-y-3 pb-16"
-                    >
-                        {bookmarkedItems.map(item => (
-                            <motion.button
-                                key={item.data.id}
-                                variants={itemVariants}
-                                onClick={() => setView({ type: item.type, id: item.data.id })}
-                                className="w-full glass-pane p-4 rounded-xl text-left transition-all hover:border-[var(--accent-text)]/50"
-                            >
-                               <div className="flex justify-between items-center">
-                                 <div className="min-w-0">
-                                    <p className="text-xs font-semibold bg-[var(--accent-bg)] text-[var(--accent-text)] px-2 py-0.5 rounded-full inline-block">
-                                        {item.type === 'problem' ? t('problem_header') : t('exercise_header')} {item.data.number}
-                                    </p>
-                                    <p className="mt-2 text-sm text-[var(--text-primary)] line-clamp-2 pr-4">{item.type === 'problem' ? item.data.text_en : item.data.title_en}</p>
-                                 </div>
-                                 <ChevronRightIcon className="w-6 h-6 text-[var(--text-subtle)] flex-shrink-0 ml-4"/>
-                               </div>
-                            </motion.button>
-                        ))}
-                    </motion.div>
-                )}
             </div>
-        </div>
+            <BackToTopButton show={showBackToTop} onClick={scrollToTop} />
+        </>
     );
 };

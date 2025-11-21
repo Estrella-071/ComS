@@ -5,8 +5,9 @@ import type { View, QuizResult } from '../types';
 import { LOCAL_STORAGE_KEYS } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppContext } from '../contexts/AppContext';
-import { BookOpenIcon, CodeBracketIcon, ListBulletIcon, BookmarkSquareIcon, ChevronUpIcon, ClockIcon, FolderIcon, PencilSquareIcon, SparklesIcon, PlayIcon, ArrowPathIcon, CheckBadgeIcon, ChevronRightIcon } from './icons';
+import { BookOpenIcon, CodeBracketIcon, ListBulletIcon, BookmarkSquareIcon, ClockIcon, FolderIcon, PencilSquareIcon, SparklesIcon, PlayIcon, ArrowPathIcon, CheckBadgeIcon, ChevronRightIcon } from './icons';
 import { SegmentedControl } from './common/SegmentedControl';
+import { BackToTopButton } from './common/BackToTopButton';
 
 interface HomeProps {
     setView: (view: View) => void;
@@ -192,187 +193,173 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
     const isProgrammingSubject = subject.type === 'programming';
 
     return (
-        <div ref={contentRef} className="h-full overflow-y-auto px-4 sm:px-6 lg:p-8 relative">
-            <div className="max-w-5xl mx-auto pb-24">
-                {/* Header Section */}
-                <div className="flex flex-col items-center justify-center pt-12 pb-16 border-b border-[var(--ui-border)] mb-12">
-                    <motion.h1 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-3xl md:text-5xl font-bold text-[var(--text-primary)] mb-3 font-serif text-center"
-                    >
-                        {subject.name[language]}
-                    </motion.h1>
-                    <motion.p
-                         initial={{ opacity: 0 }}
-                         animate={{ opacity: 1 }}
-                         transition={{ delay: 0.1 }}
-                         className="text-[var(--text-secondary)] mb-10 text-lg font-serif italic text-center"
-                    >
-                        {subject.name[language === 'en' ? 'zh' : 'en']}
-                    </motion.p>
+        <>
+            <div ref={contentRef} className="h-full overflow-y-auto px-4 sm:px-6 lg:p-8 relative">
+                <div className="max-w-5xl mx-auto pb-24">
+                    {/* Header Section */}
+                    <div className="flex flex-col items-center justify-center pt-12 pb-16 border-b border-[var(--ui-border)] mb-12">
+                        <motion.h1 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-3xl md:text-5xl font-bold text-[var(--text-primary)] mb-3 font-serif text-center"
+                        >
+                            {subject.name[language]}
+                        </motion.h1>
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.1 }}
+                            className="text-[var(--text-secondary)] mb-10 text-lg font-serif italic text-center"
+                        >
+                            {subject.name[language === 'en' ? 'zh' : 'en']}
+                        </motion.p>
 
-                    <div className="w-full max-w-sm">
-                        <SegmentedControl
-                            options={[
-                                { label: t('mode_reading'), value: 'reading' },
-                                { label: t('mode_practice'), value: 'practice' }
-                            ]}
-                            value={activeMode}
-                            onChange={handleModeChange}
-                            layoutId="home-mode-switch"
-                        />
+                        <div className="w-full max-w-sm">
+                            <SegmentedControl
+                                options={[
+                                    { label: t('mode_reading'), value: 'reading' },
+                                    { label: t('mode_practice'), value: 'practice' }
+                                ]}
+                                value={activeMode}
+                                onChange={handleModeChange}
+                                layoutId="home-mode-switch"
+                            />
+                        </div>
                     </div>
-                </div>
 
-                <AnimatePresence mode="wait">
-                    {activeMode === 'reading' ? (
-                        <motion.div
-                            key="reading-mode"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="space-y-10"
-                        >
-                             <div>
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
-                                    <h2 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest flex items-center gap-2">
-                                        <BookOpenIcon className="w-4 h-4"/>
-                                        {t('table_of_contents')}
-                                    </h2>
-                                    <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
-                                </div>
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                    {subjectData.chapterList.map((chapter) => (
-                                        <ChapterListItem 
-                                            key={chapter.id} 
-                                            chapter={chapter} 
-                                            mode="reading" 
-                                            onClick={() => handleChapterClick(chapter.id)} 
-                                            language={language}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="practice-mode"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="space-y-16"
-                        >
-                             {/* Quick Actions Grid */}
-                             <div>
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
-                                    <h2 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest flex items-center gap-2">
-                                        <SparklesIcon className="w-4 h-4"/>
-                                        {t('quick_actions')}
-                                    </h2>
-                                    <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                                    {subject.type === 'quiz' && (
-                                        <>
-                                            <QuickActionCard 
-                                                icon={<ArrowPathIcon className="w-6 h-6"/>}
-                                                title={t('question_bank_quiz')}
-                                                subtitle={t('subtitle_randomized_practice')}
-                                                onClick={() => setView({ type: 'question_bank_quiz' })}
-                                            />
-                                            <QuickActionCard 
-                                                icon={<ListBulletIcon className="w-6 h-6"/>}
-                                                title={t('all_questions')}
-                                                subtitle={`${t('browse')} ${subjectData.problems.length} ${t('questions_suffix')}`}
-                                                onClick={() => setView({ type: 'overview' })}
-                                            />
-                                        </>
-                                    )}
-                                    {isProgrammingSubject && (
-                                         <QuickActionCard 
-                                            icon={<PencilSquareIcon className="w-6 h-6"/>}
-                                            title={t('programming_exercises')}
-                                            subtitle={t('subtitle_coding_practice')}
-                                            onClick={() => setView({ type: 'programming' })}
-                                        />
-                                    )}
-                                    <QuickActionCard 
-                                        icon={<BookmarkSquareIcon className="w-6 h-6"/>}
-                                        title={t('flagged_for_review')}
-                                        subtitle={`${flaggedItems.length} ${t('saved_items_suffix')}`}
-                                        onClick={() => setView({ type: 'bookmarks' })}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Recent History */}
-                             {recentQuizzes.length > 0 && (
+                    <AnimatePresence mode="wait">
+                        {activeMode === 'reading' ? (
+                            <motion.div
+                                key="reading-mode"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="space-y-10"
+                            >
                                 <div>
                                     <div className="flex items-center gap-3 mb-6">
                                         <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
                                         <h2 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest flex items-center gap-2">
-                                            <ClockIcon className="w-4 h-4"/>
-                                            {t('recent_quizzes')}
+                                            <BookOpenIcon className="w-4 h-4"/>
+                                            {t('table_of_contents')}
                                         </h2>
                                         <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
                                     </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {recentQuizzes.map(result => (
-                                            <RecentQuizCard key={result.id} result={result} setView={setView} />
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                        {subjectData.chapterList.map((chapter) => (
+                                            <ChapterListItem 
+                                                key={chapter.id} 
+                                                chapter={chapter} 
+                                                mode="reading" 
+                                                onClick={() => handleChapterClick(chapter.id)} 
+                                                language={language}
+                                            />
                                         ))}
                                     </div>
                                 </div>
-                            )}
-
-                            {/* Chapter Practice List */}
-                            <div>
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
-                                    <h2 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest flex items-center gap-2">
-                                        <FolderIcon className="w-4 h-4"/>
-                                        {t('by_chapter')}
-                                    </h2>
-                                    <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
-                                </div>
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                    {subjectData.chapterList.map((chapter) => (
-                                        <ChapterListItem 
-                                            key={chapter.id} 
-                                            chapter={chapter} 
-                                            mode="practice" 
-                                            hasQuiz={chapterProblemsMap[chapter.id]}
-                                            onClick={() => handleChapterClick(chapter.id)} 
-                                            language={language}
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="practice-mode"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="space-y-16"
+                            >
+                                {/* Quick Actions Grid */}
+                                <div>
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
+                                        <h2 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest flex items-center gap-2">
+                                            <SparklesIcon className="w-4 h-4"/>
+                                            {t('quick_actions')}
+                                        </h2>
+                                        <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                        {subject.type === 'quiz' && (
+                                            <>
+                                                <QuickActionCard 
+                                                    icon={<ArrowPathIcon className="w-6 h-6"/>}
+                                                    title={t('question_bank_quiz')}
+                                                    subtitle={t('subtitle_randomized_practice')}
+                                                    onClick={() => setView({ type: 'question_bank_quiz' })}
+                                                />
+                                                <QuickActionCard 
+                                                    icon={<ListBulletIcon className="w-6 h-6"/>}
+                                                    title={t('all_questions')}
+                                                    subtitle={`${t('browse')} ${subjectData.problems.length} ${t('questions_suffix')}`}
+                                                    onClick={() => setView({ type: 'overview' })}
+                                                />
+                                            </>
+                                        )}
+                                        {isProgrammingSubject && (
+                                            <QuickActionCard 
+                                                icon={<PencilSquareIcon className="w-6 h-6"/>}
+                                                title={t('programming_exercises')}
+                                                subtitle={t('subtitle_coding_practice')}
+                                                onClick={() => setView({ type: 'programming' })}
+                                            />
+                                        )}
+                                        <QuickActionCard 
+                                            icon={<BookmarkSquareIcon className="w-6 h-6"/>}
+                                            title={t('flagged_for_review')}
+                                            subtitle={`${flaggedItems.length} ${t('saved_items_suffix')}`}
+                                            onClick={() => setView({ type: 'bookmarks' })}
                                         />
-                                    ))}
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+
+                                {/* Recent History */}
+                                {recentQuizzes.length > 0 && (
+                                    <div>
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
+                                            <h2 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest flex items-center gap-2">
+                                                <ClockIcon className="w-4 h-4"/>
+                                                {t('recent_quizzes')}
+                                            </h2>
+                                            <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {recentQuizzes.map(result => (
+                                                <RecentQuizCard key={result.id} result={result} setView={setView} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Chapter Practice List */}
+                                <div>
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
+                                        <h2 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest flex items-center gap-2">
+                                            <FolderIcon className="w-4 h-4"/>
+                                            {t('by_chapter')}
+                                        </h2>
+                                        <div className="h-px flex-1 bg-[var(--ui-border)]"></div>
+                                    </div>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                        {subjectData.chapterList.map((chapter) => (
+                                            <ChapterListItem 
+                                                key={chapter.id} 
+                                                chapter={chapter} 
+                                                mode="practice" 
+                                                hasQuiz={chapterProblemsMap[chapter.id]}
+                                                onClick={() => handleChapterClick(chapter.id)} 
+                                                language={language}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
-            
-            <AnimatePresence>
-                {showBackToTop && (
-                    <motion.button
-                        onClick={scrollToTop}
-                        className="fixed bottom-6 left-6 w-14 h-14 bg-[var(--ui-bg)] rounded-full text-[var(--text-primary)] flex items-center justify-center shadow-lg z-[var(--z-fab)]"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        aria-label="Back to top"
-                    >
-                        <ChevronUpIcon className="w-7 h-7" />
-                    </motion.button>
-                )}
-            </AnimatePresence>
-        </div>
+            <BackToTopButton show={showBackToTop} onClick={scrollToTop} />
+        </>
     );
 };

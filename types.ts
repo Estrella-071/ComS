@@ -42,7 +42,7 @@ export interface GlossaryTerm {
   chinese: string;
   definition: string;
   definition_zh: string;
-  category: 'Computer Basics' | 'Number Systems' | 'Data Representation' | 'Computer Architecture' | 'Networking' | 'Operating Systems' | 'Algorithms' | 'Programming Languages' | 'Software Engineering' | 'Data Structures' | 'File Structures' | 'Databases' | 'Data Compression' | 'Security' | 'Theory of Computation' | 'Artificial Intelligence' | 'Social Media' | 'Social & Ethical Issues';
+  category: 'Computer Basics' | 'Number Systems' | 'Data Representation' | 'Computer Architecture' | 'Networking' | 'Operating Systems' | 'Algorithms' | 'Programming Languages' | 'Software Engineering' | 'Data Structures' | 'File Structures' | 'Databases' | 'Data Compression' | 'Security' | 'Theory of Computation' | 'Artificial Intelligence' | 'Social Media' | 'Social & Ethical Issues' | 'Data Operations' | 'Abstract Data Types';
   chapter: string;
   importance: number; // 1 (low) - 3 (high)
 }

@@ -1,4 +1,5 @@
 
+
 import { prefaceContent } from './chapters/preface';
 import { chapter1Content } from './chapters/chapter1';
 import { chapter2Content } from './chapters/chapter2';
@@ -30,6 +31,8 @@ import { appendixGContent } from './chapters/appendixG';
 import { appendixHContent } from './chapters/appendixH';
 import { appendixIContent } from './chapters/appendixI';
 import { appendixJContent } from './chapters/appendixJ';
+import { acronymsContent } from './chapters/acronyms';
+import { glossaryChapterContent } from './chapters/glossary_chapter';
 
 export const chapterList = [
     { id: 'preface', title: { en: 'Preface', zh: '前言' }, subtitle: { en: 'Book preface and organization', zh: '本書前言與組織結構' } },
@@ -63,6 +66,8 @@ export const chapterList = [
     { id: 'appendixH', title: { en: 'Appendix H: Error Detection', zh: '附錄 H：錯誤偵測' }, subtitle: { en: 'Detection and correction codes', zh: '偵測與更正碼' } },
     { id: 'appendixI', title: { en: 'Appendix I: Sign-and-Magnitude', zh: '附錄 I：符號與數值' }, subtitle: { en: 'Addition and subtraction for integers', zh: '整數的加法與減法' } },
     { id: 'appendixJ', title: { en: 'Appendix J: Reals', zh: '附錄 J：實數' }, subtitle: { en: 'Addition and subtraction for reals', zh: '實數的加法與減法' } },
+    { id: 'acronyms', title: { en: 'Acronyms', zh: '縮寫詞' }, subtitle: { en: 'List of common abbreviations', zh: '常見縮寫列表' } },
+    { id: 'glossary', title: { en: 'Glossary', zh: '詞彙表' }, subtitle: { en: 'Definitions of key terms', zh: '關鍵術語定義' } },
 ];
 
 export const textbookData = {
@@ -97,4 +102,6 @@ export const textbookData = {
     'appendixH': { title: chapterList[28].title, content: appendixHContent },
     'appendixI': { title: chapterList[29].title, content: appendixIContent },
     'appendixJ': { title: chapterList[30].title, content: appendixJContent },
+    'acronyms': { title: chapterList[31].title, content: acronymsContent },
+    'glossary': { title: chapterList[32].title, content: glossaryChapterContent },
 };

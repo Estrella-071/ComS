@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '../hooks/useTranslation';
@@ -30,24 +29,23 @@ export const SubjectSelection: React.FC = () => {
     };
 
     return (
-        <div className="h-full overflow-y-auto flex flex-col items-center justify-center p-6 md:p-12 relative">
-            {/* Background texture or simple grid could go here, but keeping it clean for now */}
+        <div className="h-full overflow-y-auto flex flex-col items-center justify-center p-4 md:p-12 relative">
             
             <div className="w-full max-w-5xl z-10">
-                 <div className="text-center mb-16">
+                 <div className="text-center mb-8 md:mb-16 mt-8 md:mt-0">
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.5, ease: "easeOut" }}
-                        className="inline-flex items-center justify-center p-4 rounded-full border-2 border-[var(--text-primary)] mb-8"
+                        className="inline-flex items-center justify-center p-3 md:p-4 rounded-full border-2 border-[var(--text-primary)] mb-6 md:mb-8"
                     >
-                        <SparklesIcon className="w-8 h-8 text-[var(--text-primary)]" />
+                        <SparklesIcon className="w-6 h-6 md:w-8 md:h-8 text-[var(--text-primary)]" />
                     </motion.div>
                     <motion.h1 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="text-4xl md:text-6xl font-bold tracking-tight text-[var(--text-primary)] mb-6"
+                        className="text-3xl md:text-6xl font-bold tracking-tight text-[var(--text-primary)] mb-4 md:mb-6"
                     >
                         {t('subject_selection_title')}
                     </motion.h1>
@@ -55,7 +53,7 @@ export const SubjectSelection: React.FC = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
-                        className="text-lg md:text-xl text-[var(--text-secondary)] font-serif italic"
+                        className="text-base md:text-xl text-[var(--text-secondary)] font-serif italic px-4"
                     >
                         {t('subject_selection_subtitle')}
                     </motion.p>
@@ -65,7 +63,7 @@ export const SubjectSelection: React.FC = () => {
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
-                    className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto"
+                    className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-4xl mx-auto pb-8"
                 >
                     {subjects.map(subject => {
                         const Icon = iconMap[subject.id] || BookOpenIcon;
@@ -75,27 +73,27 @@ export const SubjectSelection: React.FC = () => {
                                 variants={itemVariants}
                                 onClick={() => subject.enabled && setSubject(subject.id)}
                                 disabled={!subject.enabled}
-                                className="group relative w-full h-full bg-[var(--bg-color)] border border-[var(--ui-border)] rounded-xl p-8 text-left transition-all duration-300 hover:border-[var(--text-primary)] hover:shadow-lg overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="group relative w-full h-full bg-[var(--bg-color)] border border-[var(--ui-border)] rounded-xl p-6 md:p-8 text-left transition-all duration-300 hover:border-[var(--text-primary)] hover:shadow-lg overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                                 whileHover={{ y: -4 }}
                                 whileTap={{ scale: 0.99 }}
                             >
                                 <div className="flex flex-col h-full relative z-10">
-                                    <div className="flex items-start justify-between mb-6">
-                                        <div className="p-3 rounded-lg bg-[var(--ui-bg)] text-[var(--text-primary)] group-hover:bg-[var(--text-primary)] group-hover:text-[var(--bg-color)] transition-colors duration-300">
-                                            <Icon className="w-8 h-8"/>
+                                    <div className="flex items-start justify-between mb-4 md:mb-6">
+                                        <div className="p-2.5 md:p-3 rounded-lg bg-[var(--ui-bg)] text-[var(--text-primary)] group-hover:bg-[var(--text-primary)] group-hover:text-[var(--bg-color)] transition-colors duration-300">
+                                            <Icon className="w-6 h-6 md:w-8 md:h-8"/>
                                         </div>
-                                        <span className="px-3 py-1 text-xs font-bold uppercase tracking-widest border border-[var(--ui-border)] rounded-full text-[var(--text-secondary)]">
+                                        <span className="px-2 py-1 md:px-3 md:py-1 text-[10px] md:text-xs font-bold uppercase tracking-widest border border-[var(--ui-border)] rounded-full text-[var(--text-secondary)]">
                                             {subject.type === 'quiz' ? 'Quiz' : 'Code'}
                                         </span>
                                     </div>
 
-                                    <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-3 font-serif">
+                                    <h2 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] mb-2 md:mb-3 font-serif">
                                         {subject.name[language]}
                                     </h2>
-                                    <p className="text-sm font-medium text-[var(--text-subtle)] uppercase tracking-wider mb-4">
+                                    <p className="text-xs md:text-sm font-medium text-[var(--text-subtle)] uppercase tracking-wider mb-3 md:mb-4">
                                         {subject.name[language === 'en' ? 'zh' : 'en']}
                                     </p>
-                                    <p className="text-base text-[var(--text-secondary)] leading-relaxed line-clamp-3 mb-6">
+                                    <p className="text-sm md:text-base text-[var(--text-secondary)] leading-relaxed line-clamp-3 mb-4 md:mb-6">
                                         {subject.description[language]}
                                     </p>
                                     

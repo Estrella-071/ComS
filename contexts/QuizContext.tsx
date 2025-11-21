@@ -1,8 +1,3 @@
-
-
-
-
-
 import React, { createContext, useState, useContext, useCallback, ReactNode } from 'react';
 import type { Problem, View, AnsweredQuestion, QuizResult } from '../types';
 import { LOCAL_STORAGE_KEYS } from '../types';
@@ -70,9 +65,9 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const finishQuiz = useCallback(() => {
     if (isFinished || !quizState || !subject) return;
 
-    const score = Array.from(answers).reduce((count: number, [id, answer]) => {
+    const score = Array.from(answers).reduce<number>((count, [id, answer]) => {
         const problem = quizState.problems.find(p => p.id === id);
-        return problem && problem.answer === answer ? count + 1 : count;
+        return (problem && problem.answer === answer) ? count + 1 : count;
     }, 0);
 
     const answeredQuestions: AnsweredQuestion[] = quizState.problems.map((p) => ({

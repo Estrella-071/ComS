@@ -43,7 +43,7 @@ export const en = {
   navigate: 'Navigate',
   recent_quizzes: 'Recent Quizzes',
   no_recent_quizzes: 'Complete a quiz to see your history here.',
-  change_subject: 'Change Subject',
+  change_subject: 'Subject',
   my_tools: 'My Tools',
   
   // New Home Screen

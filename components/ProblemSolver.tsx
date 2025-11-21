@@ -1,19 +1,15 @@
 
-
 import React, { useState, useMemo } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Problem } from '../types';
 import { CheckIcon, StarIcon, StarSolidIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppContext } from '../contexts/AppContext';
 import { Tooltip } from './Tooltip';
 import { TextWithHighlights } from './TextWithHighlights';
 import type { View } from '../types';
-import { useBilingualAnnotation } from '../hooks/useBilingualAnnotation';
+import { ProblemOptions } from './ProblemOptions';
+import { ProblemExplanation } from './ProblemExplanation';
+import { Toast } from './common/Toast';
 
 
 interface ProblemSolverProps {
@@ -42,9 +38,7 @@ const variants = {
 export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSidebarOpen }) => {
   const [direction, setDirection] = useState(0);
   const { t } = useTranslation();
-  const { subjectData, flaggedItems, toggleFlaggedItem, language } = useAppContext();
-  const annotate = useBilingualAnnotation();
-  const [showExplanation, setShowExplanation] = useState(false);
+  const { subjectData, flaggedItems, toggleFlaggedItem } = useAppContext();
   const [showFlagToast, setShowFlagToast] = useState(false);
 
   const problems = useMemo(() => subjectData?.problems || [], [subjectData]);
@@ -77,8 +71,9 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
     toggleFlaggedItem(problem.id);
   };
 
-  const questionText = language === 'zh' ? problem.text_zh : problem.text_en;
-  const tooltipText = language === 'zh' ? problem.text_en : problem.text_zh;
+  // Force English questions but keep Chinese interface
+  const questionText = problem.text_en;
+  const tooltipText = problem.text_zh;
 
   return (
     <div className="h-full flex flex-col">
@@ -113,6 +108,10 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                   <ChevronRightIcon className="w-8 h-8 text-[var(--text-subtle)] opacity-30" />
                 </div>
 
+                <AnimatePresence>
+                    {showFlagToast && <Toast message={t('flagged_toast')} />}
+                </AnimatePresence>
+
                 <AnimatePresence initial={false} custom={direction} mode="wait">
                   <motion.div
                     key={id}
@@ -140,18 +139,6 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                             {t('problem_header')} {problem.number}
                           </span>
                           <div className="relative flex items-center">
-                            <AnimatePresence>
-                              {showFlagToast && (
-                                <motion.div
-                                  initial={{ opacity: 0, x: 10, scale: 0.9 }}
-                                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                                  exit={{ opacity: 0, x: 10, scale: 0.9 }}
-                                  className="absolute top-1/2 -translate-y-1/2 right-full mr-2 bg-[var(--warning-solid-bg)] text-[var(--warning-solid-text)] text-xs font-semibold px-2 py-1 rounded-md whitespace-nowrap"
-                                >
-                                  {t('flagged_toast')}
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
                             <button
                               onClick={handleFlagToggle}
                               className="text-[var(--warning-text)] hover:text-[var(--warning-text-hover)] transition-colors p-1"
@@ -172,54 +159,18 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
 
                       <div className="glass-pane rounded-2xl p-4 sm:p-8">
                         <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">{t('options')}</h2>
-                        <div className="space-y-3">
-                          {problem.options.map((option) => {
-                            const optionText = language === 'zh' ? option.text_zh : option.text_en;
-                            const optionTooltip = language === 'zh' ? option.text_en : option.text_zh;
+                        
+                        <ProblemOptions 
+                            problem={problem} 
+                            isRevealed={true} // In ProblemSolver mode, we always reveal the correct answer
+                            onAnswerSelected={() => {}} // Read-only in this mode
+                            disabled={true}
+                        />
 
-                            return (
-                            <div key={option.key} className={`flex items-start gap-4 p-3 sm:p-4 rounded-xl border-2 transition-all ${
-                                option.key === problem.answer
-                                  ? 'bg-[var(--success-bg)] border-[var(--success-border)]'
-                                  : 'bg-[var(--ui-bg)] border-transparent'
-                              }`}
-                            >
-                              <div className={`flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center font-bold text-sm ${
-                                option.key === problem.answer
-                                  ? 'bg-[var(--success-solid-bg)] text-[var(--success-solid-text)]'
-                                  : 'bg-[var(--text-subtle)] text-[var(--bg-color)]'
-                              }`}>
-                                {option.key === problem.answer ? <CheckIcon className="w-4 h-4" /> : option.key.toUpperCase()}
-                              </div>
-                              <Tooltip content={optionTooltip}>
-                                <p className={`text-[var(--text-primary)] cursor-help ${option.key === problem.answer ? 'font-semibold' : ''}`}>
-                                  <TextWithHighlights text={optionText} />
-                                </p>
-                              </Tooltip>
-                            </div>
-                          )})}
-                        </div>
-                        <div className="mt-4 pt-4 border-t border-[var(--ui-border)] flex justify-center">
-                          <button
-                            onClick={() => setShowExplanation(!showExplanation)}
-                            className="bg-[var(--ui-bg)] text-[var(--text-secondary)] font-semibold px-5 py-2 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors"
-                          >
-                            {showExplanation ? t('hide_explanation') : t('show_explanation')}
-                          </button>
-                        </div>
-
-                        <AnimatePresence>
-                          {showExplanation && (
-                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                              <div className="mt-4 pt-4 border-t border-[var(--ui-border)]">
-                                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{t('explanation')}</h3>
-                                <div className="prose prose-slate dark:prose-invert max-w-none text-left prose-p:text-[var(--text-secondary)] prose-li:text-[var(--text-secondary)]">
-                                  <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{annotate(problem.explanation_zh)}</ReactMarkdown>
-                                </div>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                        <ProblemExplanation 
+                            explanation={problem.explanation_zh} 
+                            isVisible={false} // Initially hidden, can be toggled
+                        />
                       </div>
                     </div>
                   </motion.div>

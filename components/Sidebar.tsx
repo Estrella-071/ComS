@@ -1,12 +1,10 @@
 
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import type { View } from '../types';
-import { SunIcon, MoonIcon, HomeIcon, ListBulletIcon, CodeBracketIcon, FolderIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon, XMarkIcon, PencilSquareIcon, BriefcaseIcon, ArrowUturnLeftIcon, GlobeAltIcon } from './icons';
+import { HomeIcon, ListBulletIcon, CodeBracketIcon, FolderIcon, BriefcaseIcon, SearchIcon } from './icons';
 import { useAppContext } from '../contexts/AppContext';
 import { useTranslation } from '../hooks/useTranslation';
-import { Tooltip } from './Tooltip';
 import { SegmentedControl } from './common/SegmentedControl';
 
 interface SidebarProps {
@@ -16,11 +14,11 @@ interface SidebarProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   activeTocId?: string | null;
+  onOpenSearch: () => void;
 }
 
 // --- Animation Constants ---
 const spring = { type: 'spring' as const, stiffness: 350, damping: 30 };
-const iconSpring = { type: 'spring' as const, stiffness: 500, damping: 30 };
 
 const sidebarVariants = {
     open: { x: 0 },
@@ -41,9 +39,9 @@ const itemVariants = {
 };
 
 export const Sidebar: React.FC<SidebarProps> = (props) => {
-  const { view, onNavigate, onResetNavigate, isOpen, setIsOpen } = props;
+  const { view, onNavigate, onResetNavigate, isOpen, setIsOpen, onOpenSearch } = props;
   const { t } = useTranslation();
-  const { flaggedItems, subjectData, subject, setSubject, theme, setTheme, language, setLanguage } = useAppContext();
+  const { flaggedItems, subjectData, subject, language } = useAppContext();
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1024 : true);
   
   const [activeTab, setActiveTab] = useState<'chapters' | 'practice'>('chapters');
@@ -72,20 +70,6 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
     }
   };
   
-  const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
-    useEffect(() => {
-        const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    }, []);
-    const toggleFullscreen = () => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
-    };
-  
   const isQuizSubject = subject?.type === 'quiz';
   const isProgrammingSubject = subject?.type === 'programming';
 
@@ -102,7 +86,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
         className="fixed inset-y-0 left-0 z-[var(--z-sidebar)] w-80 glass-pane flex flex-col rounded-r-2xl lg:absolute lg:top-0 lg:left-0 lg:h-full lg:rounded-none"
         style={{ willChange: 'transform' }}
       >
-            <div className="pt-20 px-5 pb-4">
+            <div className="pt-20 px-5 pb-2 space-y-4">
                 <SegmentedControl 
                     options={[
                         { label: t('sidebar_tab_chapters'), value: 'chapters' },
@@ -112,9 +96,17 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                     onChange={(val) => setActiveTab(val as 'chapters' | 'practice')}
                     layoutId="sidebar-tab-switch"
                 />
+
+                <button 
+                    onClick={onOpenSearch}
+                    className="w-full h-10 bg-[var(--ui-bg)] hover:bg-[var(--ui-bg-hover)] border border-[var(--ui-border)] rounded-xl px-3 flex items-center gap-3 transition-all cursor-pointer group shadow-sm text-left"
+                >
+                    <SearchIcon className="w-5 h-5 text-[var(--text-subtle)] group-hover:text-[var(--text-primary)] transition-colors" />
+                    <span className="text-sm text-[var(--text-subtle)] group-hover:text-[var(--text-secondary)] truncate select-none">{t('search_placeholder')}</span>
+                </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-6">
+            <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-6 pt-2">
                 <AnimatePresence mode="wait">
                     {activeTab === 'chapters' ? (
                         <motion.div
@@ -125,7 +117,6 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                             transition={{ duration: 0.2 }}
                             className="space-y-1"
                         >
-                            {/* <div className="text-xs font-bold text-[var(--text-subtle)] uppercase tracking-wider mb-2 px-2">{t('by_chapter')}</div> */}
                             {chapterListData.map(chapter => (
                                 <NavItem
                                     key={chapter.id}
@@ -155,7 +146,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                                         </>
                                     )}
                                     {isProgrammingSubject && (
-                                        <NavItem icon={<PencilSquareIcon className="w-5 h-5" />} label={t('programming_exercises')} active={view.type === 'programming' || view.type === 'exercise'} onClick={() => onNavigate({ type: 'programming' })} />
+                                        <NavItem icon={<CodeBracketIcon className="w-5 h-5" />} label={t('programming_exercises')} active={view.type === 'programming' || view.type === 'exercise'} onClick={() => onNavigate({ type: 'programming' })} />
                                     )}
                                 </div>
                              </div>
@@ -171,91 +162,6 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
-
-            <div className="mt-auto flex-shrink-0 p-4 border-t border-[var(--ui-border)]">
-                <div className="grid grid-cols-4 gap-3">
-                    <Tooltip content={theme === 'light' ? t('toggle_dark_mode') : t('toggle_light_mode')}>
-                        <motion.button
-                            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                            className="w-full h-12 flex items-center justify-center rounded-full transition-colors bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-lg hover:bg-[var(--accent-solid-hover)]"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            aria-label={theme === 'light' ? t('toggle_dark_mode') : t('toggle_light_mode')}
-                        >
-                            <AnimatePresence mode="wait" initial={false}>
-                                <motion.div
-                                    key={theme}
-                                    initial={{ y: -20, opacity: 0, rotate: -30 }}
-                                    animate={{ y: 0, opacity: 1, rotate: 0 }}
-                                    exit={{ y: 20, opacity: 0, rotate: 30 }}
-                                    transition={iconSpring}
-                                    className="flex items-center justify-center h-5 w-5"
-                                >
-                                    {theme === 'light' ? <SunIcon className="w-full h-full"/> : <MoonIcon className="w-full h-full"/>}
-                                </motion.div>
-                            </AnimatePresence>
-                        </motion.button>
-                    </Tooltip>
-
-                    <Tooltip content={language === 'zh' ? 'Switch to English' : '切換為中文'}>
-                        <motion.button
-                            onClick={() => setLanguage(language === 'zh' ? 'en' : 'zh')}
-                            className="w-full h-12 flex items-center justify-center rounded-full transition-colors bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-lg hover:bg-[var(--accent-solid-hover)]"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            aria-label={language === 'zh' ? 'Switch to English' : '切換為中文'}
-                        >
-                            <AnimatePresence mode="wait" initial={false}>
-                                <motion.div
-                                    key={language}
-                                    initial={{ y: -10, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    exit={{ y: 10, opacity: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="font-semibold text-sm"
-                                >
-                                    {language === 'zh' ? 'EN' : '中'}
-                                </motion.div>
-                            </AnimatePresence>
-                        </motion.button>
-                    </Tooltip>
-                    
-                    <Tooltip content={t('change_subject')}>
-                        <motion.button
-                            onClick={() => setSubject(null)}
-                            className="w-full h-12 flex items-center justify-center rounded-full transition-colors bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-lg hover:bg-[var(--accent-solid-hover)]"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            aria-label={t('change_subject')}
-                        >
-                            <HomeIcon className="w-5 h-5"/>
-                        </motion.button>
-                    </Tooltip>
-                    
-                    <Tooltip content={isFullscreen ? t('exit_fullscreen') : t('enter_fullscreen')}>
-                        <motion.button
-                            onClick={toggleFullscreen}
-                            className="w-full h-12 flex items-center justify-center rounded-full transition-colors bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-lg hover:bg-[var(--accent-solid-hover)]"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            aria-label={isFullscreen ? t('exit_fullscreen') : t('enter_fullscreen')}
-                        >
-                            <AnimatePresence mode="wait" initial={false}>
-                                <motion.div
-                                    key={isFullscreen ? 'exit' : 'enter'}
-                                    initial={{ rotate: -90, scale: 0 }}
-                                    animate={{ rotate: 0, scale: 1 }}
-                                    exit={{ rotate: 90, scale: 0 }}
-                                    transition={iconSpring}
-                                    className="flex items-center justify-center h-5 w-5"
-                                >
-                                    {isFullscreen ? <ArrowsPointingInIcon className="w-full h-full" /> : <ArrowsPointingOutIcon className="w-full h-full" />}
-                                </motion.div>
-                            </AnimatePresence>
-                        </motion.button>
-                    </Tooltip>
-                </div>
             </div>
       </motion.aside>
   );

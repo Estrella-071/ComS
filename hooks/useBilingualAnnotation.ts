@@ -1,6 +1,7 @@
 
 import { useCallback } from 'react';
-import { useAppContext, addBilingualAnnotations } from '../contexts/AppContext';
+import { useAppContext } from '../contexts/AppContext';
+import { addBilingualAnnotations } from '../utils/textUtils';
 
 export const useBilingualAnnotation = () => {
   const { glossaryMaps } = useAppContext();

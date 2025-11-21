@@ -1,9 +1,4 @@
 
-
-
-
-
-
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../contexts/AppContext';
@@ -25,10 +20,20 @@ type SearchResultItem =
 export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate }) => {
   const { subjectData, language } = useAppContext();
   const { t } = useTranslation();
-  const [query, setQuery] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Debounce logic
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(inputValue);
+    }, 300); // 300ms delay
+
+    return () => clearTimeout(timer);
+  }, [inputValue]);
 
   const { problems, glossary, exercises } = useMemo(() => ({
     problems: subjectData?.problems || [],
@@ -37,9 +42,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
   }), [subjectData]);
 
   const allResults: SearchResultItem[] = useMemo(() => {
-    if (!query.trim()) return [];
+    if (!debouncedQuery.trim()) return [];
 
-    const lowerQuery = query.toLowerCase();
+    const lowerQuery = debouncedQuery.toLowerCase();
     
     const filteredProblems = problems.filter(p =>
       p.text_en.toLowerCase().includes(lowerQuery) ||
@@ -62,7 +67,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
     ).slice(0,10).map(e => ({ type: 'exercise', data: e} as SearchResultItem));
 
     return [...filteredProblems, ...filteredExercises, ...filteredGlossary];
-  }, [query, problems, glossary, exercises]);
+  }, [debouncedQuery, problems, glossary, exercises]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -98,7 +103,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
 
   useEffect(() => {
     setActiveIndex(-1);
-  }, [query]);
+  }, [debouncedQuery]);
 
   useEffect(() => {
     const activeElement = resultsRef.current?.querySelector(`[data-active='true']`);
@@ -131,8 +136,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
           <input
             ref={inputRef}
             type="text"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
+            value={inputValue}
+            onChange={e => setInputValue(e.target.value)}
             placeholder={t('search_modal_placeholder')}
             className="w-full bg-transparent text-lg text-[var(--text-primary)] outline-none"
           />
@@ -142,7 +147,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
         </div>
         <div ref={resultsRef} className="overflow-y-auto max-h-[60vh]">
           <AnimatePresence>
-            {query.trim() === '' ? (
+            {inputValue.trim() === '' ? (
               <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="p-12 text-center text-[var(--text-secondary)]">{t('search_modal_placeholder')}</motion.div>
             ) : allResults.length === 0 ? (
               <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="p-12 text-center text-[var(--text-secondary)]">{t('search_no_results')}</motion.div>
@@ -152,6 +157,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
                   <ResultSection icon={<CodeBracketIcon className="w-5 h-5"/>} title={t('search_results_title')}>
                     {problemResults.map((r) => {
                        const index = allResults.findIndex(item => item.type === 'problem' && item.data.id === r.data.id);
+                       // Force English for problem text
                        return (
                         <ResultItem 
                           key={r.data.id} 
@@ -159,8 +165,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
                           isActive={index === activeIndex}
                           onMouseEnter={() => setActiveIndex(index)}
                         >
-                          <p className="font-semibold"><TextWithHighlights text={`${t('problem_header')} ${r.data.number}`} highlight={query} /></p>
-                          <p className="text-sm text-[var(--text-secondary)] line-clamp-2"><TextWithHighlights text={language === 'zh' ? r.data.text_zh : r.data.text_en} highlight={query} /></p>
+                          <p className="font-semibold"><TextWithHighlights text={`${t('problem_header')} ${r.data.number}`} highlight={debouncedQuery} /></p>
+                          <p className="text-sm text-[var(--text-secondary)] line-clamp-2"><TextWithHighlights text={r.data.text_en} highlight={debouncedQuery} /></p>
                         </ResultItem>
                        )
                     })}
@@ -170,6 +176,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
                   <ResultSection icon={<PencilSquareIcon className="w-5 h-5"/>} title={t('exercise_results_title')}>
                     {exerciseResults.map((r) => {
                        const index = allResults.findIndex(item => item.type === 'exercise' && item.data.id === r.data.id);
+                       // Force English for exercise text
                        return (
                         <ResultItem 
                           key={r.data.id} 
@@ -177,8 +184,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
                           isActive={index === activeIndex}
                           onMouseEnter={() => setActiveIndex(index)}
                         >
-                          <p className="font-semibold"><TextWithHighlights text={`${t('exercise_header')} ${r.data.number}: ${language === 'zh' ? r.data.title_zh : r.data.title_en}`} highlight={query} /></p>
-                          <p className="text-sm text-[var(--text-secondary)] line-clamp-2"><TextWithHighlights text={language === 'zh' ? r.data.description_zh : r.data.description_en} highlight={query} /></p>
+                          <p className="font-semibold"><TextWithHighlights text={`${t('exercise_header')} ${r.data.number}: ${r.data.title_en}`} highlight={debouncedQuery} /></p>
+                          <p className="text-sm text-[var(--text-secondary)] line-clamp-2"><TextWithHighlights text={r.data.description_en} highlight={debouncedQuery} /></p>
                         </ResultItem>
                        )
                     })}
@@ -195,8 +202,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
                         isActive={index === activeIndex}
                         onMouseEnter={() => setActiveIndex(index)}
                        >
-                         <p className="font-semibold"><TextWithHighlights text={r.data.term} highlight={query} /> <span className="text-[var(--text-subtle)] font-normal">({r.data.chinese})</span></p>
-                        <p className="text-sm text-[var(--text-secondary)] line-clamp-2"><TextWithHighlights text={language === 'zh' ? r.data.definition_zh : r.data.definition} highlight={query} /></p>
+                         <p className="font-semibold"><TextWithHighlights text={r.data.term} highlight={debouncedQuery} /> <span className="text-[var(--text-subtle)] font-normal">({r.data.chinese})</span></p>
+                        <p className="text-sm text-[var(--text-secondary)] line-clamp-2"><TextWithHighlights text={language === 'zh' ? r.data.definition_zh : r.data.definition} highlight={debouncedQuery} /></p>
                       </ResultItem>
                        )
                     })}

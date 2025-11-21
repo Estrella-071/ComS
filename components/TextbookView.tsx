@@ -1,5 +1,4 @@
 
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -10,11 +9,10 @@ import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { Tooltip } from './Tooltip';
 import type { View, GlossaryTerm } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
-import { XMarkIcon, PlusIcon, MinusIcon, ArrowsRightLeftIcon, CodeBracketIcon, ChevronUpIcon, GlobeAltIcon, Cog6ToothIcon, PencilIcon, SparklesIcon } from './icons';
+import { XMarkIcon, ChevronUpIcon } from './icons';
 import { useAppContext } from '../contexts/AppContext';
-import { SegmentedControl } from './common/SegmentedControl';
 import { useBilingualAnnotation } from '../hooks/useBilingualAnnotation';
-import { ToggleSwitch } from './common/ToggleSwitch';
+import { slugify } from '../utils/textUtils';
 
 interface TextbookViewProps {
   chapterId: string;
@@ -22,20 +20,33 @@ interface TextbookViewProps {
   setActiveTocId: (id: string | null) => void;
 }
 
-const FONT_SIZE_STEP = 1;
-const MIN_FONT_SIZE = 12;
-const MAX_FONT_SIZE = 24;
-
-const slugify = (text: string) =>
-  text
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '');
+// Helper to extract raw text from a React node tree
+const getNodeText = (node: any): string => {
+    if (['string', 'number'].includes(typeof node)) return node.toString();
+    if (node instanceof Array) return node.map(getNodeText).join('');
+    if (typeof node === 'object' && node) {
+        // react-markdown AST node structure
+        if (node.value) return node.value;
+        if (node.children) return getNodeText(node.children);
+        // React element props structure
+        if (node.props && node.props.children) return getNodeText(node.props.children);
+    }
+    return '';
+};
 
 const renderWithGlossary = (node: React.ReactNode, glossaryMap: Record<string, GlossaryTerm>, glossaryRegex: RegExp): React.ReactNode => {
+    // Short-circuit if no glossary terms exist to avoid expensive tree traversal and regex splitting
+    // Check for empty map, or specific "match nothing" patterns including '(?!)'
+    if (Object.keys(glossaryMap).length === 0 || glossaryRegex.source === 'a^' || glossaryRegex.source === '(?:)' || glossaryRegex.source === '(?!') {
+        return node;
+    }
+
     return React.Children.map(node, child => {
         if (typeof child === 'string') {
             const parts = child.split(glossaryRegex);
+            // Optimization: If split results in the original string (length 1), return it directly
+            if (parts.length === 1) return child;
+
             return parts.map((part, i) => {
                 if (!part) {
                     return part;
@@ -97,6 +108,14 @@ const ChapterBottomNav: React.FC<{
 }
 
 const ImageModal: React.FC<{ src: string; alt?: string; onClose: () => void }> = ({ src, alt, onClose }) => {
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [onClose]);
+
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -114,7 +133,11 @@ const ImageModal: React.FC<{ src: string; alt?: string; onClose: () => void }> =
                 className="max-w-full max-h-full rounded-lg shadow-2xl cursor-default"
                 onClick={(e) => e.stopPropagation()}
             />
-            <button onClick={onClose} className="absolute top-4 right-4 text-white/70 hover:text-white">
+            <button 
+                onClick={onClose} 
+                className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                aria-label="Close image"
+            >
                 <XMarkIcon className="w-8 h-8" />
             </button>
         </motion.div>
@@ -128,14 +151,7 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
         subjectData, 
         glossaryMaps, 
         readingSettings, 
-        theme, 
-        setTheme, 
-        setFontSize,
-        setLineHeight,
-        setPageWidth,
-        setReadTheme,
-        setInitialMode,
-        setDisplayMode
+        language 
     } = useAppContext();
     const annotate = useBilingualAnnotation();
     const { fontSize, lineHeight, pageWidth, readTheme, initialMode, displayMode } = readingSettings;
@@ -144,12 +160,12 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
     const { scrollYProgress } = useScroll({ container: contentRef });
     const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
     
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [showBackToTop, setShowBackToTop] = useState(false);
     const [zoomImage, setZoomImage] = useState<{src: string, alt?: string} | null>(null);
 
     const { glossaryMap, glossaryRegex } = useMemo(() => {
-      if (!glossaryMaps) return { glossaryMap: {}, glossaryRegex: new RegExp('a^')};
+      // Fallback regex matches nothing: (?!). 
+      if (!glossaryMaps) return { glossaryMap: {}, glossaryRegex: /(?!)/};
       return { glossaryMap: glossaryMaps.glossaryMap, glossaryRegex: glossaryMaps.glossaryRegex };
     }, [glossaryMaps]);
     
@@ -197,10 +213,11 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
       return result;
     }, [displayMode, contentToRender]);
     
-    const markdownComponents = {
-        h1: ({ node, ...props }: any) => <h1 id={slugify(node.children.map((c: any) => c.value || '').join(''))} {...props}>{renderWithGlossary(props.children, glossaryMap, glossaryRegex)}</h1>,
-        h2: ({ node, ...props }: any) => <h2 id={slugify(node.children.map((c: any) => c.value || '').join(''))} {...props}>{renderWithGlossary(props.children, glossaryMap, glossaryRegex)}</h2>,
-        h3: ({ node, ...props }: any) => <h3 id={slugify(node.children.map((c: any) => c.value || '').join(''))} {...props}>{renderWithGlossary(props.children, glossaryMap, glossaryRegex)}</h3>,
+    // Memoize markdown components to prevent unnecessary re-renders of the entire markdown tree
+    const markdownComponents = useMemo(() => ({
+        h1: ({ node, ...props }: any) => <h1 id={slugify(getNodeText(node))} {...props}>{renderWithGlossary(props.children, glossaryMap, glossaryRegex)}</h1>,
+        h2: ({ node, ...props }: any) => <h2 id={slugify(getNodeText(node))} {...props}>{renderWithGlossary(props.children, glossaryMap, glossaryRegex)}</h2>,
+        h3: ({ node, ...props }: any) => <h3 id={slugify(getNodeText(node))} {...props}>{renderWithGlossary(props.children, glossaryMap, glossaryRegex)}</h3>,
         p: ({children}: {children: React.ReactNode}) => <p>{renderWithGlossary(children, glossaryMap, glossaryRegex)}</p>,
         li: ({children}: {children: React.ReactNode}) => <li>{renderWithGlossary(children, glossaryMap, glossaryRegex)}</li>,
         table: ({node, ...props}: any) => (
@@ -215,7 +232,7 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
                 onClick={() => setZoomImage({ src: props.src, alt: props.alt })}
             />
         )
-    };
+    }), [glossaryMap, glossaryRegex]);
 
     const containerClasses = ['prose-container', 'h-full', 'overflow-y-auto', 'relative', 'px-4', 'sm:px-6', 'lg:px-8', 'pb-32', readTheme !== 'default' ? `reading-theme-${readTheme}` : ''].join(' ');
     const proseWrapperClasses = ['prose', 'prose-slate', 'dark:prose-invert', 'mx-auto', pageWidth].join(' ');
@@ -247,8 +264,17 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
                                         {displayMode === 'zh' && contentToRender.zh}
                                         {displayMode === 'bilingual' && interleavedContent.map((item, index) => (
                                             <React.Fragment key={index}>
-                                                {item.zh && <>{item.zh}{'\n\n'}</>}
-                                                {item.en && <div className="en-translation prose-raw">{item.en}</div>}
+                                                {language === 'zh' ? (
+                                                    <>
+                                                        {item.zh && <>{item.zh}{'\n\n'}</>}
+                                                        {item.en && <div className="en-translation prose-raw">{item.en}</div>}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {item.en && <>{item.en}{'\n\n'}</>}
+                                                        {item.zh && <div className="en-translation prose-raw">{item.zh}</div>}
+                                                    </>
+                                                )}
                                             </React.Fragment>
                                         ))}
                                     </div>
@@ -258,17 +284,36 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
                                         {displayMode === 'zh' && <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>{contentToRender.zh}</ReactMarkdown>}
                                         {displayMode === 'bilingual' && interleavedContent.map((item, index) => (
                                         <React.Fragment key={index}>
-                                            {item.zh && (
-                                                <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>
-                                                    {item.zh}
-                                                </ReactMarkdown>
-                                            )}
-                                            {item.en && (
-                                                <div className="en-translation">
-                                                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>
-                                                        {item.en}
-                                                    </ReactMarkdown>
-                                                </div>
+                                            {language === 'zh' ? (
+                                                <>
+                                                    {item.zh && (
+                                                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>
+                                                            {item.zh}
+                                                        </ReactMarkdown>
+                                                    )}
+                                                    {item.en && (
+                                                        <div className="en-translation">
+                                                            <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>
+                                                                {item.en}
+                                                            </ReactMarkdown>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {item.en && (
+                                                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>
+                                                            {item.en}
+                                                        </ReactMarkdown>
+                                                    )}
+                                                    {item.zh && (
+                                                        <div className="en-translation">
+                                                            <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeHighlight]} components={markdownComponents}>
+                                                                {item.zh}
+                                                            </ReactMarkdown>
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         </React.Fragment>
                                         ))}
@@ -291,21 +336,7 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
                   </motion.button>
                 )}
             </AnimatePresence>
-            <ReadingSettings 
-              isOpen={isSettingsOpen} 
-              setIsOpen={setIsSettingsOpen} 
-              settings={readingSettings} 
-              setters={{
-                setFontSize,
-                setLineHeight,
-                setPageWidth,
-                setReadTheme,
-                setInitialMode,
-                setDisplayMode,
-              }}
-              theme={theme}
-              setTheme={setTheme}
-            />
+            {/* Settings is now global in App.tsx, removed from here */}
         </div>
         <AnimatePresence>
             {zoomImage && <ImageModal src={zoomImage.src} alt={zoomImage.alt} onClose={() => setZoomImage(null)} />}
@@ -313,112 +344,3 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
       </div>
     );
 };
-
-interface ReadingSettingsProps { isOpen: boolean; setIsOpen: (isOpen: boolean) => void; settings: { fontSize: number; lineHeight: number; pageWidth: string; readTheme: string; initialMode: boolean; displayMode: 'en' | 'zh' | 'bilingual'; }; setters: { setFontSize: (size: number) => void; setLineHeight: (height: number) => void; setPageWidth: (width: string) => void; setReadTheme: (theme: string) => void; setInitialMode: (enabled: boolean) => void; setDisplayMode: (mode: 'en' | 'zh' | 'bilingual') => void; }; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void; }
-
-const SettingRow: React.FC<{icon: React.ReactNode, label: string, children: React.ReactNode, layout?: 'stacked' | 'inline'}> = ({ icon, label, children, layout = 'stacked' }) => {
-    if (layout === 'inline') {
-        return (
-            <div className="flex items-center justify-between gap-4">
-                <label className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider whitespace-nowrap">{icon}<span>{label}</span></label>
-                <div>{children}</div>
-            </div>
-        );
-    }
-    return (
-        <div className="space-y-2">
-            <label className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">{icon}<span>{label}</span></label>
-            <div>{children}</div>
-        </div>
-    );
-};
-
-const ReadingSettings: React.FC<ReadingSettingsProps> = ({ isOpen, setIsOpen, settings, setters, theme, setTheme }) => {
-  const { t } = useTranslation();
-  const spring = { type: 'spring' as const, stiffness: 350, damping: 30 };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') setIsOpen(false);
-    };
-    if (isOpen) {
-        window.addEventListener('keydown', handleKeyDown);
-    }
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, setIsOpen]);
-
-  return (
-    <div className="relative flex flex-col items-center">
-        <motion.div
-            variants={{
-                open: { opacity: 1, y: 0, scale: 1, pointerEvents: 'auto' },
-                closed: { opacity: 0, y: 20, scale: 0.95, pointerEvents: 'none' }
-            }}
-            initial="closed"
-            animate={isOpen ? "open" : "closed"}
-            transition={spring}
-            className="absolute bottom-[calc(100%+0.5rem)] right-0 glass-pane rounded-2xl w-80 shadow-xl text-[var(--text-primary)] max-h-[calc(100vh-6rem)] overflow-y-auto"
-        >
-          <div className="flex justify-between items-center p-4 border-b border-[var(--ui-border)] sticky top-0 bg-[var(--bg-translucent)] backdrop-blur-md z-10">
-              <h3 className="font-bold">{t('reading_settings_title')}</h3>
-              <button onClick={() => setIsOpen(false)} className="p-1 -m-1 text-[var(--text-secondary)] hover:bg-[var(--ui-bg-hover)] rounded-full">
-                  <XMarkIcon className="w-5 h-5" />
-              </button>
-          </div>
-          <div className="p-4 space-y-6">
-              <SettingRow icon={<GlobeAltIcon className="w-5 h-5 text-[var(--text-secondary)]"/>} label={t('reading_settings_language')} layout="inline">
-                  <SegmentedControl options={[{ label: t('reading_settings_lang_zh'), value: 'zh' }, { label: t('reading_settings_lang_en'), value: 'en' }, { label: t('reading_settings_lang_bilingual'), value: 'bilingual' }]} value={settings.displayMode} onChange={setters.setDisplayMode} layoutId="display-mode-toggle" />
-              </SettingRow>
-
-              <SettingRow icon={<PencilIcon className="w-5 h-5 text-[var(--text-secondary)]"/>} label={`${t('reading_settings_font_size')} (${settings.fontSize}px)`}>
-                <input 
-                    type="range" 
-                    min={MIN_FONT_SIZE} 
-                    max={MAX_FONT_SIZE} 
-                    value={settings.fontSize}
-                    onChange={(e) => setters.setFontSize(Number(e.target.value))}
-                    className="w-full"
-                />
-              </SettingRow>
-
-              <SettingRow icon={<ArrowsRightLeftIcon className="w-5 h-5 text-[var(--text-secondary)] transform rotate-90"/>} label={t('reading_settings_line_height')} layout="inline">
-                <SegmentedControl options={[{ label: '1.5', value: '1.5' }, { label: '1.7', value: '1.7' }, { label: '2.0', value: '2.0' }]} value={String(settings.lineHeight)} onChange={(v) => setters.setLineHeight(parseFloat(v))} layoutId="line-height-toggle" />
-              </SettingRow>
-
-              <SettingRow icon={<ArrowsRightLeftIcon className="w-5 h-5 text-[var(--text-secondary)]"/>} label={t('reading_settings_page_width')} layout="inline">
-                 <SegmentedControl options={[{ label: 'S', value: 'max-w-4xl' }, { label: 'M', value: 'max-w-6xl' }, { label: 'L', value: 'max-w-7xl' }]} value={settings.pageWidth} onChange={setters.setPageWidth} layoutId="page-width-toggle" />
-              </SettingRow>
-              
-              <SettingRow icon={<SparklesIcon className="w-5 h-5 text-[var(--text-secondary)]" />} label={t('reading_settings_theme')} layout="inline">
-                <div className="flex items-center gap-2">
-                    <button onClick={() => { setTheme('light'); setters.setReadTheme('default'); }} className={`w-8 h-8 rounded-full border border-[var(--ui-border)] bg-[#f4f1ea] ${theme === 'light' && settings.readTheme === 'default' ? 'ring-2 ring-offset-2 ring-offset-[var(--bg-color)] ring-[var(--accent-solid)]' : ''}`}></button>
-                    <button onClick={() => setters.setReadTheme('sepia')} className={`w-8 h-8 rounded-full bg-[#DBCDBA] ${settings.readTheme === 'sepia' ? 'ring-2 ring-offset-2 ring-offset-[var(--bg-color)] ring-[var(--accent-solid)]' : ''}`}></button>
-                    <button onClick={() => { setTheme('dark'); setters.setReadTheme('default'); }} className={`w-8 h-8 rounded-full border border-[var(--ui-border)] bg-[#1c1917] ${theme === 'dark' && settings.readTheme === 'default' ? 'ring-2 ring-offset-2 ring-offset-[var(--bg-color)] ring-[var(--accent-solid)]' : ''}`}></button>
-                </div>
-              </SettingRow>
-              
-              <SettingRow icon={<CodeBracketIcon className="w-5 h-5 text-[var(--text-secondary)]" />} label={t('reading_settings_formatting')} layout="inline">
-                  <ToggleSwitch
-                      id="initial-mode-toggle"
-                      checked={settings.initialMode}
-                      onChange={setters.setInitialMode}
-                  />
-              </SettingRow>
-          </div>
-        </motion.div>
-      <motion.button onClick={() => setIsOpen(!isOpen)} className="w-14 h-14 bg-[var(--accent-solid)] rounded-full text-[var(--accent-solid-text)] flex items-center justify-center shadow-lg" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} aria-label="Reading settings">
-          <AnimatePresence mode="wait">
-            <motion.div 
-                key={isOpen ? 'close' : 'open'} 
-                initial={{ opacity: 0, scale: 0.6, rotate: -45 }} 
-                animate={{ opacity: 1, scale: 1, rotate: 0 }} 
-                exit={{ opacity: 0, scale: 0.6, rotate: 45 }} 
-                transition={{ duration: 0.2, ease: 'easeOut' }}
-            >
-                {isOpen ? <XMarkIcon className="w-7 h-7" /> : <Cog6ToothIcon className="w-7 h-7" />}
-            </motion.div>
-          </AnimatePresence>
-      </motion.button>
-    </div>
-  );
-}

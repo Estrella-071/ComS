@@ -1,9 +1,5 @@
 
 
-
-
-
-
 import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import type { ProgrammingExercise, View } from '../types';
@@ -20,7 +16,7 @@ type FilterType = 'all' | 'programming' | 'short_answer' | 'making_a_difference'
 
 export const ProgrammingView: React.FC<ProgrammingViewProps> = ({ setView }) => {
     const { t } = useTranslation();
-    const { subjectData, language } = useAppContext();
+    const { subjectData } = useAppContext();
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState<FilterType>('programming');
     const contentRef = useRef<HTMLDivElement>(null);
@@ -134,9 +130,10 @@ export const ProgrammingView: React.FC<ProgrammingViewProps> = ({ setView }) => 
                             <motion.div layout variants={listVariants} initial="hidden" animate="visible" className="space-y-4">
                                 <AnimatePresence>
                                 {chapterExercises.map(ex => {
-                                    const mainTitle = language === 'zh' ? ex.title_zh : ex.title_en;
-                                    const subTitle = language === 'zh' ? ex.title_en : ex.title_zh;
-                                    const description = language === 'zh' ? ex.description_zh : ex.description_en;
+                                    // Force English
+                                    const mainTitle = ex.title_en;
+                                    const subTitle = ex.title_zh;
+                                    const description = ex.description_en;
 
                                     return (
                                     <motion.div

@@ -1,18 +1,15 @@
 
-
 import React, { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Problem } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppContext } from '../contexts/AppContext';
 import { Tooltip } from './Tooltip';
-import { CheckIcon, XMarkIcon, StarIcon, StarSolidIcon } from './icons';
+import { StarIcon, StarSolidIcon } from './icons';
 import { TextWithHighlights } from './TextWithHighlights';
-import { useBilingualAnnotation } from '../hooks/useBilingualAnnotation';
+import { ProblemOptions } from './ProblemOptions';
+import { ProblemExplanation } from './ProblemExplanation';
+import { Toast } from './common/Toast';
 
 interface QuestionCardProps {
   problem: Problem;
@@ -23,14 +20,11 @@ interface QuestionCardProps {
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer, onAnswerSelected, shouldAutoShowExplanation }) => {
   const { t } = useTranslation();
-  const { flaggedItems, toggleFlaggedItem, language } = useAppContext();
-  const annotate = useBilingualAnnotation();
-  const [showManualExplanation, setShowManualExplanation] = useState(false);
+  const { flaggedItems, toggleFlaggedItem } = useAppContext();
   const [showFlagToast, setShowFlagToast] = useState(false);
 
   const isFlagged = flaggedItems.includes(problem.id);
   const hasAnswered = userAnswer !== undefined;
-  const isExplanationEffectivelyVisible = shouldAutoShowExplanation || showManualExplanation;
 
   const handleFlagToggle = () => {
     if (!isFlagged) {
@@ -40,30 +34,22 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
     toggleFlaggedItem(problem.id);
   };
 
-  // Determine text based on language
-  const questionText = language === 'zh' ? problem.text_zh : problem.text_en;
-  const tooltipText = language === 'zh' ? problem.text_en : problem.text_zh;
+  // Force English questions, Chinese tooltip
+  const questionText = problem.text_en;
+  const tooltipText = problem.text_zh;
 
   return (
     <div className="glass-pane rounded-2xl p-4 sm:p-8 h-full overflow-y-auto">
+      <AnimatePresence>
+          {showFlagToast && <Toast message={t('flagged_toast')} />}
+      </AnimatePresence>
+
       <div className="mb-4">
         <div className="flex justify-between items-center mb-3">
           <p className="text-sm font-semibold bg-[var(--accent-bg)] text-[var(--accent-text)] px-3 py-1 rounded-full inline-block">
               {`${t('chapter')} ${problem.chapter}${t('chapter_unit')} - ${t('problem_header')} ${problem.number}`}
           </p>
           <div className="relative flex items-center">
-            <AnimatePresence>
-                {showFlagToast && (
-                    <motion.div
-                        initial={{ opacity: 0, x: 10, scale: 0.9 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, x: 10, scale: 0.9 }}
-                        className="absolute top-1/2 -translate-y-1/2 right-full mr-2 bg-[var(--warning-solid-bg)] text-[var(--warning-solid-text)] text-xs font-semibold px-2 py-1 rounded-md whitespace-nowrap"
-                    >
-                        {t('flagged_toast')}
-                    </motion.div>
-                )}
-            </AnimatePresence>
             <motion.button
                 onClick={handleFlagToggle}
                 className="text-[var(--warning-text)] hover:text-[var(--warning-text-hover)] transition-colors p-2 -m-2"
@@ -84,71 +70,20 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
         </div>
       </div>
 
-      <div className="space-y-3">
-        {problem.options.map((option) => {
-          const isSelected = userAnswer === option.key;
-          const isCorrect = problem.answer === option.key;
-          const optionText = language === 'zh' ? option.text_zh : option.text_en;
-          const optionTooltip = language === 'zh' ? option.text_en : option.text_zh;
-          
-          let stateStyles = 'bg-[var(--ui-bg)] border-transparent hover:bg-[var(--ui-bg-hover)]';
-          if (hasAnswered) {
-              if (isCorrect) stateStyles = 'bg-[var(--success-bg)] border-[var(--success-border)]';
-              else if (isSelected && !isCorrect) stateStyles = 'bg-[var(--error-bg)] border-[var(--error-border)]';
-          }
+      <ProblemOptions 
+          problem={problem}
+          userAnswer={userAnswer}
+          onAnswerSelected={onAnswerSelected}
+          isRevealed={hasAnswered}
+          disabled={hasAnswered}
+      />
 
-          return (
-            <motion.button
-              key={option.key}
-              onClick={() => onAnswerSelected(option.key)}
-              disabled={hasAnswered}
-              className={`w-full flex items-center gap-4 px-4 py-3 sm:py-4 rounded-xl border-2 text-left transition-all ${stateStyles} ${!hasAnswered ? 'cursor-pointer' : 'cursor-default'}`}
-              whileHover={!hasAnswered ? { scale: 1.02 } : {}}
-              whileTap={!hasAnswered ? { scale: 0.98 } : {}}
-            >
-              <div className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm ${
-                hasAnswered && isCorrect ? 'bg-[var(--success-solid-bg)] text-[var(--success-solid-text)]' : 
-                hasAnswered && isSelected ? 'bg-[var(--error-solid-bg)] text-[var(--error-solid-text)]' :
-                'bg-[var(--text-subtle)] text-[var(--bg-color)]'
-              }`}>
-                {hasAnswered && isCorrect && <CheckIcon className="w-5 h-5"/>}
-                {hasAnswered && isSelected && !isCorrect && <XMarkIcon className="w-5 h-5"/>}
-                {!hasAnswered && option.key.toUpperCase()}
-                {hasAnswered && !isSelected && !isCorrect && option.key.toUpperCase()}
-              </div>
-              <Tooltip content={optionTooltip}>
-                <p className={`text-[var(--text-primary)] cursor-help leading-relaxed ${hasAnswered && isCorrect ? 'font-semibold' : ''}`}>
-                    <TextWithHighlights text={optionText} />
-                </p>
-              </Tooltip>
-            </motion.button>
-          );
-        })}
-      </div>
-      
-       {hasAnswered && !shouldAutoShowExplanation && (
-        <div className="mt-4 pt-4 border-t border-[var(--ui-border)] flex justify-center">
-            <button
-                onClick={() => setShowManualExplanation(!showManualExplanation)}
-                className="bg-[var(--ui-bg)] text-[var(--text-secondary)] font-semibold px-5 py-2 rounded-lg hover:bg-[var(--ui-bg-hover)] transition-colors"
-            >
-                {showManualExplanation ? t('hide_explanation') : t('show_explanation')}
-            </button>
-        </div>
-       )}
-
-      <AnimatePresence>
-        {(hasAnswered && isExplanationEffectivelyVisible) && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                <div className="mt-4 pt-4 border-t border-[var(--ui-border)]">
-                    <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{t('explanation')}</h3>
-                    <div className="prose prose-slate dark:prose-invert max-w-none text-left prose-p:text-[var(--text-secondary)] prose-li:text-[var(--text-secondary)]">
-                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{annotate(problem.explanation_zh)}</ReactMarkdown>
-                    </div>
-                </div>
-            </motion.div>
-        )}
-      </AnimatePresence>
+      {hasAnswered && (
+          <ProblemExplanation 
+            explanation={problem.explanation_zh}
+            isVisible={shouldAutoShowExplanation}
+          />
+      )}
     </div>
   );
 };

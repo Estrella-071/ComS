@@ -2,100 +2,8 @@
 import React, { createContext, useState, useEffect, useContext, useCallback, useMemo } from 'react';
 import { LOCAL_STORAGE_KEYS } from '../types';
 import { subjects, allData, type SubjectData } from '../data/subjects';
-import type { Subject, GlossaryTerm } from '../types';
-
-// --- SHARED UTILS (to avoid code duplication) ---
-
-export interface GlossaryMaps {
-  glossaryMap: Record<string, GlossaryTerm>;
-  glossaryRegex: RegExp;
-  zhToEnMap: Record<string, string>;
-  glossaryRegexForZh: RegExp;
-}
-
-export const computeGlossaryMaps = (glossaryData: GlossaryTerm[]): GlossaryMaps => {
-    // Filter glossary for annotation based on importance. Terms with importance 1 are too common.
-    const annotatableGlossary = glossaryData.filter(term => term.importance > 1);
-
-    // Full map for tooltips in English text
-    const glossaryMap = glossaryData.reduce<Record<string, GlossaryTerm>>((acc, term) => {
-        acc[term.term.toLowerCase()] = term;
-        return acc;
-    }, {});
-
-    // Regex for English tooltips
-    // 1. Sort by length descending to ensure "C++" matches before "C".
-    // 2. Escape special characters.
-    // 3. Apply word boundaries smartly: only if the term starts/ends with a word char.
-    const allGlossaryTerms = glossaryData
-        .slice() // Create a copy to sort
-        .sort((a, b) => b.term.length - a.term.length)
-        .map(g => {
-            const escaped = g.term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            // If term starts with a word char, require a word boundary before it.
-            const startBoundary = /^\w/.test(g.term) ? '\\b' : '';
-            // If term ends with a word char, require a word boundary after it.
-            const endBoundary = /\w$/.test(g.term) ? '\\b' : '';
-            return `${startBoundary}${escaped}${endBoundary}`;
-        });
-    
-    const glossaryRegex = new RegExp(`(${allGlossaryTerms.join('|')})`, 'gi');
-    
-    // Map and Regex for Chinese annotations (uses only annotatable terms)
-    const zhToEnMap = annotatableGlossary.reduce<Record<string, string>>((acc, term) => {
-        if (term.chinese) {
-            const aliases = term.chinese.split(',').map(s => s.trim());
-            aliases.forEach(alias => {
-                acc[alias] = term.term;
-            });
-        }
-        return acc;
-    }, {});
-
-    // Sort Chinese terms by length descending as well
-    const zhTerms = Object.keys(zhToEnMap).sort((a, b) => b.length - a.length);
-    // Use simple alternation for Chinese as word boundaries are less relevant/reliable in simple regex
-    const glossaryRegexForZh = zhTerms.length > 0 ? new RegExp(`(${zhTerms.join('|')})`, 'g') : new RegExp('a^');
-
-    return { glossaryMap, glossaryRegex, zhToEnMap, glossaryRegexForZh };
-};
-
-export const addBilingualAnnotations = (markdown: string, maps: GlossaryMaps | null) => {
-    if (!markdown || !maps) return markdown;
-    const { zhToEnMap, glossaryRegexForZh } = maps;
-    
-    // Split by code blocks and preformatted text to avoid annotating code
-    const parts = markdown.split(/(```[\s\S]*?```|`[^`]*?`|<pre>[\s\S]*?<\/pre>)/);
-
-    const processedParts = parts.map((part, index) => {
-        // If it's a code block (odd index), return as is
-        if (index % 2 === 1) return part;
-
-        // Process paragraph by paragraph within this non-code part
-        const paragraphs = part.split(/(\n\s*\n)/); 
-        const processedParagraphs = paragraphs.map(paragraphOrSeparator => {
-            // Don't process empty lines or separators, just content blocks
-            if (paragraphOrSeparator.trim() === '') {
-                return paragraphOrSeparator;
-            }
-
-            const annotatedInBlock = new Set<string>();
-            // Use a function with the replace method to control annotation frequency
-            return paragraphOrSeparator.replace(glossaryRegexForZh, (match) => {
-                const englishTerm = zhToEnMap[match];
-                if (englishTerm && !annotatedInBlock.has(englishTerm)) {
-                    annotatedInBlock.add(englishTerm);
-                    return `${match} (${englishTerm})`;
-                }
-                return match; // Return original match if already annotated in this block
-            });
-        });
-        return processedParagraphs.join('');
-    });
-
-    return processedParts.join('');
-};
-// --- END SHARED UTILS ---
+import type { Subject } from '../types';
+import { computeGlossaryMaps, type GlossaryMaps } from '../utils/textUtils';
 
 type Theme = 'light' | 'dark';
 type Language = 'en' | 'zh';
@@ -151,15 +59,8 @@ const getInitialTheme = (): Theme => {
   return 'light';
 };
 
-const getInitialLanguage = (): Language => {
-    if (typeof window !== 'undefined') {
-        const storedLang = localStorage.getItem('language');
-        if (storedLang === 'en' || storedLang === 'zh') {
-            return storedLang;
-        }
-    }
-    return 'zh'; // Default to Chinese
-};
+// Force Chinese as initial language
+const getInitialLanguage = (): Language => 'zh';
 
 const getSubjectSpecificValue = <T,>(subjectId: string, key: string, defaultValue: T): T => {
     if (typeof window === 'undefined') return defaultValue;
@@ -184,7 +85,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [autoShowExplanation, setAutoShowExplanation] = useState<boolean>(true);
   const [autoAdvance, setAutoAdvance] = useState<boolean>(false);
   const [readingSettings, setReadingSettings] = useState<ReadingSettings>({
-    fontSize: 18, lineHeight: 1.7, pageWidth: 'max-w-6xl', readTheme: 'default', initialMode: false, displayMode: 'bilingual', preferredMode: 'reading'
+    fontSize: 18, lineHeight: 1.7, pageWidth: 'max-w-6xl', readTheme: 'default', initialMode: false, 
+    displayMode: language === 'zh' ? 'zh' : 'en', 
+    preferredMode: 'reading'
   });
   
   const [subjectId, setSubjectId] = useState<string | null>(null);
@@ -204,12 +107,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setAutoShowExplanation(getSubjectSpecificValue(subject.id, LOCAL_STORAGE_KEYS.AUTO_SHOW_EXPLANATION, true));
       setAutoAdvance(getSubjectSpecificValue(subject.id, LOCAL_STORAGE_KEYS.AUTO_ADVANCE, false));
       setReadingSettings(getSubjectSpecificValue(subject.id, LOCAL_STORAGE_KEYS.READING_SETTINGS, {
-        fontSize: 18, lineHeight: 1.7, pageWidth: 'max-w-6xl', readTheme: 'default', initialMode: false, displayMode: 'bilingual', preferredMode: 'reading'
+        fontSize: 18, lineHeight: 1.7, pageWidth: 'max-w-6xl', readTheme: 'default', initialMode: false, 
+        displayMode: language === 'zh' ? 'zh' : 'en', 
+        preferredMode: 'reading'
       }));
     } else {
       setFlaggedItems([]);
     }
-  }, [subject]);
+  }, [subject, language]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);

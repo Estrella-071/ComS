@@ -1,5 +1,4 @@
 
-
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import type { View, QuizResult } from '../types';
@@ -30,7 +29,7 @@ const RecentQuizCard: React.FC<{ result: QuizResult, setView: (view: View) => vo
                     <h3 className="font-bold text-[var(--text-primary)] line-clamp-1 group-hover:underline decoration-1 underline-offset-4">{result.quizTitle}</h3>
                     <p className="text-xs text-[var(--text-subtle)] mt-1 font-mono">{new Date(result.date).toLocaleDateString()}</p>
                 </div>
-                <div className={`flex items-center justify-center px-2.5 py-1 rounded border text-sm font-bold font-mono ${scoreInt >= 60 ? 'border-[var(--text-primary)] text-[var(--text-primary)]' : 'border-[var(--text-subtle)] text-[var(--text-subtle)] opacity-70'}`}>
+                <div className={`flex items-center justify-center px-2.5 py-1 rounded border text-sm font-bold font-mono ${scoreInt >= 60 ? 'border-[var(--success-text)] text-[var(--success-text)] bg-[var(--success-bg)]' : 'border-[var(--text-subtle)] text-[var(--text-subtle)] opacity-70'}`}>
                     {percentage}%
                 </div>
             </div>

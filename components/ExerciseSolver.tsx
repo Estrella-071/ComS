@@ -1,16 +1,14 @@
 
-
-
-
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppContext } from '../contexts/AppContext';
 import type { View } from '../types';
-import { ChevronLeftIcon, ChevronRightIcon, CodeBracketIcon, PlayIcon, ArrowPathIcon, PaperAirplaneIcon, CheckIcon } from './icons';
+import { ChevronLeftIcon, ChevronRightIcon, CodeBracketIcon, PlayIcon, ArrowPathIcon, PaperAirplaneIcon } from './icons';
 import { Tooltip } from './Tooltip';
+import { Toast } from './common/Toast';
 
 interface ExerciseSolverProps {
   id: string;
@@ -31,28 +29,19 @@ const variants = {
   }),
 };
 
-const Toast: React.FC<{ message: string }> = ({ message }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      className="fixed bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 z-[var(--z-tooltip)] glass-pane px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2"
-    >
-      <CheckIcon className="w-5 h-5 text-[var(--success-text)]" />
-      <span>{message}</span>
-    </motion.div>
-);
-
 export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isSidebarOpen }) => {
   const [direction, setDirection] = useState(0);
   const { t } = useTranslation();
-  const { subjectData, language } = useAppContext();
+  const { subjectData } = useAppContext();
 
   const [code, setCode] = useState('');
   const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [showSubmitToast, setShowSubmitToast] = useState(false);
   const [showResetToast, setShowResetToast] = useState(false);
+  
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const lineNumbersRef = useRef<HTMLDivElement>(null);
 
   const exercises = useMemo(() => subjectData?.exercises || [], [subjectData]);
   const exerciseIndex = useMemo(() => exercises.findIndex(p => p.id === id), [id, exercises]);
@@ -94,6 +83,32 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
     setShowSubmitToast(true);
     setTimeout(() => setShowSubmitToast(false), 2000);
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        const target = e.currentTarget;
+        const start = target.selectionStart;
+        const end = target.selectionEnd;
+        
+        // Insert 2 spaces
+        const spaces = "  ";
+        const newCode = code.substring(0, start) + spaces + code.substring(end);
+        
+        setCode(newCode);
+        
+        // Restore cursor position (async to ensure render)
+        requestAnimationFrame(() => {
+            target.selectionStart = target.selectionEnd = start + 2;
+        });
+    }
+  };
+  
+  const handleScroll = () => {
+      if (textareaRef.current && lineNumbersRef.current) {
+          lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
+      }
+  };
   
   const getDifficultyClass = (difficulty: 'easy' | 'medium' | 'hard') => {
     switch (difficulty) {
@@ -107,17 +122,19 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
     return <div className="text-center py-10">Exercise not found.</div>;
   }
 
-  const mainTitle = language === 'zh' ? exercise.title_zh : exercise.title_en;
-  const subTitle = language === 'zh' ? exercise.title_en : exercise.title_zh;
-  const description = language === 'zh' ? exercise.description_zh : exercise.description_en;
-
+  // Force English
+  const mainTitle = exercise.title_en;
+  const subTitle = exercise.title_zh;
+  const description = exercise.description_en;
+  
+  const lineCount = code.split('\n').length;
 
   return (
     <div className="h-full flex flex-col">
        <div className="flex-shrink-0 px-4 sm:px-8 pt-4">
             <div className="w-full max-w-4xl mx-auto">
                 <p className="text-sm font-semibold text-center text-[var(--text-secondary)] mb-2">{t('exercise_header')} {exercise.number} ({exerciseIndex + 1} / {exercises.length})</p>
-                <div className="w-full bg-[var(--ui-bg)] rounded-full h-1.5">
+                <div className="w-full bg-[var(--ui-bg)] rounded-full h-1.5 overflow-hidden">
                     <motion.div
                         className="bg-[var(--accent-solid)] h-1.5 rounded-full"
                         animate={{ width: `${((exerciseIndex + 1) / exercises.length) * 100}%` }}
@@ -195,11 +212,28 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
                             </button>
                           </div>
                         </div>
-                        <div className="bg-[#282c34] rounded-lg overflow-hidden relative">
+                        
+                        <div className="bg-[#1e1e1e] rounded-lg overflow-hidden relative border border-gray-700 shadow-inner flex">
+                          {/* Line Numbers */}
+                          <div 
+                            ref={lineNumbersRef}
+                            className="flex-none w-10 bg-[#1e1e1e] text-gray-600 text-right pr-3 pt-4 font-mono text-sm select-none leading-relaxed tracking-wide overflow-hidden border-r border-gray-800"
+                            style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                          >
+                            {Array.from({ length: Math.max(lineCount, 10) }).map((_, i) => (
+                                <div key={i} className="h-[24px] leading-[24px]">{i + 1}</div>
+                            ))}
+                          </div>
+                          
+                          {/* Code Area */}
                           <textarea 
+                            ref={textareaRef}
                             value={code}
                             onChange={(e) => setCode(e.target.value)}
-                            className="w-full h-80 bg-transparent text-gray-300 font-mono p-4 resize-y outline-none leading-relaxed tracking-wide"
+                            onKeyDown={handleKeyDown}
+                            onScroll={handleScroll}
+                            className="flex-1 h-80 bg-transparent text-gray-200 font-mono p-4 pl-3 resize-y outline-none leading-[24px] tracking-wide whitespace-pre"
+                            style={{ fontFamily: 'JetBrains Mono, monospace' }}
                             spellCheck="false"
                           />
                         </div>
@@ -209,8 +243,8 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
                         {(isRunning || output) && (
                           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="glass-pane rounded-2xl p-4 sm:p-6 overflow-hidden">
                             <h2 className="text-lg font-bold text-[var(--text-primary)] mb-4">{t('output')}</h2>
-                            <pre className="bg-[#282c34] rounded-lg p-4 text-gray-300 font-mono text-sm whitespace-pre-wrap min-h-[5rem]">
-                              {isRunning ? <span className="animate-pulse">{t('running_code')}</span> : output}
+                            <pre className="bg-[#1e1e1e] rounded-lg p-4 text-gray-300 font-mono text-sm whitespace-pre-wrap min-h-[5rem] border border-gray-700">
+                              {isRunning ? <span className="animate-pulse text-yellow-400">{t('running_code')}</span> : output}
                             </pre>
                           </motion.div>
                         )}
@@ -219,7 +253,7 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
                       {exercise.sampleOutput && (
                         <div className="glass-pane rounded-2xl p-4 sm:p-6">
                           <h2 className="text-lg font-bold text-[var(--text-primary)] mb-4">{t('sample_output')}</h2>
-                          <pre className="bg-[#282c34] rounded-lg p-4 text-gray-300 font-mono text-sm whitespace-pre-wrap">{exercise.sampleOutput}</pre>
+                          <pre className="bg-[#1e1e1e] rounded-lg p-4 text-gray-300 font-mono text-sm whitespace-pre-wrap border border-gray-700">{exercise.sampleOutput}</pre>
                         </div>
                       )}
 

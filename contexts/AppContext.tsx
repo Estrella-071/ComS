@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, useContext, useCallback, useMemo } from 'react';
 import { LOCAL_STORAGE_KEYS } from '../types';
 import { subjects, allData, type SubjectData } from '../data/subjects';
@@ -57,9 +56,13 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const getInitialTheme = (): Theme => {
   if (typeof window !== 'undefined') {
-    const storedTheme = localStorage.getItem(LOCAL_STORAGE_KEYS.THEME);
-    if (storedTheme === 'light' || storedTheme === 'dark') {
-      return storedTheme;
+    try {
+      const storedTheme = localStorage.getItem(LOCAL_STORAGE_KEYS.THEME);
+      if (storedTheme === 'light' || storedTheme === 'dark') {
+        return storedTheme;
+      }
+    } catch (e) {
+      console.warn('LocalStorage access denied for theme');
     }
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       return 'dark';
@@ -84,7 +87,11 @@ const getSubjectSpecificValue = <T,>(subjectId: string, key: string, defaultValu
 
 const setSubjectSpecificValue = <T,>(subjectId: string, key: string, value: T) => {
     if (typeof window === 'undefined') return;
-    localStorage.setItem(`${key}_${subjectId}`, JSON.stringify(value));
+    try {
+      localStorage.setItem(`${key}_${subjectId}`, JSON.stringify(value));
+    } catch (e) {
+      console.warn(`Failed to save ${key} to localStorage`, e);
+    }
 }
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -137,12 +144,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem(LOCAL_STORAGE_KEYS.THEME, newTheme);
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEYS.THEME, newTheme);
+    } catch (e) {
+      console.warn('Failed to save theme');
+    }
   };
   
   const setLanguage = (newLanguage: Language) => {
     setLanguageState(newLanguage);
-    localStorage.setItem('language', newLanguage);
+    try {
+      localStorage.setItem('language', newLanguage);
+    } catch (e) {
+      console.warn('Failed to save language');
+    }
   };
   
   const createSubjectSpecificSetter = <T,>(setter: React.Dispatch<React.SetStateAction<T>>, key: string) => {

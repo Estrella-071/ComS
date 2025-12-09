@@ -31,7 +31,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
     answerQuestion, goToProblem, finishQuiz, restartQuiz 
   } = useQuiz();
 
-  const animatedScore = useSpring(0, { stiffness: 100, damping: 30 });
+  const animatedScore = useSpring(0, { stiffness: 150, damping: 30 });
   const displayScore = useTransform(animatedScore, latest => Math.round(latest));
 
   const problems = quizState?.problems || [];
@@ -111,9 +111,10 @@ export const QuizView: React.FC<QuizViewProps> = ({
   
   useEffect(() => {
     if (justAnswered && autoAdvance) {
+      // Reduced delay to 800ms
       autoAdvanceTimer.current = window.setTimeout(() => {
         paginate(1);
-      }, 1500);
+      }, 800);
     }
     return () => {
         if (autoAdvanceTimer.current) {
@@ -125,11 +126,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
 
   const variants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? 50 : -50, opacity: 0, scale: 0.95
+      x: direction > 0 ? 50 : -50, opacity: 0, scale: 0.98
     }),
     center: { zIndex: 1, x: 0, opacity: 1, scale: 1 },
     exit: (direction: number) => ({
-      zIndex: 0, x: direction < 0 ? 50 : -50, opacity: 0, scale: 0.95
+      zIndex: 0, x: direction < 0 ? 50 : -50, opacity: 0, scale: 0.98
     }),
   };
 
@@ -139,6 +140,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
              <motion.div 
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 className="glass-pane p-8 rounded-2xl w-full max-w-md"
             >
                 <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4">{title}</h2>
@@ -158,12 +160,12 @@ export const QuizView: React.FC<QuizViewProps> = ({
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
-        transition: { staggerChildren: 0.15, delayChildren: 0.2 }
+        transition: { staggerChildren: 0.08, delayChildren: 0.1 }
     }
   };
   const resultItemVariants = {
-      hidden: { y: 20, opacity: 0 },
-      visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } }
+      hidden: { y: 15, opacity: 0 },
+      visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 400, damping: 30 } }
   } as const;
 
   if (isFinished) {
@@ -245,7 +247,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             <motion.div
                 className="h-[2px] bg-[var(--accent-solid)] origin-left"
                 animate={{ scaleX: (currentIndex + 1) / problems.length }}
-                transition={{ type: 'spring', stiffness: 100, damping: 30 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 30 }}
             />
         </div>
          {/* Mobile Progress Bar */}
@@ -253,7 +255,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
              <motion.div
                 className="h-full bg-[var(--accent-solid)] origin-left"
                 animate={{ width: `${((currentIndex + 1) / problems.length) * 100}%` }}
-                transition={{ type: 'spring', stiffness: 100, damping: 30 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 30 }}
             />
          </div>
       </div>
@@ -267,7 +269,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 initial="enter"
                 animate="center"
                 exit="exit"
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                transition={{ type: "spring", stiffness: 500, damping: 50 }}
                 className="w-full h-full max-h-full"
                 drag={!isSidebarOpen ? 'x' : false}
                 dragConstraints={{ left: 0, right: 0 }}
@@ -311,7 +313,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
           className="pointer-events-auto flex items-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] rounded-full shadow-xl shadow-[var(--accent-solid)]/20 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--accent-solid-hover)] transition-all group hover:scale-105 active:scale-95"
           whileTap={{ scale: 0.95 }}
           animate={justAnswered ? { scale: [1, 1.03, 1] } : {}}
-          transition={justAnswered ? { duration: 0.4, ease: "easeInOut" } : {}}
+          transition={justAnswered ? { duration: 0.2, ease: "easeInOut" } : {}}
         >
             <span className="hidden sm:inline font-bold text-sm tracking-wide">{currentIndex === problems.length - 1 ? t('results') : t('next_question')}</span>
             <span className="sm:hidden font-bold">{currentIndex === problems.length - 1 ? t('results') : t('next_question')}</span>

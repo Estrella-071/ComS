@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SubjectSelection } from './components/SubjectSelection';
@@ -19,7 +20,7 @@ const App: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.2 }}
               className="w-full h-full"
             >
               <SubjectSelection />
@@ -30,6 +31,7 @@ const App: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }}
               className="w-full h-full flex items-center justify-center"
             >
               <div className="text-lg font-semibold text-[var(--text-secondary)]">Loading...</div>
@@ -40,7 +42,7 @@ const App: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.2 }}
               className="h-full"
             >
               <QuizProvider>

@@ -86,14 +86,14 @@ export const ProgrammingView: React.FC<ProgrammingViewProps> = ({ setView }) => 
     if (!subjectData) return null;
 
     const listVariants = {
-        visible: { transition: { staggerChildren: 0.05 } },
+        visible: { transition: { staggerChildren: 0.03 } },
         hidden: {},
     };
     
     const itemVariants = {
-      visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 25 } },
+      visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 400, damping: 30 } },
       hidden: { opacity: 0, y: 20 },
-      exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
+      exit: { opacity: 0, scale: 0.95, transition: { duration: 0.15 } },
     };
 
     return (
@@ -144,7 +144,7 @@ export const ProgrammingView: React.FC<ProgrammingViewProps> = ({ setView }) => 
                                             layout
                                             variants={itemVariants}
                                             exit={itemVariants.exit}
-                                            whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                                            whileHover={{ y: -2, transition: { duration: 0.15 } }}
                                             whileTap={{ scale: 0.99, y: 0 }}
                                         >
                                             <button

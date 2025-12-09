@@ -7,7 +7,7 @@ import { useQuiz } from '../contexts/QuizContext';
 import { ListBulletIcon, CheckBadgeIcon, CheckIcon, XMarkIcon, StarSolidIcon } from './icons';
 import type { View } from '../types';
 
-const spring = { type: 'spring' as const, stiffness: 350, damping: 30 };
+const spring = { type: 'spring' as const, stiffness: 500, damping: 40 };
 
 interface QuizNavigatorPopoverProps {
   onNavigate: (view: View) => void;

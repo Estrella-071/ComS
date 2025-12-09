@@ -31,9 +31,9 @@ export const ProblemOptions: React.FC<ProblemOptionsProps> = ({
         const optionText = option.text_en;
         const optionTooltip = option.text_zh;
 
-        let containerClasses = "relative group w-full flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl md:rounded-2xl transition-all duration-300 border ";
-        let indicatorClasses = "flex-shrink-0 w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-mono text-xs font-bold transition-all duration-300 border ";
-        let textClasses = "font-sans text-sm md:text-base transition-colors duration-300 text-left flex-1 ";
+        let containerClasses = "relative group w-full flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl md:rounded-2xl transition-all duration-200 border ";
+        let indicatorClasses = "flex-shrink-0 w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-mono text-xs font-bold transition-all duration-200 border ";
+        let textClasses = "font-sans text-sm md:text-base transition-colors duration-200 text-left flex-1 ";
 
         if (isRevealed) {
            if (isCorrect) {
@@ -78,7 +78,7 @@ export const ProblemOptions: React.FC<ProblemOptionsProps> = ({
             disabled={disabled}
             className={containerClasses}
             initial={false}
-            whileHover={!disabled && !isRevealed ? { x: 5 } : {}}
+            whileHover={!disabled && !isRevealed ? { x: 3 } : {}}
             whileTap={!disabled && !isRevealed ? { scale: 0.98 } : {}}
           >
             <div className={indicatorClasses}>

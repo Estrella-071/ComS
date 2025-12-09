@@ -47,8 +47,8 @@ export function SegmentedControl<T extends string>({
       const targetX = safePropIndex * itemWidth;
       animate(x, targetX, {
         type: "spring",
-        stiffness: 350,
-        damping: 30
+        stiffness: 600,
+        damping: 35
       });
     }
   }, [safePropIndex, itemWidth, containerWidth]);
@@ -85,18 +85,18 @@ export function SegmentedControl<T extends string>({
 
   const handlePointerDown = (e: React.PointerEvent) => {
       e.stopPropagation();
-      animate(scale, 1.05, { duration: 0.2 });
+      animate(scale, 1.05, { duration: 0.15 });
   };
 
   const handlePointerUp = () => {
       if (!isDragging.current) {
-          animate(scale, 1, { duration: 0.2 });
+          animate(scale, 1, { duration: 0.15 });
       }
   };
 
   const handlePanStart = () => {
       isDragging.current = true;
-      animate(scale, 1.05, { duration: 0.2 });
+      animate(scale, 1.05, { duration: 0.15 });
   };
 
   const handlePan = (_: any, info: { delta: { x: number } }) => {
@@ -122,7 +122,7 @@ export function SegmentedControl<T extends string>({
 
   const handlePanEnd = () => {
     isDragging.current = false;
-    animate(scale, 1, { duration: 0.2 });
+    animate(scale, 1, { duration: 0.15 });
 
     const currentX = x.get();
     let finalIndex = 0;
@@ -142,8 +142,8 @@ export function SegmentedControl<T extends string>({
              const targetX = finalIndex * itemWidth;
              animate(x, targetX, {
                 type: "spring",
-                stiffness: 350,
-                damping: 30
+                stiffness: 600,
+                damping: 35
             });
         }
     }

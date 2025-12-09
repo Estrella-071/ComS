@@ -70,9 +70,9 @@ const PrismCard: React.FC<PrismCardProps> = ({ subject, onClick, index, onHoverS
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: index * 0.2, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
       onMouseEnter={() => { setIsHovered(true); onHoverStart(); }}
       onMouseLeave={() => { setIsHovered(false); onHoverEnd(); }}
       onClick={onClick}
@@ -81,7 +81,7 @@ const PrismCard: React.FC<PrismCardProps> = ({ subject, onClick, index, onHoverS
       <div 
         className={`
           relative w-full h-full flex flex-col justify-between p-6 md:p-8 
-          border transition-all duration-500 overflow-hidden rounded-2xl md:rounded-none
+          border transition-all duration-300 overflow-hidden rounded-2xl md:rounded-none
           ${isHovered ? 'border-[var(--text-primary)] bg-[var(--text-primary)]/10' : 'border-[var(--ui-border)] bg-[var(--ui-bg)]'}
         `}
         style={{
@@ -91,7 +91,7 @@ const PrismCard: React.FC<PrismCardProps> = ({ subject, onClick, index, onHoverS
             : '0 0 0 rgba(0,0,0,0)',
         }}
       >
-        <div className={`absolute inset-0 transition-opacity duration-300 pointer-events-none ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`absolute inset-0 transition-opacity duration-200 pointer-events-none ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
              <div className="absolute inset-0 border border-red-500/50 translate-x-[2px] translate-y-[2px]" />
              <div className="absolute inset-0 border border-blue-500/50 -translate-x-[2px] -translate-y-[2px]" />
         </div>
@@ -101,11 +101,11 @@ const PrismCard: React.FC<PrismCardProps> = ({ subject, onClick, index, onHoverS
              <span className="font-mono text-[10px] text-[var(--text-secondary)] opacity-60 uppercase tracking-[0.2em] border border-[var(--ui-border)] px-2 py-1 rounded-full">
                 {String(index + 1).padStart(2, '0')} / REF
              </span>
-             <Icon className={`w-6 h-6 transition-colors duration-300 ${isHovered ? 'text-[var(--text-primary)]' : 'text-[var(--text-subtle)]'}`} />
+             <Icon className={`w-6 h-6 transition-colors duration-200 ${isHovered ? 'text-[var(--text-primary)]' : 'text-[var(--text-subtle)]'}`} />
           </div>
           
           <h2 className={`
-            font-serif text-3xl md:text-5xl font-light leading-tight mb-2 transition-all duration-300
+            font-serif text-3xl md:text-5xl font-light leading-tight mb-2 transition-all duration-200
             ${isHovered ? 'text-[var(--text-primary)] scale-105 origin-left' : 'text-[var(--text-primary)] opacity-80'}
           `}>
              {subject.name[language]}
@@ -116,13 +116,13 @@ const PrismCard: React.FC<PrismCardProps> = ({ subject, onClick, index, onHoverS
         </div>
 
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10 dark:opacity-20">
-            <div className={`w-32 h-32 border border-[var(--text-primary)] rounded-full transition-transform duration-1000 ${isHovered ? 'scale-150 rotate-45' : 'scale-100 rotate-0'}`} />
-            <div className={`absolute w-48 h-px bg-[var(--text-primary)] transition-transform duration-700 ${isHovered ? 'rotate-90' : 'rotate-45'}`} />
-            <div className={`absolute w-48 h-px bg-[var(--text-primary)] transition-transform duration-700 ${isHovered ? 'rotate-0' : '-rotate-45'}`} />
+            <div className={`w-32 h-32 border border-[var(--text-primary)] rounded-full transition-transform duration-700 ${isHovered ? 'scale-150 rotate-45' : 'scale-100 rotate-0'}`} />
+            <div className={`absolute w-48 h-px bg-[var(--text-primary)] transition-transform duration-500 ${isHovered ? 'rotate-90' : 'rotate-45'}`} />
+            <div className={`absolute w-48 h-px bg-[var(--text-primary)] transition-transform duration-500 ${isHovered ? 'rotate-0' : '-rotate-45'}`} />
         </div>
 
         <div className="relative z-10 space-y-6 mt-8 md:mt-0">
-           <p className={`font-mono text-sm leading-relaxed transition-colors duration-300 line-clamp-3 ${isHovered ? 'text-[var(--text-primary)] opacity-90' : 'text-[var(--text-secondary)] opacity-50'}`}>
+           <p className={`font-mono text-sm leading-relaxed transition-colors duration-200 line-clamp-3 ${isHovered ? 'text-[var(--text-primary)] opacity-90' : 'text-[var(--text-secondary)] opacity-50'}`}>
               {subject.description[language]}
            </p>
            
@@ -131,7 +131,7 @@ const PrismCard: React.FC<PrismCardProps> = ({ subject, onClick, index, onHoverS
                  Initialize
               </span>
               <div className={`
-                w-8 h-8 flex items-center justify-center rounded-full border transition-all duration-300
+                w-8 h-8 flex items-center justify-center rounded-full border transition-all duration-200
                 ${isHovered ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg-color)] rotate-0' : 'border-[var(--ui-border)] text-[var(--text-subtle)] -rotate-45'}
               `}>
                  <ChevronRightIcon className="w-4 h-4" />
@@ -149,8 +149,8 @@ const BackgroundText: React.FC<{ control: any }> = ({ control }) => {
     // Parallax logic
     const mouseX = useMotionValue(0.5);
     const mouseY = useMotionValue(0.5);
-    const smoothX = useSpring(mouseX, { damping: 50, stiffness: 400 });
-    const smoothY = useSpring(mouseY, { damping: 50, stiffness: 400 });
+    const smoothX = useSpring(mouseX, { damping: 40, stiffness: 300 });
+    const smoothY = useSpring(mouseY, { damping: 40, stiffness: 300 });
     
     // Weakened parallax effect
     const textX = useTransform(smoothX, [0, 1], [-5, 5]);
@@ -181,7 +181,7 @@ const BackgroundText: React.FC<{ control: any }> = ({ control }) => {
             filter: ["blur(0px)", "blur(1px)", "blur(0px)", "blur(0.5px)", "blur(0px)"],
             scale: 1,
             transition: { 
-                duration: 0.3, 
+                duration: 0.2, 
                 times: [0, 0.2, 0.4, 0.6, 1],
                 ease: "linear"
             }
@@ -190,7 +190,7 @@ const BackgroundText: React.FC<{ control: any }> = ({ control }) => {
             opacity: 0.1,
             filter: "blur(0px) brightness(0.8)",
             scale: 1,
-            transition: { duration: 0.3 }
+            transition: { duration: 0.2 }
         }
     };
 
@@ -236,8 +236,8 @@ export const SubjectSelection: React.FC = () => {
     };
 
     const handleCardHoverEnd = () => {
-        const delay = 0.5;
-        const duration = 0.5;
+        const delay = 0.3;
+        const duration = 0.3;
 
         textControls.start({
             opacity: 1,

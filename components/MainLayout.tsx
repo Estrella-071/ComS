@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sidebar } from './Sidebar';
@@ -146,18 +145,33 @@ export const MainLayout: React.FC = () => {
   const pageVariants = {
     enter: (direction: number) => ({
       opacity: 0,
-      x: direction > 0 ? 15 : (direction < 0 ? -15 : 0),
+      x: direction > 0 ? 20 : (direction < 0 ? -20 : 0),
       y: direction === 0 ? 10 : 0,
+      transition: { 
+        type: 'spring' as const, 
+        stiffness: 400, 
+        damping: 35,
+        mass: 0.8
+      }
     }),
     center: {
       opacity: 1,
       x: 0,
       y: 0,
+      transition: { 
+        type: 'spring' as const, 
+        stiffness: 400, 
+        damping: 35,
+        mass: 0.8
+      }
     },
     exit: (direction: number) => ({
       opacity: 0,
-      x: direction > 0 ? -15 : (direction < 0 ? 15 : 0),
+      x: direction > 0 ? -20 : (direction < 0 ? 20 : 0),
       y: direction === 0 ? -10 : 0,
+      // Critical change: Use a very fast duration transition for exit instead of spring.
+      // This allows the old component to unmount quickly so the new one can mount.
+      transition: { duration: 0.15, ease: 'easeIn' as const }
     }),
   };
 
@@ -181,7 +195,7 @@ export const MainLayout: React.FC = () => {
                     initial={{ opacity: 0, scale: 0.6, rotate: -45 }}
                     animate={{ opacity: 1, scale: 1, rotate: 0 }}
                     exit={{ opacity: 0, scale: 0.6, rotate: 45 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    transition={{ duration: 0.15, ease: 'easeOut' }}
                   >
                     {isSidebarOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
                   </motion.div>
@@ -195,9 +209,9 @@ export const MainLayout: React.FC = () => {
                       key="back"
                       onClick={handleBack}
                       className="h-12 px-4 bg-[var(--accent-solid)] rounded-full text-[var(--accent-solid-text)] flex items-center justify-center gap-2 shadow-lg hover:bg-[var(--accent-solid-hover)] transition-colors"
-                      initial={{ scale: 0.8, opacity: 0, x: -20 }}
+                      initial={{ scale: 0.8, opacity: 0, x: -15 }}
                       animate={{ scale: 1, opacity: 1, x: 0 }}
-                      exit={{ scale: 0.8, opacity: 0, x: -20 }}
+                      exit={{ scale: 0.8, opacity: 0, x: -15 }}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       aria-label={t('go_back')}
@@ -212,9 +226,9 @@ export const MainLayout: React.FC = () => {
                     key="home"
                     onClick={() => setSubject(null)}
                     className="h-12 px-4 bg-[var(--accent-solid)] rounded-full text-[var(--accent-solid-text)] flex items-center justify-center gap-2 shadow-lg hover:bg-[var(--accent-solid-hover)] transition-colors"
-                    initial={{ scale: 0.8, opacity: 0, x: -20 }}
+                    initial={{ scale: 0.8, opacity: 0, x: -15 }}
                     animate={{ scale: 1, opacity: 1, x: 0 }}
-                    exit={{ scale: 0.8, opacity: 0, x: -20 }}
+                    exit={{ scale: 0.8, opacity: 0, x: -15 }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     aria-label={t('change_subject')}
@@ -296,7 +310,6 @@ export const MainLayout: React.FC = () => {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ type: 'spring' as const, stiffness: 300, damping: 30 }}
               className="h-full"
             >
               {renderView()}

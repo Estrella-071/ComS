@@ -82,6 +82,7 @@ const ImageModal: React.FC<{ src: string; alt?: string; onClose: () => void }> =
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/95 flex items-center justify-center p-4 cursor-zoom-out backdrop-blur-sm"
             onClick={onClose}
         >
@@ -91,7 +92,7 @@ const ImageModal: React.FC<{ src: string; alt?: string; onClose: () => void }> =
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                transition={{ type: "spring", damping: 30, stiffness: 400 }}
                 className="max-w-full max-h-[90vh] rounded-lg shadow-2xl cursor-default object-contain"
                 onClick={(e) => e.stopPropagation()}
             />
@@ -203,7 +204,7 @@ export const TextbookView: React.FC<TextbookViewProps> = ({ chapterId, setView, 
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                transition={{ duration: 0.3 }}
+                                transition={{ duration: 0.2 }}
                             >
                                 {initialMode ? (
                                     <div className="prose-raw font-mono whitespace-pre-wrap text-sm leading-relaxed">

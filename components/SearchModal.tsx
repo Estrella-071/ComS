@@ -119,15 +119,15 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onNavigate })
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.2 }}
       className="fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/50 flex items-start justify-center pt-16 md:pt-24"
       onClick={onClose}
     >
       <motion.div
-        initial={{ y: -50, opacity: 0 }}
+        initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -50, opacity: 0 }}
-        transition={{ type: 'spring' as const, stiffness: 300, damping: 30 }}
+        exit={{ y: -30, opacity: 0 }}
+        transition={{ type: 'spring' as const, stiffness: 500, damping: 40 }}
         className="w-[95vw] max-w-2xl glass-pane rounded-2xl shadow-2xl flex flex-col"
         onClick={e => e.stopPropagation()}
       >

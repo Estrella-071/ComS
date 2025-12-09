@@ -9,7 +9,7 @@ interface ReadingProgressProps {
 
 export const ReadingProgress: React.FC<ReadingProgressProps> = ({ progress, label }) => {
   const [percentage, setPercentage] = useState(0);
-  const scaleX = useSpring(progress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+  const scaleX = useSpring(progress, { stiffness: 400, damping: 40, restDelta: 0.001 });
 
   useMotionValueEvent(progress, "change", (latest) => {
     setPercentage(Math.round(latest * 100));
@@ -20,7 +20,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({ progress, labe
       className="absolute bottom-6 left-6 z-[var(--z-fab)] flex items-center gap-3 pl-4 pr-5 py-3 glass-pane rounded-full shadow-xl border border-[var(--ui-border)] bg-[var(--bg-translucent)] backdrop-blur-md max-w-[calc(100%-8rem)] transition-all hover:border-[var(--text-secondary)]"
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 30 }}
+      transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 30 }}
     >
       {label && (
          <span className="text-xs font-bold text-[var(--text-secondary)] truncate max-w-[160px] sm:max-w-[240px] border-r border-[var(--ui-border)] pr-3 mr-1 hidden sm:block">

@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import type { View, QuizResult } from '../types';
@@ -48,7 +49,7 @@ const LargeActionCard: React.FC<{
             onClick={onAction}
             whileHover={{ scale: 1.01, y: -4 }}
             whileTap={{ scale: 0.98 }}
-            className={`w-full relative overflow-hidden rounded-3xl p-8 text-left shadow-lg border transition-all duration-300 group min-h-[180px] flex flex-col justify-between
+            className={`w-full relative overflow-hidden rounded-3xl p-8 text-left shadow-lg border transition-all duration-200 group min-h-[180px] flex flex-col justify-between
                 ${isPrimary 
                     ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg-color)]' 
                     : 'border-[var(--ui-border)] bg-[var(--bg-color)] text-[var(--text-primary)] hover:border-[var(--text-primary)]'
@@ -230,13 +231,13 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
         hidden: { opacity: 0 },
         visible: { 
             opacity: 1,
-            transition: { staggerChildren: 0.05 } 
+            transition: { staggerChildren: 0.03 } 
         }
     };
     
     const itemVariants = {
-        hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1, transition: { type: 'spring' as const, stiffness: 300, damping: 30 } }
+        hidden: { y: 15, opacity: 0 },
+        visible: { y: 0, opacity: 1, transition: { type: 'spring' as const, stiffness: 400, damping: 30 } }
     };
 
     return (
@@ -271,7 +272,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                             variants={containerVariants}
                             initial="hidden"
                             animate="visible"
-                            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                            exit={{ opacity: 0, transition: { duration: 0.15 } }}
                             className="space-y-10"
                         >
                             {/* --- PRACTICE MODE LAYOUT --- */}

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import type { QuizResult, Problem } from '../types';
@@ -82,9 +83,9 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
                         {history.map(result => (
                             <motion.div
                                 key={result.id}
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.3 }}
+                                transition={{ duration: 0.2 }}
                                 className="glass-pane p-4 rounded-2xl"
                             >
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">

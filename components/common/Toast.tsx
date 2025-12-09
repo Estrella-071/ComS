@@ -12,7 +12,7 @@ export const Toast: React.FC<ToastProps> = ({ message, icon }) => (
   <motion.div
     initial={{ opacity: 0, y: 50 }}
     animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 20 }}
+    exit={{ opacity: 0, y: 20, transition: { duration: 0.15 } }}
     className="fixed bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 z-[var(--z-tooltip)] glass-pane px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-lg bg-[var(--bg-translucent)] backdrop-blur-md border border-[var(--ui-border)]"
   >
     {icon || <CheckIcon className="w-5 h-5 text-[var(--success-text)]" />}

@@ -6,7 +6,7 @@ import { useAppContext } from '../contexts/AppContext';
 import { ListBulletIcon, ChevronDownIcon } from './icons';
 import { slugify } from '../utils/textUtils';
 
-const spring = { type: 'spring' as const, stiffness: 350, damping: 30 };
+const spring = { type: 'spring' as const, stiffness: 500, damping: 40 };
 
 interface H3Heading { title: string; slug: string; }
 interface H2Heading { title: string; slug: string; children: H3Heading[]; }

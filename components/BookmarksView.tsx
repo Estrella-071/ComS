@@ -82,12 +82,12 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ setView }) => {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: { staggerChildren: 0.05 }
+            transition: { staggerChildren: 0.03 }
         }
     };
     
     const itemVariants = {
-        hidden: { y: 20, opacity: 0 },
+        hidden: { y: 15, opacity: 0 },
         visible: { y: 0, opacity: 1 }
     };
 

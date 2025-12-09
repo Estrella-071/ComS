@@ -9,7 +9,8 @@ interface ToggleSwitchProps {
 }
 
 export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ checked, onChange, id }) => {
-  const spring = { type: "spring", stiffness: 700, damping: 30 } as const;
+  // Snappy spring
+  const spring = { type: "spring", stiffness: 900, damping: 35 } as const;
 
   return (
     <div

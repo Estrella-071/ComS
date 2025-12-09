@@ -18,7 +18,7 @@ interface SidebarProps {
 }
 
 // --- Animation Constants ---
-const spring = { type: 'spring' as const, stiffness: 350, damping: 30 };
+const spring = { type: 'spring' as const, stiffness: 500, damping: 40, mass: 0.8 };
 
 const sidebarVariants = {
     open: { x: 0, opacity: 1 },
@@ -28,14 +28,14 @@ const sidebarVariants = {
 const listContainerVariants = {
     visible: { 
         opacity: 1,
-        transition: { staggerChildren: 0.06, delayChildren: 0.05 }
+        transition: { staggerChildren: 0.03, delayChildren: 0.02 }
     },
     hidden: { opacity: 0 }
 };
 
 const itemVariants = {
-  visible: { opacity: 1, x: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
-  hidden: { opacity: 0, x: -15 }
+  visible: { opacity: 1, x: 0, transition: { type: 'spring' as const, stiffness: 500, damping: 30 } },
+  hidden: { opacity: 0, x: -10 }
 };
 
 export const Sidebar: React.FC<SidebarProps> = (props) => {
@@ -95,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                     {/* Search Button - Pill Shape, Serif Font */}
                     <button 
                         onClick={onOpenSearch}
-                        className="w-full group relative flex items-center justify-between px-5 py-3 bg-transparent hover:bg-[var(--ui-bg)] border border-[var(--ui-border)] hover:border-[var(--text-primary)] rounded-full transition-all duration-300"
+                        className="w-full group relative flex items-center justify-between px-5 py-3 bg-transparent hover:bg-[var(--ui-bg)] border border-[var(--ui-border)] hover:border-[var(--text-primary)] rounded-full transition-all duration-200"
                     >
                         <div className="flex items-center gap-3">
                             <SearchIcon className="w-4 h-4 text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors" />
@@ -219,7 +219,7 @@ const NavItem: React.FC<NavItemProps> = ({ icon, label, subLabel, active, onClic
     variants={itemVariants}
     onClick={onClick}
     // Design Change: rounded-full instead of rounded-xl, font-serif, removed background hover to focus on outline/text
-    className={`group relative w-full flex items-center justify-between gap-3 px-5 py-3 rounded-full transition-all duration-300 text-left overflow-hidden border ${
+    className={`group relative w-full flex items-center justify-between gap-3 px-5 py-3 rounded-full transition-all duration-200 text-left overflow-hidden border ${
       active
         ? 'bg-[var(--text-primary)] text-[var(--bg-color)] border-[var(--text-primary)]' // Inverted high contrast for active
         : 'bg-transparent text-[var(--text-secondary)] border-transparent hover:border-[var(--text-subtle)] hover:text-[var(--text-primary)]' // Minimalist for inactive

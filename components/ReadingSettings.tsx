@@ -88,8 +88,8 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
             {isOpen && (
                 <motion.div
                     variants={{
-                        open: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 30 } },
-                        closed: { opacity: 0, y: 20, scale: 0.95, transition: { duration: 0.2 } }
+                        open: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 500, damping: 40 } },
+                        closed: { opacity: 0, y: 15, scale: 0.95, transition: { duration: 0.15 } }
                     }}
                     initial="closed"
                     animate="open"
@@ -260,7 +260,7 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                     initial={{ opacity: 0, rotate: -90 }} 
                     animate={{ opacity: 1, rotate: 0 }} 
                     exit={{ opacity: 0, rotate: 90 }} 
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.15 }}
                 >
                     {isOpen ? <XMarkIcon className="w-6 h-6" /> : <Cog6ToothIcon className="w-7 h-7" />}
                 </motion.div>

@@ -69,10 +69,12 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
   const handleRun = () => {
     setIsRunning(true);
     setOutput('');
+    // Reduced from 1000ms to 250ms. 
+    // Just enough to show the "Running..." state without making the user wait.
     setTimeout(() => {
       setOutput(exercise.sampleOutput || 'Execution complete. No output.');
       setIsRunning(false);
-    }, 1000);
+    }, 250);
   };
 
   const handleReset = () => {
@@ -170,7 +172,7 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    transition={{ type: 'spring' as const, stiffness: 400, damping: 35 }}
+                    transition={{ type: 'spring' as const, stiffness: 500, damping: 50 }}
                     drag={!isSidebarOpen ? 'x' : false}
                     dragConstraints={{ left: 0, right: 0 }}
                     dragElastic={0.25}

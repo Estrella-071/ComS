@@ -13,6 +13,8 @@ import { problems as problems10 } from './chapter10';
 import { problems as problems11 } from './chapter11';
 import { problems as problems12 } from './chapter12';
 import { problems as problems13 } from './chapter13';
+import { problems as problems14 } from './chapter14';
+import { problems as problems15 } from './chapter15';
 
 
 export const problems: Problem[] = [
@@ -29,4 +31,6 @@ export const problems: Problem[] = [
   ...problems11,
   ...problems12,
   ...problems13,
+  ...problems14,
+  ...problems15,
 ];

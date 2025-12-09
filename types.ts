@@ -63,14 +63,6 @@ export interface QuizResult {
     answeredQuestions: AnsweredQuestion[];
 }
 
-export interface QuizState {
-    problems: Problem[];
-    currentIndex: number;
-    answers: Map<string, string>;
-    isFinished: boolean;
-    score: number;
-}
-
 export interface Subject {
   id: string;
   name: {

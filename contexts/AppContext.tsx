@@ -18,6 +18,11 @@ interface ReadingSettings {
   preferredMode: 'reading' | 'practice';
 }
 
+// New interface for Canvas State
+interface CanvasState {
+    isInteractive: boolean;
+}
+
 interface AppContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -42,6 +47,10 @@ interface AppContextType {
   setInitialMode: (enabled: boolean) => void;
   setDisplayMode: (mode: 'bilingual' | 'en' | 'zh') => void;
   setPreferredMode: (mode: 'reading' | 'practice') => void;
+  
+  // Canvas Controls
+  canvasState: CanvasState;
+  setCanvasInteractive: (isInteractive: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -95,6 +104,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isSubjectLoading, setIsSubjectLoading] = useState<boolean>(false);
   const [glossaryMaps, setGlossaryMaps] = useState<GlossaryMaps | null>(null);
 
+  // Canvas State
+  const [canvasState, setCanvasState] = useState<CanvasState>({
+      isInteractive: false, // Default to false for Subject Selection screen
+  });
+
   const subject = useMemo(() => {
     if (!subjectId) return null;
     return subjects.find(s => s.id === subjectId) || null;
@@ -111,8 +125,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         displayMode: language === 'zh' ? 'zh' : 'en', 
         preferredMode: 'reading'
       }));
+      
+      // When entering a subject, ensure canvas is interactive and lit
+      setCanvasState(prev => ({ ...prev, isInteractive: true }));
     } else {
       setFlaggedItems([]);
+      // When returning to subject selection, reset canvas to dark and non-interactive
+      // setCanvasState({ isInteractive: false });
     }
   }, [subject, language]);
 
@@ -169,6 +188,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setSubjectId(null);
       setSubjectData(null);
       setGlossaryMaps(null);
+      // Reset canvas when going back to home
+      setCanvasState({ isInteractive: false });
     }
   }, []);
 
@@ -209,6 +230,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setDisplayMode = useCallback((mode: 'bilingual' | 'en' | 'zh') => updateReadingSettings({ displayMode: mode }), [updateReadingSettings]);
   const setPreferredMode = useCallback((mode: 'reading' | 'practice') => updateReadingSettings({ preferredMode: mode }), [updateReadingSettings]);
 
+  // Canvas Actions
+  const setCanvasInteractive = useCallback((isInteractive: boolean) => {
+      setCanvasState(prev => ({ ...prev, isInteractive }));
+  }, []);
+
+
   const value = useMemo(() => ({
     theme,
     setTheme,
@@ -232,11 +259,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setReadTheme,
     setInitialMode,
     setDisplayMode,
-    setPreferredMode
+    setPreferredMode,
+    canvasState,
+    setCanvasInteractive
   }), [
     theme, setTheme, language, setLanguage, flaggedItems, toggleFlaggedItem, autoShowExplanation, setAutoShowExplanationCallback,
     autoAdvance, setAutoAdvanceCallback, subject, setSubject, subjectData, isSubjectLoading, glossaryMaps,
-    readingSettings, setFontSize, setLineHeight, setPageWidth, setReadTheme, setInitialMode, setDisplayMode, setPreferredMode
+    readingSettings, setFontSize, setLineHeight, setPageWidth, setReadTheme, setInitialMode, setDisplayMode, setPreferredMode,
+    canvasState, setCanvasInteractive
   ]);
 
 

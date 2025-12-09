@@ -6,7 +6,6 @@ interface SegmentedControlProps<T extends string> {
   options: Array<{ label: string; value: T }>;
   value: T;
   onChange: (value: T) => void;
-  layoutId?: string; // Kept for API compatibility
 }
 
 export function SegmentedControl<T extends string>({

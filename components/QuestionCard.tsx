@@ -39,51 +39,78 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
   const tooltipText = problem.text_zh;
 
   return (
-    <div className="glass-pane rounded-2xl p-4 sm:p-8 h-full overflow-y-auto">
+    <div className="w-full h-full flex flex-col">
       <AnimatePresence>
           {showFlagToast && <Toast message={t('flagged_toast')} />}
       </AnimatePresence>
 
-      <div className="mb-4">
-        <div className="flex justify-between items-center mb-3">
-          <p className="text-sm font-semibold bg-[var(--accent-bg)] text-[var(--accent-text)] px-3 py-1 rounded-full inline-block">
-              {`${t('chapter')} ${problem.chapter}${t('chapter_unit')} - ${t('problem_header')} ${problem.number}`}
-          </p>
-          <div className="relative flex items-center">
-            <motion.button
-                onClick={handleFlagToggle}
-                className="text-[var(--warning-text)] hover:text-[var(--warning-text-hover)] transition-colors p-2 -m-2"
-                aria-label={isFlagged ? 'Unflag problem' : 'Flag problem'}
-                whileHover={{ scale: 1.15 }}
-                whileTap={{ scale: 1.4, rotate: 15 }}
-            >
-                {isFlagged ? <StarSolidIcon className="w-6 h-6" /> : <StarIcon className="w-6 h-6" />}
-            </motion.button>
-          </div>
+      <div className="glass-pane rounded-[1.5rem] md:rounded-[2rem] p-5 pb-24 md:p-10 md:pb-24 lg:pb-10 h-full overflow-y-auto custom-scrollbar border border-[var(--ui-border)] shadow-xl bg-[var(--bg-translucent)] backdrop-blur-xl">
+        
+        {/* Question Header Area */}
+        <div className="mb-6 md:mb-8 relative">
+            <div className="flex justify-between items-start gap-4">
+                <div className="flex-1">
+                     <div className="font-mono text-[9px] sm:text-[10px] text-[var(--text-subtle)] uppercase tracking-widest mb-2 sm:mb-4">
+                        Problem Statement
+                     </div>
+                     <div className="text-lg sm:text-2xl lg:text-3xl font-serif leading-relaxed text-[var(--text-primary)] font-medium">
+                        <Tooltip content={tooltipText}>
+                            <span className="cursor-help border-b border-dashed border-[var(--text-subtle)]/30 hover:border-[var(--accent-solid)] transition-colors">
+                                <TextWithHighlights text={questionText} />
+                            </span>
+                        </Tooltip>
+                    </div>
+                </div>
+                
+                <motion.button
+                    onClick={handleFlagToggle}
+                    className={`flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border transition-all duration-300 ${
+                        isFlagged 
+                        ? 'bg-[var(--warning-bg)] border-[var(--warning-text)] text-[var(--warning-text)]' 
+                        : 'bg-transparent border-[var(--ui-border)] text-[var(--text-subtle)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)]'
+                    }`}
+                    aria-label={isFlagged ? 'Unflag problem' : 'Flag problem'}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                >
+                    {isFlagged ? <StarSolidIcon className="w-5 h-5" /> : <StarIcon className="w-5 h-5" />}
+                </motion.button>
+            </div>
         </div>
-        <div className="text-base sm:text-lg leading-relaxed text-[var(--text-secondary)]">
-            <Tooltip content={tooltipText}>
-                <p className="border-b border-dashed border-slate-400 dark:border-slate-600 cursor-help inline">
-                    <TextWithHighlights text={questionText} />
-                </p>
-            </Tooltip>
+
+        <div className="h-px w-1/4 bg-[var(--ui-border)] mb-6 md:mb-8 opacity-50"></div>
+
+        {/* Options Area */}
+        <div className="mb-8">
+            <div className="font-mono text-[9px] sm:text-[10px] text-[var(--text-subtle)] uppercase tracking-widest mb-3 sm:mb-4">
+                Select Option
+            </div>
+            <ProblemOptions 
+                problem={problem}
+                userAnswer={userAnswer}
+                onAnswerSelected={onAnswerSelected}
+                isRevealed={hasAnswered}
+                disabled={hasAnswered}
+            />
         </div>
+
+        {/* Explanation Area */}
+        <AnimatePresence>
+            {hasAnswered && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                    <ProblemExplanation 
+                        explanation={problem.explanation_zh}
+                        isVisible={shouldAutoShowExplanation}
+                    />
+                </motion.div>
+            )}
+        </AnimatePresence>
       </div>
-
-      <ProblemOptions 
-          problem={problem}
-          userAnswer={userAnswer}
-          onAnswerSelected={onAnswerSelected}
-          isRevealed={hasAnswered}
-          disabled={hasAnswered}
-      />
-
-      {hasAnswered && (
-          <ProblemExplanation 
-            explanation={problem.explanation_zh}
-            isVisible={shouldAutoShowExplanation}
-          />
-      )}
     </div>
   );
 };

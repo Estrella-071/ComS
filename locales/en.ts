@@ -1,5 +1,4 @@
 
-
 export const en = {
   // General
   app_name: 'Interactive Learning Bank',
@@ -9,12 +8,11 @@ export const en = {
   // Sidebar & Home
   home: 'Home',
   table_of_contents: 'Table of Contents',
-  modes: 'Modes',
   practice_modes: 'Practice Modes',
-  all_questions: 'All Questions',
-  question_bank_quiz: 'Question Bank Quiz',
+  question_bank: 'Question Bank', // Renamed from all_questions
+  start_quiz_session: 'Start Quiz', // Renamed from question_bank_quiz
   programming_exercises: 'Programming Exercises',
-  flagged_for_review: 'Bookmarks',
+  starred_items: 'Starred', // Renamed from flagged_for_review
   tools: 'Tools',
   quiz_history: 'Quiz History',
   by_chapter: 'Chapters',
@@ -22,25 +20,14 @@ export const en = {
   chapter: 'Chapter',
   chapter_short: 'Ch',
   chapter_unit: '',
-  toggle_dark_mode: 'Switch to Dark Mode',
-  toggle_light_mode: 'Switch to Light Mode',
-  enter_fullscreen: 'Enter Fullscreen',
-  exit_fullscreen: 'Exit Fullscreen',
   search_placeholder: 'Search content...',
-  flagged_toast: 'Added to Bookmarks',
+  flagged_toast: 'Added to Starred',
   search: 'Search',
   sidebar_toc_header: 'Table of Contents',
-  sidebar_quiz_nav_header: 'Quiz Navigator',
-  sidebar_problem_nav_header: 'Problem Navigator',
-  sidebar_exercise_nav_header: 'Exercise Navigator',
   review_incorrect_questions: 'Review Incorrect',
-  sidebar_tab_current: 'Current',
-  sidebar_tab_navigate: 'Navigate',
-  sidebar_tab_tools: 'Tools',
   sidebar_tab_settings: 'Settings',
   sidebar_tab_chapters: 'Chapters',
   sidebar_tab_practice: 'Practice',
-  navigate: 'Navigate',
   recent_quizzes: 'Recent Quizzes',
   no_recent_quizzes: 'Complete a quiz to see your history here.',
   change_subject: 'Subject',
@@ -55,20 +42,18 @@ export const en = {
   welcome_back: 'Welcome back!',
   subject_selection_title: 'Select a Subject',
   subject_selection_subtitle: 'Choose a course to begin your learning journey.',
-  subtitle_randomized_practice: 'Randomized practice',
+  subtitle_randomized_practice: 'Customizable quiz mode',
   subtitle_coding_practice: 'Hands-on coding practice',
-  browse: 'Browse',
-  questions_suffix: 'questions',
-  saved_items_suffix: 'saved items',
+  subtitle_question_bank: 'Browse all questions by chapter',
 
   // Subject Selection
   select_subject: 'Select a Subject',
 
   // Bookmarks View
-  bookmarks_title: 'Bookmarks',
-  bookmarks_description: 'Review your bookmarked items or start a quiz with them.',
-  bookmarks_no_problems: 'You haven\'t bookmarked any items yet.',
-  bookmarks_start_quiz: 'Start Quiz with Bookmarked Problems',
+  bookmarks_title: 'Starred Items',
+  bookmarks_description: 'Review your starred items or start a quiz with them.',
+  bookmarks_no_problems: 'You haven\'t starred any items yet.',
+  bookmarks_start_quiz: 'Start Quiz with Starred Problems',
 
   // Quiz View
   question: 'Question',

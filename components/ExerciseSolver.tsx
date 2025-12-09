@@ -9,6 +9,7 @@ import type { View } from '../types';
 import { ChevronLeftIcon, ChevronRightIcon, CodeBracketIcon, PlayIcon, ArrowPathIcon, PaperAirplaneIcon } from './icons';
 import { Tooltip } from './Tooltip';
 import { Toast } from './common/Toast';
+import { EdgeProgressBar } from './common/EdgeProgressBar';
 
 interface ExerciseSolverProps {
   id: string;
@@ -42,6 +43,7 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lineNumbersRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const exercises = useMemo(() => subjectData?.exercises || [], [subjectData]);
   const exerciseIndex = useMemo(() => exercises.findIndex(p => p.id === id), [id, exercises]);
@@ -131,7 +133,7 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
 
   return (
     <div className="h-full flex flex-col">
-       <div className="flex-shrink-0 px-4 sm:px-8 pt-4">
+       <div className="flex-shrink-0 px-4 sm:px-8 pt-20 lg:pt-4">
             <div className="w-full max-w-4xl mx-auto">
                 <p className="text-sm font-semibold text-center text-[var(--text-secondary)] mb-2">{t('exercise_header')} {exercise.number} ({exerciseIndex + 1} / {exercises.length})</p>
                 <div className="w-full bg-[var(--ui-bg)] rounded-full h-1.5 overflow-hidden">
@@ -179,7 +181,8 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
                       else if (offset.x > swipeDistanceThreshold || velocity.x > 400) navigate(-1);
                     }}
                   >
-                    <div className="h-full overflow-y-auto pb-24 lg:pb-8 px-4 space-y-6">
+                    <div ref={contentRef} className="h-full overflow-y-auto pb-24 lg:pb-8 px-4 space-y-6 relative">
+                      <EdgeProgressBar containerRef={contentRef} />
                       <div className="glass-pane rounded-2xl p-6 sm:p-8">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                           <div>

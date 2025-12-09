@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckIcon, StarIcon, StarSolidIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
+import { StarIcon, StarSolidIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppContext } from '../contexts/AppContext';
 import { Tooltip } from './Tooltip';
@@ -77,7 +77,7 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
 
   return (
     <div className="h-full flex flex-col">
-       <div className="flex-shrink-0 px-4 sm:px-8 pt-4">
+       <div className="flex-shrink-0 px-4 sm:px-8 pt-20 lg:pt-4">
             <div className="w-full max-w-4xl mx-auto">
                 <p className="text-sm font-semibold text-center text-[var(--text-secondary)] mb-2">{t('problem_header')} {problem.number} ({problemIndex + 1} / {problems.length})</p>
                 <div className="w-full bg-[var(--ui-bg)] rounded-full h-1.5">

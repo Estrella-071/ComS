@@ -7,6 +7,7 @@ import { useAppContext } from '../contexts/AppContext';
 import { SearchIcon } from './icons';
 import { SegmentedControl } from './common/SegmentedControl';
 import { BackToTopButton } from './common/BackToTopButton';
+import { EdgeProgressBar } from './common/EdgeProgressBar';
 
 interface ProgrammingViewProps {
     setView: (view: View) => void;
@@ -98,7 +99,9 @@ export const ProgrammingView: React.FC<ProgrammingViewProps> = ({ setView }) => 
     return (
         <>
             <div ref={contentRef} className="h-full overflow-y-auto relative">
-                <div className="sticky top-0 z-[var(--z-sticky-l2)] bg-[var(--bg-color)]/80 backdrop-blur-md pt-4 pb-4 space-y-4">
+                <EdgeProgressBar containerRef={contentRef} />
+                {/* Added pt-20 for mobile spacing */}
+                <div className="sticky top-0 z-[var(--z-sticky-l2)] bg-[var(--bg-color)]/80 backdrop-blur-md pt-20 lg:pt-4 pb-4 space-y-4">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="relative w-full">
                             <input 
@@ -116,7 +119,6 @@ export const ProgrammingView: React.FC<ProgrammingViewProps> = ({ setView }) => 
                             options={filterOptions}
                             value={filterType}
                             onChange={(val) => setFilterType(val as FilterType)}
-                            layoutId="exercise-filter"
                         />
                     </div>
                 </div>

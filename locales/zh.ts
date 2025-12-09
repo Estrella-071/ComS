@@ -1,5 +1,4 @@
 
-
 export const zh = {
   // General
   app_name: '互動學習題庫',
@@ -9,12 +8,11 @@ export const zh = {
   // Sidebar & Home
   home: '首頁',
   table_of_contents: '目錄',
-  modes: '測驗模式',
   practice_modes: '練習模式',
-  all_questions: '全部題目',
-  question_bank_quiz: '題庫測驗',
+  question_bank: '題庫', // Renamed from all_questions
+  start_quiz_session: '開始測驗', // Renamed from question_bank_quiz
   programming_exercises: '程式設計習題',
-  flagged_for_review: '書籤',
+  starred_items: '已加星號', // Renamed from flagged_for_review
   tools: '工具',
   quiz_history: '測驗紀錄',
   by_chapter: '章節',
@@ -22,25 +20,14 @@ export const zh = {
   chapter: '第',
   chapter_short: '第',
   chapter_unit: '章',
-  toggle_dark_mode: '切換為深色模式',
-  toggle_light_mode: '切換為淺色模式',
-  enter_fullscreen: '進入全螢幕',
-  exit_fullscreen: '退出全螢幕',
   search_placeholder: '搜尋內容...',
-  flagged_toast: '已新增至書籤',
+  flagged_toast: '已加星號',
   search: '搜尋',
   sidebar_toc_header: '本章目錄',
-  sidebar_quiz_nav_header: '測驗導航',
-  sidebar_problem_nav_header: '題目導航',
-  sidebar_exercise_nav_header: '習題導航',
   review_incorrect_questions: '複習錯題',
-  sidebar_tab_current: '當前',
-  sidebar_tab_navigate: '導航',
-  sidebar_tab_tools: '工具',
   sidebar_tab_settings: '設定',
   sidebar_tab_chapters: '閱讀',
   sidebar_tab_practice: '練習',
-  navigate: '導航',
   recent_quizzes: '近期測驗',
   no_recent_quizzes: '完成一次測驗後，紀錄將會顯示於此。',
   change_subject: '更換科目',
@@ -55,20 +42,18 @@ export const zh = {
   welcome_back: '歡迎回來！',
   subject_selection_title: '選擇科目',
   subject_selection_subtitle: '選擇一門課程以開始您的學習旅程。',
-  subtitle_randomized_practice: '隨機題目練習',
+  subtitle_randomized_practice: '自訂範圍測驗',
   subtitle_coding_practice: '動手寫程式練習',
-  browse: '瀏覽',
-  questions_suffix: '道題目',
-  saved_items_suffix: '個已儲存項目',
+  subtitle_question_bank: '瀏覽所有章節題目',
 
   // Subject Selection
   select_subject: '選擇科目',
 
   // Bookmarks View
-  bookmarks_title: '書籤',
-  bookmarks_description: '檢視您已加入書籤的項目，或使用這些項目進行測驗。',
-  bookmarks_no_problems: '您尚未將任何項目加入書籤。',
-  bookmarks_start_quiz: '使用已加入書籤的題目進行測驗',
+  bookmarks_title: '已加星號',
+  bookmarks_description: '檢視您已加星號的項目，或使用這些項目進行測驗。',
+  bookmarks_no_problems: '您尚未將任何項目加星號。',
+  bookmarks_start_quiz: '使用已加星號的題目進行測驗',
   
   // Quiz View
   question: '題目',
@@ -95,7 +80,7 @@ export const zh = {
   quiz_nav_unanswered: '未答',
 
   // Question Bank Quiz Settings
-  quiz_settings: '題庫測驗設定',
+  quiz_settings: '測驗設定',
   quiz_description: '選擇要包含在測驗中的章節並設定測驗模式。',
   select_all: '全選',
   deselect_all: '全部取消',

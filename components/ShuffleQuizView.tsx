@@ -1,5 +1,4 @@
 
-
 import React, { useState, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '../hooks/useTranslation';
@@ -78,8 +77,8 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
     }
 
     const title = selectedChapters.length > 0 && selectedChapters.length < chapters.length
-        ? `${t('question_bank_quiz')} (${selectedChapters.map(c => `${t('chapter_short')}${c}${t('chapter_unit')}`).join(', ')})`
-        : t('question_bank_quiz');
+        ? `${t('start_quiz_session')} (${selectedChapters.map(c => `${t('chapter_short')}${c}${t('chapter_unit')}`).join(', ')})`
+        : t('start_quiz_session');
 
     setView({ 
         type: 'quiz', 
@@ -93,7 +92,7 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
   if (!subjectData) return null;
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto pt-20 lg:pt-0">
         <div className="max-w-3xl mx-auto flex items-center justify-center min-h-full py-8 px-4 sm:px-6 lg:p-8">
             <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
@@ -121,7 +120,6 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
                             ]}
                             value={quizMode}
                             onChange={(value) => setQuizMode(value)}
-                            layoutId="quiz-mode-toggle"
                         />
                     </SettingRow>
 

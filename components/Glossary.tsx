@@ -6,6 +6,7 @@ import type { GlossaryTerm, View } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppContext } from '../contexts/AppContext';
 import { BackToTopButton } from './common/BackToTopButton';
+import { EdgeProgressBar } from './common/EdgeProgressBar';
 
 interface GlossaryProps {
     setView: (view: View) => void;
@@ -82,7 +83,8 @@ export const Glossary: React.FC<GlossaryProps> = ({ setView }) => {
 
     return (
         <>
-            <div ref={contentRef} className="h-full overflow-y-auto px-4 sm:px-6 lg:p-8 relative">
+            <div ref={contentRef} className="h-full overflow-y-auto px-4 sm:px-6 lg:p-8 relative pt-24 lg:pt-8">
+                <EdgeProgressBar containerRef={contentRef} />
                 <div className="max-w-4xl mx-auto">
                     <div className="flex items-center gap-4 my-8">
                         <div className="w-12 h-12 rounded-2xl glass-pane flex items-center justify-center">

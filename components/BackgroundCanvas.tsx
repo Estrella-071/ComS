@@ -2,305 +2,243 @@
 import React, { useEffect, useRef } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 
-// --- Constants ---
-const GRID_SIZE = 32;
-const FONT_SIZE = 14;
-const SCROLL_SPEED = 0.05;
+// --- Physics Configuration ---
+const GRID_SPACING = 40; 
+const MAX_RIPPLE_AGE = 4000; // Ripples last for 4 seconds
+const WAVE_SPEED = 0.25; // Propagation speed
+const BASE_FREQ = 0.08; // Base frequency of the wave
 
-// Ripple Effect
-const RIPPLE_DURATION = 4500;
-const RIPPLE_MAX_RADIUS = 800;
-const NUM_WAVES = 5;
-const WAVE_SPACING = 90;
+// --- Fluid Dynamics Parameters ---
+// Trochoidal Sharpness (k): Higher = sharper peaks, flatter troughs
+const PEAK_SHARPNESS = 2.0; 
+// Approximate mean of exp(k*sin(x)) for k=2.0 is roughly 2.3. 
+// Subtracting this centers the wave around 0 (displacement).
+const WAVE_OFFSET = 2.3; 
 
-// Interactivity & Polish
-const LERP_FACTOR = 0.1; 
-const GLOW_DISTANCE = 60; 
-const GLOW_INTENSITY = 2.0; 
-const REFRACTION_INDEX = 1.08; // How much the wave "slows down" under UI
-const DAMPENING_FACTOR = 0.5;  // How much dimmer the wave is under UI
+// Energy Damping
+const VISCOUS_DAMPING = 0.0015; // Energy loss over time
+const GEOMETRIC_DAMPING = 0.002; // Energy loss over distance (radial)
 
-// --- Helper Functions ---
-const lerp = (start: number, end: number, amt: number): number => (1 - amt) * start + amt * end;
+// --- Visual Mapping Configuration ---
+const BASE_OPACITY = 0.18; // The "Still Water" level. Visible but dim.
+const AMPLITUDE_GAIN = 0.4; // How much wave height affects opacity. 
 
-const isPointInRect = (px: number, py: number, rect: DOMRect): boolean => {
-    return px >= rect.left && px <= rect.right && py >= rect.top && py <= rect.bottom;
-};
-
-const distanceToNearestEdge = (px: number, py: number, rect: DOMRect): number => {
-    const dx = Math.max(rect.left - px, 0, px - rect.right);
-    const dy = Math.max(rect.top - py, 0, py - rect.bottom);
-    return Math.sqrt(dx * dx + dy * dy);
-};
-
-// --- Dot Class ---
-class Dot {
-    x: number;
-    y: number;
-    targetChar: string;
-    currentChar: string;
-    animationTimer: number;
-    restTimer: number;
-    displayInfluence: number = 0;
-
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-        this.targetChar = '';
-        this.currentChar = '';
-        this.animationTimer = 0;
-        this.restTimer = 0;
-        this.reset();
-    }
-
-    reset() {
-        this.targetChar = Math.random() < 0.5 ? '0' : '1';
-        this.currentChar = '';
-        this.animationTimer = Math.random() * 60 + 20;
-        this.restTimer = Math.random() * 2000 + 800;
-    }
-
-    update(rawInfluence: number) {
-        if (rawInfluence > 0.1) {
-            this.restTimer = Math.max(this.restTimer, 10);
-            return;
-        }
-
-        if (this.animationTimer > 0) {
-            if (Math.floor(this.animationTimer) % 6 === 0) {
-                this.currentChar = String(Math.floor(Math.random() * 10));
-            }
-            this.animationTimer--;
-            if (this.animationTimer <= 0) {
-                this.currentChar = this.targetChar;
-            }
-        } else if (this.restTimer > 0) {
-            this.restTimer--;
-        } else {
-            this.reset();
-        }
-    }
-
-    draw(ctx: CanvasRenderingContext2D, dotColor: string, glowColor: string, smoothedInfluence: number, drawX: number, drawY: number) {
-        const easedInfluence = Math.pow(smoothedInfluence, 1.5);
-        const baseAlpha = 0.08;
-
-        if (easedInfluence < 0.01) {
-            ctx.globalAlpha = baseAlpha;
-            ctx.fillStyle = dotColor;
-            ctx.fillText(this.targetChar, drawX, drawY);
-            return;
-        }
-
-        ctx.globalAlpha = baseAlpha + (1 - baseAlpha) * easedInfluence;
-        ctx.shadowColor = glowColor;
-        ctx.shadowBlur = easedInfluence * 12;
-        ctx.fillStyle = dotColor;
-        ctx.fillText(this.currentChar || this.targetChar, drawX, drawY);
-        ctx.shadowBlur = 0;
-    }
-}
-
-// --- Ripple Interface ---
 interface Ripple {
+    id: number;
     x: number;
     y: number;
-    createdAt: number;
+    startTime: number;
+    initialAmp: number;
 }
 
-// --- Main Component ---
+interface GridPoint {
+    x: number;
+    y: number;
+    baseX: number; // For parallax restore
+    baseY: number;
+}
+
 export const BackgroundCanvas: React.FC = () => {
-    const { theme } = useAppContext();
-    const animationFrameId = useRef<number | null>(null);
-    const dots = useRef<Dot[]>([]);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const ripples = useRef<Ripple[]>([]);
-    const uiRects = useRef<DOMRect[]>([]);
-    const offsetX = useRef(0);
-    const offsetY = useRef(0);
+    const gridPoints = useRef<GridPoint[]>([]);
+    const animationFrameId = useRef<number | null>(null);
     
-    // Cache colors to avoid getComputedStyle in loop
-    const colors = useRef({ dot: '#1c1917', glow: 'rgba(0, 0, 0, 0.5)' });
+    // Global State connection
+    const { canvasState, theme } = useAppContext();
+    const { isInteractive } = canvasState;
 
-    // Update colors when theme changes
-    useEffect(() => {
-        // Small delay to allow CSS transition to start/finish or DOM to update
-        const timer = setTimeout(() => {
-            const style = getComputedStyle(document.documentElement);
-            colors.current.dot = style.getPropertyValue('--bg-dot-color').trim();
-            colors.current.glow = style.getPropertyValue('--bg-glow-color').trim();
-        }, 50);
-        return () => clearTimeout(timer);
-    }, [theme]);
+    // Mouse parallax state
+    const mousePos = useRef({ x: 0, y: 0 });
+    const targetOffset = useRef({ x: 0, y: 0 });
+    const currentOffset = useRef({ x: 0, y: 0 });
 
+    // --- Input Handling ---
     useEffect(() => {
-        const canvas = document.getElementById('background-canvas') as HTMLCanvasElement;
+        const handleMouseMove = (e: MouseEvent) => {
+            mousePos.current = { x: e.clientX, y: e.clientY };
+            targetOffset.current = {
+                x: (window.innerWidth / 2 - e.clientX) * 0.015,
+                y: (window.innerHeight / 2 - e.clientY) * 0.015
+            };
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, [isInteractive]);
+
+    // --- Initialization & Resizing ---
+    useEffect(() => {
+        const canvas = canvasRef.current;
         if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        // --- Event Handlers & Observers ---
-        const addRipple = (x: number, y: number) => {
-            ripples.current.push({ x, y, createdAt: Date.now() });
-        };
-
-        const handlePointerDown = (event: MouseEvent | TouchEvent) => {
-            // On smaller viewports (likely mobile/tablet), disable the ripple effect for performance.
-            if (window.innerWidth < 1024) {
-                return;
-            }
-
-            let x, y;
-            if ('touches' in event) {
-                x = event.touches[0].clientX;
-                y = event.touches[0].clientY;
-            } else {
-                x = event.clientX;
-                y = event.clientY;
-            }
-            addRipple(x, y);
-        };
         
-        const updateUIRects = () => {
-             const elements = document.querySelectorAll('aside, .glass-pane');
-             uiRects.current = Array.from(elements).map(el => el.getBoundingClientRect());
-        };
-        // Update rects initially and on resize
-        updateUIRects();
-        const resizeObserver = new ResizeObserver(updateUIRects);
+        const initGrid = () => {
+            const cols = Math.ceil(window.innerWidth / GRID_SPACING) + 2;
+            const rows = Math.ceil(window.innerHeight / GRID_SPACING) + 2;
+            gridPoints.current = [];
+            
+            const startX = -GRID_SPACING;
+            const startY = -GRID_SPACING;
 
-        const setup = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            dots.current = [];
-            for (let x = -GRID_SIZE; x < canvas.width + GRID_SIZE; x += GRID_SIZE) {
-                for (let y = -GRID_SIZE; y < canvas.height + GRID_SIZE; y += GRID_SIZE) {
-                    dots.current.push(new Dot(x, y));
-                }
-            }
-            updateUIRects();
-        };
-
-        // --- Animation Logic ---
-        const calculateInfluenceForDot = (ripple: Ripple, drawX: number, drawY: number, rects: DOMRect[]): number => {
-            const age = Date.now() - ripple.createdAt;
-            const progress = age / RIPPLE_DURATION;
-            if (progress < 0 || progress > 1) return 0;
-
-            const dx = drawX - ripple.x;
-            const dy = drawY - ripple.y;
-            const distFromCenter = Math.sqrt(dx * dx + dy * dy);
-
-            const easedProgress = 1 - Math.pow(1 - progress, 2);
-            const leadingEdge = easedProgress * RIPPLE_MAX_RADIUS;
-            
-            // Optimization: Simple bounding box check before detailed rect check could go here
-            // For now, we keep it simple as number of rects is low
-            
-            let isInsideAnyRect = false;
-            let minEdgeDist = Infinity;
-            
-            for (const rect of rects) {
-                // Quick bounding box check
-                if (drawX >= rect.left && drawX <= rect.right && drawY >= rect.top && drawY <= rect.bottom) {
-                    isInsideAnyRect = true;
-                    break;
-                }
-                // Only calculate distance if we might need glow (optional optimization)
-                 const d = distanceToNearestEdge(drawX, drawY, rect);
-                 if (d < minEdgeDist) minEdgeDist = d;
-            }
-            
-            let effectiveDist = distFromCenter;
-            let dampening = 1.0;
-            
-            if (isInsideAnyRect) {
-                effectiveDist *= REFRACTION_INDEX; 
-                dampening = DAMPENING_FACTOR;
-            }
-
-            const packetLength = NUM_WAVES * WAVE_SPACING;
-            if (effectiveDist > leadingEdge || effectiveDist < leadingEdge - packetLength) {
-                return 0;
-            }
-            
-            const posInPacket = leadingEdge - effectiveDist;
-            const rawCosWave = Math.cos(posInPacket * (2 * Math.PI / WAVE_SPACING));
-            const shapedWave = Math.pow((rawCosWave + 1) / 2, 3.5) * 2.0 - 1.0;
-            const waveValue = shapedWave * Math.exp(-posInPacket * 0.01);
-            const timeFade = Math.pow(1 - progress, 1.5);
-            
-            let influence = waveValue * timeFade * dampening;
-            
-            if (!isInsideAnyRect && minEdgeDist < GLOW_DISTANCE) {
-                const glowFactor = 1 + GLOW_INTENSITY * Math.pow(1 - minEdgeDist / GLOW_DISTANCE, 2);
-                influence *= glowFactor;
-            }
-
-            return Math.max(0, influence);
-        };
-        
-        const animate = () => {
-            const now = Date.now();
-            ripples.current = ripples.current.filter(ripple => now - ripple.createdAt < RIPPLE_DURATION);
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.font = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            offsetX.current = (offsetX.current - SCROLL_SPEED) % GRID_SIZE;
-            offsetY.current = (offsetY.current + SCROLL_SPEED) % GRID_SIZE;
-            
-            const currentRects = uiRects.current;
-            const { dot: dotColor, glow: glowColor } = colors.current;
-
-            dots.current.forEach(dot => {
-                const drawX = dot.x + offsetX.current;
-                const drawY = dot.y + offsetY.current;
-                
-                // Skip drawing if out of bounds (plus some buffer for text size)
-                if (drawX < -20 || drawX > canvas.width + 20 || drawY < -20 || drawY > canvas.height + 20) {
-                    return;
-                }
-
-                let totalInfluence = 0;
-                // Optimization: Only calculate influence if there are active ripples
-                if (ripples.current.length > 0) {
-                    ripples.current.forEach(ripple => {
-                        totalInfluence += calculateInfluenceForDot(ripple, drawX, drawY, currentRects);
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    const x = startX + i * GRID_SPACING;
+                    const y = startY + j * GRID_SPACING;
+                    gridPoints.current.push({
+                        x, 
+                        y,
+                        baseX: x,
+                        baseY: y,
                     });
                 }
-                
-                dot.displayInfluence = lerp(dot.displayInfluence, totalInfluence, LERP_FACTOR);
-
-                dot.update(totalInfluence);
-                
-                dot.draw(ctx, dotColor, glowColor, dot.displayInfluence, drawX, drawY);
-            });
-
-            ctx.globalAlpha = 1;
-            animationFrameId.current = requestAnimationFrame(animate);
+            }
         };
 
-        // --- Initialization & Cleanup ---
-        window.addEventListener('resize', setup);
-        document.addEventListener('mousedown', handlePointerDown);
-        document.addEventListener('touchstart', handlePointerDown, { passive: true });
-        resizeObserver.observe(document.body);
+        const handleResize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initGrid();
+        };
 
-        setup();
-        animate();
+        window.addEventListener('resize', handleResize);
+        handleResize(); 
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // --- Physics & Render Loop ---
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext('2d', { alpha: false });
+        if (!canvas || !ctx) return;
+
+        const isDark = theme === 'dark';
+        
+        // Theme colors
+        const bgColorHex = isDark ? '#050505' : '#f4f1ea';
+        const gridLineColor = isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)';
+        const dotColorRgb = isDark ? '255, 255, 255' : '28, 25, 23';
+        
+        const render = (time: number) => {
+            // 1. Physics: Update Grid Parallax
+            currentOffset.current.x += (targetOffset.current.x - currentOffset.current.x) * 0.05;
+            currentOffset.current.y += (targetOffset.current.y - currentOffset.current.y) * 0.05;
+
+            // 2. Draw Background
+            ctx.fillStyle = bgColorHex;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 3. Grid Movement Logic (Slow drift)
+            const driftX = (time * 0.01) % GRID_SPACING;
+            const driftY = (time * 0.01) % GRID_SPACING;
+
+            // Clean up dead ripples
+            ripples.current = ripples.current.filter(r => (time - r.startTime) < MAX_RIPPLE_AGE);
+
+            // --- Draw Grid Lines ---
+            ctx.beginPath();
+            ctx.strokeStyle = gridLineColor;
+            ctx.lineWidth = 1;
+
+            for (let x = -GRID_SPACING + driftX + currentOffset.current.x % GRID_SPACING; x < canvas.width; x += GRID_SPACING) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+            }
+            for (let y = -GRID_SPACING + driftY + currentOffset.current.y % GRID_SPACING; y < canvas.height; y += GRID_SPACING) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+            }
+            ctx.stroke();
+
+            // 4. Process Wave Physics per Point
+            for (const point of gridPoints.current) {
+                const screenX = point.baseX + currentOffset.current.x + driftX;
+                const screenY = point.baseY + currentOffset.current.y + driftY;
+
+                // Culling
+                if (screenX < -20 || screenX > canvas.width + 20 || 
+                    screenY < -20 || screenY > canvas.height + 20) continue;
+
+                let totalDisplacement = 0;
+
+                // --- SUPERPOSITION PRINCIPLE ---
+                // We sum the displacements (heights) of all active waves.
+                for (const r of ripples.current) {
+                    const age = time - r.startTime;
+                    if (age <= 0) continue;
+
+                    const dx = screenX - r.x;
+                    const dy = screenY - r.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    // 1. Frequency Dispersion: Longer waves (lower freq) travel faster and are on the outside.
+                    const localFreq = BASE_FREQ / (1 + dist * 0.002);
+
+                    // 2. Traveling Wavefront
+                    // Center of the wave packet moves at WAVE_SPEED
+                    const packetCenter = age * WAVE_SPEED;
+                    const distFromPacket = dist - packetCenter;
+                    
+                    // Wave packet width expands slightly over time (dispersion)
+                    const packetWidth = 120 + age * 0.08;
+
+                    // Only calculate if within the packet to save cycles and define the "ring"
+                    if (Math.abs(distFromPacket) < packetWidth) {
+                        
+                        // 3. Gaussian Window (The Envelope)
+                        const envelope = Math.exp(-Math.pow(distFromPacket / (packetWidth * 0.4), 2));
+
+                        // 4. Trochoidal Wave Profile
+                        const phase = dist * localFreq - (age * 0.015);
+                        const rawWave = Math.exp(PEAK_SHARPNESS * Math.sin(phase)) - WAVE_OFFSET;
+
+                        // 5. Capillary Waves (Surface Tension Noise)
+                        const capillary = Math.sin(dist * 0.25 + age * 0.1) * 0.15;
+
+                        // 6. Damping
+                        const damping = (1 / (1 + dist * GEOMETRIC_DAMPING)) * 
+                                        Math.exp(-age * VISCOUS_DAMPING) *
+                                        r.initialAmp;
+
+                        // Add to total displacement (Superposition)
+                        totalDisplacement += (rawWave + capillary) * envelope * damping;
+                    }
+                }
+
+                // --- Visual Mapping ---
+                // Map displacement to opacity.
+                // Displacement 0 -> BASE_OPACITY (Still water)
+                let opacity = BASE_OPACITY + (totalDisplacement * AMPLITUDE_GAIN);
+
+                // Hard clamp.
+                opacity = Math.max(0, Math.min(1, opacity));
+
+                // Draw dot if visible
+                if (opacity > 0.01) {
+                    ctx.beginPath();
+                    ctx.arc(screenX, screenY, 1.2, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${dotColorRgb}, ${opacity})`;
+                    ctx.fill();
+                }
+            }
+            
+            animationFrameId.current = requestAnimationFrame(render);
+        };
+
+        render(performance.now());
 
         return () => {
-            if (animationFrameId.current) {
-                cancelAnimationFrame(animationFrameId.current);
-            }
-            window.removeEventListener('resize', setup);
-            document.removeEventListener('mousedown', handlePointerDown);
-            document.removeEventListener('touchstart', handlePointerDown);
-            resizeObserver.disconnect();
+            if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
         };
-    }, []); // Empty dependency array ensures setup runs once. Theme changes handled by separate useEffect.
+    }, [theme]);
 
-    return null;
+    return (
+        <canvas
+            id="background-canvas"
+            ref={canvasRef}
+            className="fixed inset-0 w-full h-full z-0 pointer-events-none"
+        />
+    );
 };

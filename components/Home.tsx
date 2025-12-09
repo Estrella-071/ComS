@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import type { View, QuizResult } from '../types';
@@ -176,7 +175,14 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
     useEffect(() => {
         if (!subject) return;
         try {
-            const storedHistory = localStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY);
+            // Safe LocalStorage Access
+            let storedHistory: string | null = null;
+            try {
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    storedHistory = window.localStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY);
+                }
+            } catch (e) { /* ignore */ }
+
             if (storedHistory) {
                 const allHistory: QuizResult[] = JSON.parse(storedHistory);
                 const subjectHistory = allHistory.filter(q => q.subjectId === subject.id);

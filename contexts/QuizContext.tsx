@@ -28,6 +28,25 @@ interface QuizContextType {
 
 const QuizContext = createContext<QuizContextType | undefined>(undefined);
 
+// Safe Storage Helper (Duplicated to avoid circular deps or complex refactoring, simple enough)
+const safeStorage = {
+    getItem: (key: string) => {
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          return window.localStorage.getItem(key);
+        }
+      } catch (e) { return null; }
+      return null;
+    },
+    setItem: (key: string, value: string) => {
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          window.localStorage.setItem(key, value);
+        }
+      } catch (e) { /* ignore */ }
+    }
+  };
+
 export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [quizState, setQuizState] = useState<QuizState | null>(null);
   const [answers, setAnswers] = useState<Map<string, string>>(new Map());
@@ -87,9 +106,10 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     try {
-      const history = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY) || '[]');
+      const stored = safeStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY);
+      const history = stored ? JSON.parse(stored) : [];
       history.unshift(result);
-      localStorage.setItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY, JSON.stringify(history.slice(0, 20)));
+      safeStorage.setItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY, JSON.stringify(history.slice(0, 20)));
     } catch (error) {
       console.error("Failed to save quiz history", error);
     }

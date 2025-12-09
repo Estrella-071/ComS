@@ -54,19 +54,36 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const getInitialTheme = (): Theme => {
-  if (typeof window !== 'undefined') {
+// Safe LocalStorage Helper
+const safeStorage = {
+  getItem: (key: string) => {
     try {
-      const storedTheme = localStorage.getItem(LOCAL_STORAGE_KEYS.THEME);
-      if (storedTheme === 'light' || storedTheme === 'dark') {
-        return storedTheme;
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem(key);
       }
     } catch (e) {
-      console.warn('LocalStorage access denied for theme');
+      // console.warn('LocalStorage access denied');
     }
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
+    return null;
+  },
+  setItem: (key: string, value: string) => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(key, value);
+      }
+    } catch (e) {
+      // console.warn('LocalStorage write denied');
     }
+  }
+};
+
+const getInitialTheme = (): Theme => {
+  const storedTheme = safeStorage.getItem(LOCAL_STORAGE_KEYS.THEME);
+  if (storedTheme === 'light' || storedTheme === 'dark') {
+    return storedTheme as Theme;
+  }
+  if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
   }
   return 'light';
 };
@@ -75,22 +92,19 @@ const getInitialTheme = (): Theme => {
 const getInitialLanguage = (): Language => 'zh';
 
 const getSubjectSpecificValue = <T,>(subjectId: string, key: string, defaultValue: T): T => {
-    if (typeof window === 'undefined') return defaultValue;
+    const stored = safeStorage.getItem(`${key}_${subjectId}`);
     try {
-        const stored = localStorage.getItem(`${key}_${subjectId}`);
         return stored ? JSON.parse(stored) : defaultValue;
     } catch (error) {
-        console.error(`Failed to parse ${key} from localStorage`, error);
         return defaultValue;
     }
 }
 
 const setSubjectSpecificValue = <T,>(subjectId: string, key: string, value: T) => {
-    if (typeof window === 'undefined') return;
     try {
-      localStorage.setItem(`${key}_${subjectId}`, JSON.stringify(value));
+      safeStorage.setItem(`${key}_${subjectId}`, JSON.stringify(value));
     } catch (e) {
-      console.warn(`Failed to save ${key} to localStorage`, e);
+      // ignore
     }
 }
 
@@ -144,20 +158,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.THEME, newTheme);
-    } catch (e) {
-      console.warn('Failed to save theme');
-    }
+    safeStorage.setItem(LOCAL_STORAGE_KEYS.THEME, newTheme);
   };
   
   const setLanguage = (newLanguage: Language) => {
     setLanguageState(newLanguage);
-    try {
-      localStorage.setItem('language', newLanguage);
-    } catch (e) {
-      console.warn('Failed to save language');
-    }
+    safeStorage.setItem('language', newLanguage);
   };
   
   const createSubjectSpecificSetter = <T,>(setter: React.Dispatch<React.SetStateAction<T>>, key: string) => {

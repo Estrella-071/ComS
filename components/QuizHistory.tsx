@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import type { QuizResult, Problem } from '../types';
@@ -37,7 +36,14 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
 
   useEffect(() => {
     try {
-      const storedHistory = localStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY);
+      // Safe LocalStorage Access
+      let storedHistory: string | null = null;
+      try {
+          if (typeof window !== 'undefined' && window.localStorage) {
+            storedHistory = window.localStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY);
+          }
+      } catch (e) { /* ignore */ }
+
       if (storedHistory) {
         const allHistory: QuizResult[] = JSON.parse(storedHistory);
         if (subject) {

@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ] # 確保這裡跟你的主要分支名稱一樣 (通常是 main 或 master)
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -23,7 +23,8 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci # 或 npm install
+        # Changed from 'npm ci' to 'npm install' because package-lock.json might not exist yet
+        run: npm install
 
       - name: Build
         run: npm run build
@@ -31,7 +32,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist # Vite 預設編譯出來的資料夾叫 dist
+          path: ./dist
 
   deploy:
     environment:

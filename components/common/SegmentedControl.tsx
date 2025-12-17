@@ -6,12 +6,14 @@ interface SegmentedControlProps<T extends string> {
   options: Array<{ label: string; value: T }>;
   value: T;
   onChange: (value: T) => void;
+  className?: string;
 }
 
 export function SegmentedControl<T extends string>({
   options,
   value,
   onChange,
+  className = "h-12 text-sm bg-[var(--ui-bg)]"
 }: SegmentedControlProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -154,7 +156,7 @@ export function SegmentedControl<T extends string>({
     <div 
         ref={containerRef}
         onClick={handleTrackClick}
-        className="relative flex h-12 w-full select-none items-center rounded-full bg-[var(--ui-bg)] p-1 cursor-pointer"
+        className={`relative flex w-full select-none items-center rounded-full p-1 cursor-pointer ${className}`}
         style={{ touchAction: 'none' }}
     >
         {containerWidth > 0 && (
@@ -177,7 +179,7 @@ export function SegmentedControl<T extends string>({
             {options.map((option) => (
                 <div
                     key={option.value}
-                    className={`flex-1 flex items-center justify-center text-sm font-semibold transition-colors duration-200 ${
+                    className={`flex-1 flex items-center justify-center font-semibold transition-colors duration-200 ${
                         activeValue === option.value 
                         ? 'text-[var(--accent-solid-text)]' 
                         : 'text-[var(--text-secondary)]'

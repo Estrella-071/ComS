@@ -4,9 +4,11 @@ import { motion, useMotionValue, useSpring, useTransform, useAnimation, Variants
 import { useAppContext } from '../contexts/AppContext';
 import { subjects } from '../data/subjects';
 import { BookOpenIcon, CodeBracketIcon, ChevronRightIcon } from './icons';
+import { SegmentedControl } from './common/SegmentedControl';
 
 const CornerData = () => {
   const [time, setTime] = useState(new Date());
+  const { theme, setTheme, language, setLanguage } = useAppContext();
   
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -20,9 +22,26 @@ const CornerData = () => {
         <div className="hidden sm:block">SYS.VER.2.0.5</div>
       </div>
 
-      <div className="absolute top-6 right-6 z-20 font-mono text-xs text-[var(--text-secondary)] opacity-70 gap-6 hidden sm:flex">
-        <span className="border border-[var(--ui-border)] px-3 py-1 rounded-full hover:bg-[var(--text-primary)] hover:text-[var(--bg-color)] transition-colors cursor-pointer pointer-events-auto">About</span>
-        <span className="border border-[var(--ui-border)] px-3 py-1 rounded-full hover:bg-[var(--text-primary)] hover:text-[var(--bg-color)] transition-colors cursor-pointer pointer-events-auto">Contact</span>
+      <div className="absolute top-6 right-6 z-20 flex flex-col sm:flex-row items-end sm:items-center gap-3 pointer-events-auto">
+        {/* Language Switcher */}
+        <div className="w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 transition-all duration-300">
+             <SegmentedControl 
+                options={[{ label: 'EN', value: 'en' }, { label: '中', value: 'zh' }]}
+                value={language}
+                onChange={(val) => setLanguage(val as 'en' | 'zh')}
+                className="h-8 sm:h-9 md:h-10 lg:h-11 text-xs sm:text-sm font-mono font-bold shadow-sm border border-[var(--ui-border)] backdrop-blur-md bg-[var(--ui-bg)]/50"
+             />
+        </div>
+
+        {/* Theme Switcher */}
+        <div className="w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 transition-all duration-300">
+             <SegmentedControl 
+                options={[{ label: '☀', value: 'light' }, { label: '☾', value: 'dark' }]}
+                value={theme}
+                onChange={(val) => setTheme(val as 'light' | 'dark')}
+                className="h-8 sm:h-9 md:h-10 lg:h-11 text-xs sm:text-sm font-bold shadow-sm border border-[var(--ui-border)] backdrop-blur-md bg-[var(--ui-bg)]/50"
+             />
+        </div>
       </div>
 
       <div className="absolute bottom-6 right-6 z-20 font-mono text-xs text-[var(--text-secondary)] opacity-70 text-right pointer-events-none">

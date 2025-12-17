@@ -33,7 +33,7 @@ export const zh = {
   change_subject: '更換科目',
   my_tools: '個人工具',
   
-  // New Home Screen
+  // New Home Screen & UI
   mode_reading: '閱讀模式',
   mode_practice: '練習模式',
   start_chapter_quiz: '開始測驗',
@@ -45,6 +45,19 @@ export const zh = {
   subtitle_randomized_practice: '自訂範圍測驗',
   subtitle_coding_practice: '動手寫程式練習',
   subtitle_question_bank: '瀏覽所有章節題目',
+  resume_label: '繼續',
+  resume_reading: '繼續閱讀',
+  start_reading: '開始閱讀',
+  items_count: '個項目',
+  questions_count: '題',
+  finals_tag: '期末考',
+  custom_label: '自訂',
+  ui_language: '介面語言',
+  settings_display: '顯示設定',
+  settings_paper: '紙張色調',
+  practice_bank_title: '題庫練習',
+  practice_bank_subtitle: '題庫',
+  practice_questions_for_chapter: '練習本章題目',
 
   // Subject Selection
   select_subject: '選擇科目',
@@ -128,7 +141,6 @@ export const zh = {
   options: '選項',
 
   // Textbook View
-  practice_questions_for_chapter: '練習本章題目',
   next_chapter: '下一章',
   previous_chapter: '上一章',
   reading_settings_title: '閱讀設定',

@@ -68,7 +68,13 @@ const getInitialTheme = (): Theme => {
   return 'light';
 };
 
-const getInitialLanguage = (): Language => 'zh';
+const getInitialLanguage = (): Language => {
+    const storedLang = safeStorage.getItem('language');
+    if (storedLang === 'en' || storedLang === 'zh') {
+        return storedLang as Language;
+    }
+    return 'zh';
+};
 
 // Utilizes safeStorage which already handles try-catch and environment checks
 const getSubjectSpecificValue = <T,>(subjectId: string, key: string, defaultValue: T): T => {
@@ -91,10 +97,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [flaggedItems, setFlaggedItems] = useState<string[]>([]);
   const [autoShowExplanation, setAutoShowExplanation] = useState<boolean>(true);
   const [autoAdvance, setAutoAdvance] = useState<boolean>(false);
+  
+  // Default preferredMode set to 'practice'
   const [readingSettings, setReadingSettings] = useState<ReadingSettings>({
     fontSize: 18, lineHeight: 1.7, pageWidth: 'max-w-5xl', readTheme: 'default', initialMode: false, 
     displayMode: language === 'zh' ? 'zh' : 'en', 
-    preferredMode: 'reading'
+    preferredMode: 'practice' 
   });
   
   const [subjectId, setSubjectId] = useState<string | null>(null);
@@ -120,7 +128,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setReadingSettings(getSubjectSpecificValue(subject.id, LOCAL_STORAGE_KEYS.READING_SETTINGS, {
         fontSize: 18, lineHeight: 1.7, pageWidth: 'max-w-5xl', readTheme: 'default', initialMode: false, 
         displayMode: language === 'zh' ? 'zh' : 'en', 
-        preferredMode: 'reading'
+        preferredMode: 'practice'
       }));
       setLastActiveChapterIdState(getSubjectSpecificValue(subject.id, 'lastActiveChapterId', null));
       

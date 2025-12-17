@@ -46,6 +46,8 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
     readingSettings: settings,
     theme,
     setTheme,
+    language,
+    setLanguage,
     setFontSize,
     setLineHeight,
     setPageWidth,
@@ -110,6 +112,18 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                         
                         <div>
                             <SectionHeader>{t('tools')}</SectionHeader>
+                            <div className="mb-4">
+                                <ControlLabel icon={<GlobeAltIcon className="w-3.5 h-3.5" />} label={t('ui_language')} />
+                                <SegmentedControl
+                                    options={[
+                                        { label: 'English', value: 'en' },
+                                        { label: '中文', value: 'zh' }
+                                    ]}
+                                    value={language}
+                                    onChange={(val) => setLanguage(val as 'en' | 'zh')}
+                                />
+                            </div>
+
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="bg-[var(--ui-bg)] rounded-xl p-3 flex flex-col items-center justify-center gap-2 hover:bg-[var(--ui-bg-hover)] transition-colors">
                                     <span className="text-[10px] font-bold text-[var(--text-subtle)] uppercase">{t('reading_settings_theme')}</span>
@@ -127,7 +141,7 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                                 </div>
 
                                 <div className="bg-[var(--ui-bg)] rounded-xl p-3 flex flex-col items-center justify-center gap-2 hover:bg-[var(--ui-bg-hover)] transition-colors">
-                                    <span className="text-[10px] font-bold text-[var(--text-subtle)] uppercase">Display</span>
+                                    <span className="text-[10px] font-bold text-[var(--text-subtle)] uppercase">{t('settings_display')}</span>
                                     <button 
                                         onClick={toggleFullscreen}
                                         className="flex items-center gap-2 text-xs font-semibold bg-[var(--bg-color)] px-3 py-1.5 rounded-full border border-[var(--ui-border)] shadow-sm hover:border-[var(--accent-solid)] transition-colors w-full justify-center h-8"
@@ -205,7 +219,7 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                                         <div className="grid grid-cols-1 gap-3">
                                             {theme === 'light' && (
                                                 <div className="flex items-center justify-between bg-[var(--ui-bg)] p-3 rounded-xl">
-                                                    <span className="text-xs font-bold text-[var(--text-secondary)] uppercase">Paper Tone</span>
+                                                    <span className="text-xs font-bold text-[var(--text-secondary)] uppercase">{t('settings_paper')}</span>
                                                     <div className="flex items-center gap-3">
                                                         <button onClick={() => setReadTheme('default')} className={`w-6 h-6 rounded-full border border-stone-200 bg-[#f4f1ea] transition-all relative ${settings.readTheme === 'default' ? 'ring-2 ring-[var(--accent-solid)] ring-offset-1 ring-offset-[var(--ui-bg)]' : 'hover:scale-110'}`} aria-label="Default Paper"></button>
                                                         <button onClick={() => setReadTheme('sepia')} className={`w-6 h-6 rounded-full bg-[#DBCDBA] border border-[#c4b5a3] transition-all relative ${settings.readTheme === 'sepia' ? 'ring-2 ring-[var(--accent-solid)] ring-offset-1 ring-offset-[var(--ui-bg)]' : 'hover:scale-110'}`} aria-label="Sepia Paper"></button>

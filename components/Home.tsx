@@ -16,17 +16,12 @@ interface HomeProps {
 }
 
 const GreetingHeader: React.FC<{ title: string, subtitle: string }> = ({ title, subtitle }) => {
-    const hour = new Date().getHours();
-    let greeting = 'Hello';
-    if (hour < 12) greeting = 'Good morning';
-    else if (hour < 18) greeting = 'Good afternoon';
-    else greeting = 'Good evening';
-
+    const { t } = useTranslation();
     return (
         <div className="flex flex-col items-start space-y-1 md:space-y-2">
             <div className="flex items-center gap-3 mb-1 md:mb-2">
                 <div className="h-px w-8 bg-[var(--text-primary)] opacity-30"></div>
-                <span className="text-[10px] md:text-xs font-bold font-mono text-[var(--text-secondary)] uppercase tracking-[0.2em]">{greeting}</span>
+                <span className="text-[10px] md:text-xs font-bold font-mono text-[var(--text-secondary)] uppercase tracking-[0.2em]">{t('welcome_back')}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-[var(--text-primary)] font-serif leading-none tracking-tight">
                 {title}
@@ -47,7 +42,8 @@ const LargeActionCard: React.FC<{
     isPrimary?: boolean;
     indexStr?: string;
     className?: string;
-}> = ({ onAction, label, subLabel, icon, recentQuiz, isPrimary = false, indexStr = "01", className = "" }) => {
+    resumeLabel?: string;
+}> = ({ onAction, label, subLabel, icon, recentQuiz, isPrimary = false, indexStr = "01", className = "", resumeLabel }) => {
     return (
         <motion.button
             onClick={onAction}
@@ -73,9 +69,9 @@ const LargeActionCard: React.FC<{
                         {/* Adjust icon size for mobile */}
                         <div className="scale-90 md:scale-100">{icon}</div>
                     </div>
-                    {recentQuiz && isPrimary && (
+                    {recentQuiz && isPrimary && resumeLabel && (
                         <span className="px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-[var(--bg-color)] text-[var(--text-primary)] text-[8px] md:text-[9px] font-mono font-bold uppercase tracking-wider border border-transparent shadow-lg animate-pulse">
-                            Resume
+                            {resumeLabel}
                         </span>
                     )}
                 </div>
@@ -103,7 +99,8 @@ const SmallToolCard: React.FC<{
     count?: number | string;
     onClick: () => void;
     indexStr?: string;
-}> = ({ icon, title, count, onClick, indexStr }) => (
+    countLabel?: string;
+}> = ({ icon, title, count, onClick, indexStr, countLabel }) => (
     <motion.button
         onClick={onClick}
         whileHover={{ y: -4, scale: 1.02 }}
@@ -117,10 +114,10 @@ const SmallToolCard: React.FC<{
         </div>
         <div className="text-left flex-1 md:w-full">
             <h3 className="text-lg md:text-xl font-bold text-[var(--text-primary)] leading-tight font-serif group-hover:translate-x-1 transition-transform">{title}</h3>
-            {count !== undefined && (
+            {count !== undefined && countLabel && (
                 <div className="flex items-center gap-2 md:gap-3 mt-1 md:mt-2">
                     <div className="h-px w-4 md:w-6 bg-[var(--text-subtle)]"></div>
-                    <p className="text-[9px] md:text-[10px] text-[var(--text-secondary)] font-mono uppercase tracking-widest">{count} ITEMS</p>
+                    <p className="text-[9px] md:text-[10px] text-[var(--text-secondary)] font-mono uppercase tracking-widest">{count} {countLabel}</p>
                 </div>
             )}
         </div>
@@ -134,7 +131,9 @@ const ChapterCard: React.FC<{
     language: 'en' | 'zh';
     problemCount?: number;
     mode?: 'reading' | 'practice';
-}> = ({ chapter, index, onClick, language, problemCount, mode = 'reading' }) => {
+    questionsLabel: string;
+    finalsLabel: string;
+}> = ({ chapter, index, onClick, language, problemCount, mode = 'reading', questionsLabel, finalsLabel }) => {
     const mainTitle = chapter.title[language];
     const subTitle = chapter.subtitle ? chapter.subtitle[language] : chapter.title[language === 'en' ? 'zh' : 'en'];
     const chapterNum = index.toString().padStart(2, '0');
@@ -170,7 +169,7 @@ const ChapterCard: React.FC<{
                     {mode === 'practice' && problemCount !== undefined && !isDisabled && (
                          <div className="flex items-center gap-2 mt-1">
                              <div className="h-0.5 w-4 bg-[var(--accent-solid)] opacity-30"></div>
-                             <span className="text-[10px] font-mono font-bold text-[var(--accent-text)]">{problemCount} Questions</span>
+                             <span className="text-[10px] font-mono font-bold text-[var(--accent-text)]">{problemCount} {questionsLabel}</span>
                          </div>
                     )}
                  </div>
@@ -184,7 +183,7 @@ const ChapterCard: React.FC<{
             
             {isHighlighted && (
                  <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-[var(--warning-solid-bg)] text-[var(--warning-solid-text)] text-[8px] font-bold uppercase tracking-wider shadow-sm">
-                    Finals
+                    {finalsLabel}
                  </div>
             )}
         </motion.button>
@@ -349,6 +348,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                                     icon={<PlayIcon className="w-6 h-6 md:w-7 md:h-7"/>}
                                                     isPrimary={true}
                                                     recentQuiz={recentQuizzes.length > 0 ? recentQuizzes[0] : null}
+                                                    resumeLabel={t('resume_label')}
                                                     indexStr="01"
                                                 />
                                             </motion.div>
@@ -356,8 +356,8 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                             <motion.div variants={itemVariants} className="h-full">
                                                 <LargeActionCard 
                                                     onAction={() => setView({ type: 'overview' })}
-                                                    label={t('question_bank')}
-                                                    subLabel={t('subtitle_question_bank')}
+                                                    label={t('practice_bank_title')}
+                                                    subLabel={t('practice_bank_subtitle')}
                                                     icon={<ListBulletIcon className="w-6 h-6 md:w-7 md:h-7"/>}
                                                     indexStr="02"
                                                 />
@@ -386,6 +386,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                                 count={flaggedItems.length}
                                                 onClick={() => setView({ type: 'bookmarks' })}
                                                 indexStr="03"
+                                                countLabel={t('items_count')}
                                             />
                                         </motion.div>
                                         {isQuizSubject && (
@@ -396,6 +397,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                                     count={recentQuizzes.length}
                                                     onClick={() => setView({ type: 'history' })}
                                                     indexStr="04"
+                                                    countLabel={t('items_count')}
                                                 />
                                             </motion.div>
                                         )}
@@ -421,6 +423,8 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                                         language={language}
                                                         problemCount={problemsByChapter[chapter.id] || 0}
                                                         mode="practice"
+                                                        questionsLabel={t('questions_count')}
+                                                        finalsLabel={t('finals_tag')}
                                                     />
                                                 ))}
                                             </div>
@@ -436,7 +440,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                             <LargeActionCard 
                                                 onAction={handleContinueReading}
                                                 label={lastChapterTitle || subjectData.chapterList[0]?.title[language] || "Read"}
-                                                subLabel={lastActiveChapterId ? "Resume Reading" : "Start Reading"}
+                                                subLabel={lastActiveChapterId ? t('resume_reading') : t('start_reading')}
                                                 icon={<BookOpenIcon className="w-7 h-7"/>}
                                                 isPrimary={true}
                                                 indexStr="00"
@@ -455,9 +459,9 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                                     <PlayIcon className="w-6 h-6" />
                                                 </div>
                                                 <div className="mt-4">
-                                                    <h3 className="text-xl font-bold font-serif text-[var(--text-primary)] leading-tight mb-1">Practice</h3>
+                                                    <h3 className="text-xl font-bold font-serif text-[var(--text-primary)] leading-tight mb-1">{t('practice_bank_title')}</h3>
                                                     <p className="text-[10px] font-mono uppercase tracking-widest text-[var(--text-secondary)] opacity-60">
-                                                        Question Bank
+                                                        {t('practice_bank_subtitle')}
                                                     </p>
                                                 </div>
                                              </button>
@@ -482,6 +486,8 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                                     onClick={() => handleChapterClick(chapter.id)}
                                                     language={language}
                                                     mode="reading"
+                                                    questionsLabel={t('questions_count')}
+                                                    finalsLabel={t('finals_tag')}
                                                 />
                                             ))}
                                         </div>

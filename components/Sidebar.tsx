@@ -341,7 +341,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                                             label={t('start_quiz_session')} 
                                             active={view.type === 'question_bank_quiz'} 
                                             onClick={() => onNavigate({ type: 'question_bank_quiz' })}
-                                            subLabel="Custom"
+                                            subLabel={t('custom_label')}
                                         />
                                         <NavItem 
                                             icon={<StarIcon className="w-4 h-4"/>} 

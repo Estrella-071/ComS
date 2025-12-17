@@ -33,7 +33,7 @@ export const en = {
   change_subject: 'Subject',
   my_tools: 'My Tools',
   
-  // New Home Screen
+  // New Home Screen & UI
   mode_reading: 'Reading',
   mode_practice: 'Practice',
   start_chapter_quiz: 'Start Quiz',
@@ -45,6 +45,19 @@ export const en = {
   subtitle_randomized_practice: 'Customizable quiz mode',
   subtitle_coding_practice: 'Hands-on coding practice',
   subtitle_question_bank: 'Browse all questions by chapter',
+  resume_label: 'Resume',
+  resume_reading: 'Resume Reading',
+  start_reading: 'Start Reading',
+  items_count: 'ITEMS',
+  questions_count: 'Questions',
+  finals_tag: 'Finals',
+  custom_label: 'Custom',
+  ui_language: 'Interface Language',
+  settings_display: 'Display',
+  settings_paper: 'Paper Tone',
+  practice_bank_title: 'Practice',
+  practice_bank_subtitle: 'Question Bank',
+  practice_questions_for_chapter: 'Practice Questions for Chapter',
 
   // Subject Selection
   select_subject: 'Select a Subject',
@@ -127,7 +140,6 @@ export const en = {
   options: 'Options',
 
   // Textbook View
-  practice_questions_for_chapter: 'Practice Questions for Chapter',
   next_chapter: 'Next Chapter',
   previous_chapter: 'Previous Chapter',
   reading_settings_title: 'Reading Settings',

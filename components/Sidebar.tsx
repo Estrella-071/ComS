@@ -5,7 +5,8 @@ import type { View } from '../types';
 import { 
     HomeIcon, ListBulletIcon, CodeBracketIcon, FolderIcon, 
     BriefcaseIcon, SearchIcon, SparklesIcon, StarIcon, 
-    PlayIcon, BookOpenIcon, PencilSquareIcon, ArrowPathIcon 
+    PlayIcon, BookOpenIcon, PencilSquareIcon, ArrowPathIcon,
+    Cog6ToothIcon, Squares2X2Icon
 } from './icons';
 import { useAppContext } from '../contexts/AppContext';
 import { useQuiz } from '../contexts/QuizContext';
@@ -115,7 +116,7 @@ const NavItem = memo<NavItemProps>(({ icon, label, subLabel, active, onClick, ba
 NavItem.displayName = 'NavItem';
 
 const SectionHeader: React.FC<{children: React.ReactNode}> = memo(({children}) => (
-    <div className="px-4 py-2 mt-4 mb-1 flex items-center gap-3">
+    <div className="px-4 py-2 mt-6 mb-2 flex items-center gap-3">
         <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-subtle)] select-none opacity-80 font-mono">
             {children}
         </h3>
@@ -132,10 +133,30 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   const { quizState, currentIndex } = useQuiz();
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1024 : true);
   
-  // Determine current mode
-  const mode = useMemo(() => {
-    if (view.type === 'textbook') return 'reading';
-    return 'practice'; // 'quiz', 'problem', 'exercise', 'question_bank_quiz', 'bookmarks', 'history', 'overview', 'programming'
+  // Decoupled state for the sidebar tab. 
+  // This allows users to browse the "Practice" menu even while in "Reading" mode.
+  const [activeTab, setActiveTab] = useState<'reading' | 'practice'>('reading');
+  
+  // Sync activeTab with view type intelligently
+  useEffect(() => {
+    switch (view.type) {
+        case 'textbook':
+        case 'glossary':
+            setActiveTab('reading');
+            break;
+        case 'quiz':
+        case 'problem':
+        case 'exercise':
+        case 'question_bank_quiz':
+        case 'history':
+        case 'bookmarks':
+        case 'programming':
+            setActiveTab('practice');
+            break;
+        // For 'home' or 'overview', we preserve the user's last choice
+        default:
+            break;
+    }
   }, [view.type]);
 
   const chapterListData = subjectData?.chapterList || [];
@@ -156,21 +177,19 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   const isQuizSubject = subject?.type === 'quiz';
   const isProgrammingSubject = subject?.type === 'programming';
 
-  // Helper to get current chapter context for "Switch to Text" or "Switch to Practice"
-  const currentChapterContextId = useMemo(() => {
+  // Helper to determine which chapter should be highlighted in the list
+  const activeChapterId = useMemo(() => {
     if (view.type === 'textbook') return view.chapterId;
-    if (view.type === 'quiz' && quizState && quizState.problems.length > 0) {
-        // Try to get chapter from current problem
-        const currentProblem = quizState.problems[currentIndex];
-        if (currentProblem) return `chapter${currentProblem.chapter}`;
-    }
-    if (view.type === 'problem') {
-         // Need to find problem in subjectData to get chapter
-         const problem = subjectData?.problems.find(p => p.id === view.id);
+    if (view.type === 'quiz') return view.chapterId; // Only if it's a chapter quiz
+    
+    // If viewing a single problem, highlight its chapter
+    if (view.type === 'problem' && subjectData) {
+         const problem = subjectData.problems.find(p => p.id === view.id);
          if (problem) return `chapter${problem.chapter}`;
+         if (problem) return problem.chapter; // Fallback depending on ID format
     }
-    return lastActiveChapterId || subjectData?.chapterList[0]?.id;
-  }, [view, quizState, currentIndex, subjectData, lastActiveChapterId]);
+    return null;
+  }, [view, subjectData]);
 
   const handleStartChapterQuiz = (chapterId: string) => {
       const chapterNum = chapterId.replace(/\D/g, '');
@@ -187,23 +206,6 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
           startIndex: 0,
           chapterId: chapterId 
       });
-  };
-
-  const handleModeSwitch = (newMode: string) => {
-      if (newMode === 'reading') {
-          if (currentChapterContextId) {
-            onNavigate({ type: 'textbook', chapterId: currentChapterContextId });
-          } else {
-            onNavigate({ type: 'textbook', chapterId: subjectData?.chapterList[0].id || '' });
-          }
-      } else {
-          // Switch to practice - Use current chapter context if available, otherwise go home
-          if (currentChapterContextId) {
-              handleStartChapterQuiz(currentChapterContextId);
-          } else {
-              onNavigate({ type: 'home' });
-          }
-      }
   };
 
   return (
@@ -233,16 +235,14 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                     </div>
                 </button>
 
-                {view.type !== 'home' && (
-                    <SegmentedControl 
-                        options={[
-                            { label: t('sidebar_tab_chapters'), value: 'reading' },
-                            { label: t('sidebar_tab_practice'), value: 'practice' }
-                        ]}
-                        value={mode}
-                        onChange={(val) => handleModeSwitch(val)}
-                    />
-                )}
+                <SegmentedControl 
+                    options={[
+                        { label: t('sidebar_tab_chapters'), value: 'reading' },
+                        { label: t('sidebar_tab_practice'), value: 'practice' }
+                    ]}
+                    value={activeTab}
+                    onChange={(val) => setActiveTab(val as 'reading' | 'practice')}
+                />
             </div>
 
             <div 
@@ -255,7 +255,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                 <div className="h-2" /> 
 
                 <AnimatePresence mode="wait">
-                    {mode === 'reading' ? (
+                    {activeTab === 'reading' ? (
                         <motion.div
                             key="reading-nav"
                             variants={listContainerVariants}
@@ -264,9 +264,15 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                             exit={{ opacity: 0, transition: { duration: 0.1 } }}
                             className="space-y-2"
                         >
-                            {/* Actions for Reading Mode */}
-                            <div className="mb-6 space-y-2">
+                            {/* Resources Section */}
+                            <div className="mb-2 space-y-1">
                                 <SectionHeader>{t('quick_actions')}</SectionHeader>
+                                <NavItem 
+                                    icon={<Squares2X2Icon className="w-5 h-5"/>} 
+                                    label={t('home')} 
+                                    active={view.type === 'home'} 
+                                    onClick={() => onNavigate({type: 'home'})} 
+                                />
                                 <NavItem 
                                     icon={<FolderIcon className="w-5 h-5"/>} 
                                     label={t('glossary')} 
@@ -282,7 +288,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                                     key={chapter.id}
                                     label={chapter.title[language]}
                                     subLabel={index.toString().padStart(2, '0')}
-                                    active={view.type === 'textbook' && view.chapterId === chapter.id}
+                                    active={activeChapterId === chapter.id}
                                     onClick={() => onNavigate({ type: 'textbook', chapterId: chapter.id })}
                                     isChapter={true}
                                     disabled={chapter.disabled}
@@ -300,22 +306,26 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                             exit={{ opacity: 0, transition: { duration: 0.1 } }}
                             className="space-y-2"
                         >
-                             {/* Actions for Practice Mode */}
-                             <div className="mb-6 space-y-2">
-                                <SectionHeader>{t('practice_modes')}</SectionHeader>
+                             {/* Tools Section */}
+                             <div className="mb-2 space-y-1">
+                                <SectionHeader>{t('tools')}</SectionHeader>
                                 
-                                {isQuizSubject && currentChapterContextId && (
-                                     <NavItem 
-                                        icon={<SparklesIcon className="w-5 h-5"/>} 
-                                        label="Change Scope" // Replaced View Problems
-                                        active={view.type === 'question_bank_quiz'} 
-                                        onClick={() => onNavigate({ type: 'question_bank_quiz' })}
-                                        subLabel="Settings"
-                                     />
-                                )}
+                                <NavItem 
+                                    icon={<Squares2X2Icon className="w-5 h-5"/>} 
+                                    label={t('home')} 
+                                    active={view.type === 'home'} 
+                                    onClick={() => onNavigate({type: 'home'})} 
+                                />
 
                                 {isQuizSubject && (
                                     <>
+                                        <NavItem 
+                                            icon={<SparklesIcon className="w-5 h-5"/>} 
+                                            label={t('start_quiz_session')} 
+                                            active={view.type === 'question_bank_quiz'} 
+                                            onClick={() => onNavigate({ type: 'question_bank_quiz' })}
+                                            subLabel="Custom"
+                                        />
                                         <NavItem 
                                             icon={<StarIcon className="w-5 h-5"/>} 
                                             label={t('starred_items')} 
@@ -351,7 +361,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                                             key={chapter.id}
                                             label={chapter.title[language]}
                                             subLabel={index.toString().padStart(2, '0')}
-                                            active={view.type === 'quiz' && view.chapterId === chapter.id}
+                                            active={activeChapterId === chapter.id}
                                             onClick={() => handleStartChapterQuiz(chapter.id)}
                                             isChapter={true}
                                             disabled={chapter.disabled}
@@ -367,7 +377,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
 
                  <div className="lg:hidden mt-8 pt-4 border-t border-[var(--ui-border)]">
                      <NavItem 
-                         icon={<SparklesIcon className="w-5 h-5" />} 
+                         icon={<Cog6ToothIcon className="w-5 h-5" />} 
                          label={t('sidebar_tab_settings')} 
                          active={false} 
                          onClick={onOpenSettings} 

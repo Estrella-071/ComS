@@ -98,7 +98,7 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                 >
                     <div className="flex justify-between items-center px-5 py-4 border-b border-[var(--ui-border)] bg-[var(--bg-translucent)]/50 backdrop-blur-md">
                         <div className="flex items-center gap-2">
-                            <SparklesIcon className="w-4 h-4 text-[var(--accent-solid)]" />
+                            <Cog6ToothIcon className="w-4 h-4 text-[var(--accent-solid)]" />
                             <h3 className="font-bold text-xs uppercase tracking-widest text-[var(--text-primary)]">{t('sidebar_tab_settings')}</h3>
                         </div>
                         <button onClick={() => setIsOpen(false)} className="text-[var(--text-subtle)] hover:text-[var(--text-primary)] transition-colors">

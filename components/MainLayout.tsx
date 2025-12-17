@@ -331,7 +331,7 @@ export const MainLayout: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
             >
-                <ArrowPathIcon className="w-5 h-5" />
+                <HomeIcon className="w-5 h-5" />
                 <span className="text-sm font-semibold whitespace-nowrap hidden sm:inline">{t('change_subject')}</span>
             </motion.button>
             

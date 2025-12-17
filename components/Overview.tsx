@@ -87,16 +87,18 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
         }
     }
     
-    const getChapterTitle = (chapterNum: string) => {
+    const getChapterInfo = (chapterNum: string) => {
         if (!subjectData?.chapterList) return null;
         // Search by ID first (e.g., 'chapter1') then by matching index logic if needed
         const chapterData = subjectData.chapterList.find(c => c.id === `chapter${chapterNum}` || c.id === chapterNum);
-        if (chapterData) return chapterData.title[language];
+        
+        if (chapterData) return { title: chapterData.title[language], isHighlighted: chapterData.highlight };
         
         // Fallback: Check if chapterList is array and index matches
         const idx = parseInt(chapterNum) - 1;
         if (idx >= 0 && idx < subjectData.chapterList.length) {
-            return subjectData.chapterList[idx].title[language];
+            const fallbackData = subjectData.chapterList[idx];
+             return { title: fallbackData.title[language], isHighlighted: fallbackData.highlight };
         }
         
         return null;
@@ -153,7 +155,9 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                             
                             {chapters.map(chapter => {
                                 const isActive = activeChapter === chapter;
-                                const title = getChapterTitle(chapter);
+                                const info = getChapterInfo(chapter);
+                                const title = info?.title;
+                                const isHighlighted = info?.isHighlighted;
                                 
                                 return (
                                  <button
@@ -167,12 +171,13 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                                  >
                                     <div className={`absolute left-[16px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border transition-all z-10 ${
                                         isActive 
-                                        ? 'bg-[var(--accent-solid)] border-[var(--accent-solid)] scale-125' 
-                                        : 'bg-[var(--bg-color)] border-[var(--text-subtle)] group-hover:border-[var(--text-secondary)]'
+                                        ? (isHighlighted ? 'bg-[var(--warning-solid-bg)] border-[var(--warning-solid-bg)] scale-125' : 'bg-[var(--accent-solid)] border-[var(--accent-solid)] scale-125')
+                                        : (isHighlighted ? 'bg-[var(--bg-color)] border-[var(--warning-text)] group-hover:bg-[var(--warning-text)]' : 'bg-[var(--bg-color)] border-[var(--text-subtle)] group-hover:border-[var(--text-secondary)]')
                                     }`} />
                                     
-                                     <div className={`text-xs font-mono mb-0.5 transition-colors ${isActive ? 'text-[var(--text-primary)] font-bold' : 'text-[var(--text-subtle)]'}`}>
-                                        {t('chapter')} {chapter}
+                                     <div className={`text-xs font-mono mb-0.5 transition-colors flex items-center justify-between ${isActive ? 'text-[var(--text-primary)] font-bold' : (isHighlighted ? 'text-[var(--warning-text)] font-semibold' : 'text-[var(--text-subtle)]')}`}>
+                                        <span>{t('chapter')} {chapter}</span>
+                                        {isHighlighted && <StarSolidIcon className="w-3 h-3 text-[var(--warning-text)]" />}
                                      </div>
                                      {title && <div className={`text-sm truncate leading-tight transition-colors font-serif ${isActive ? 'text-[var(--text-primary)] font-bold' : 'text-[var(--text-secondary)]'}`}>{title}</div>}
                                  </button>
@@ -212,15 +217,23 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                             className="absolute top-full right-0 mt-2 w-64 glass-pane rounded-xl shadow-2xl overflow-hidden max-h-80 overflow-y-auto border border-[var(--ui-border)] z-[var(--z-sticky-l2)]"
                                         >
-                                            {chapters.map(chapter => (
+                                            {chapters.map(chapter => {
+                                                const info = getChapterInfo(chapter);
+                                                const isHighlighted = info?.isHighlighted;
+                                                return (
                                                 <button
                                                     key={chapter}
                                                     onClick={() => scrollToChapter(chapter)}
-                                                    className={`w-full text-left px-5 py-3 text-sm border-b border-[var(--ui-border)] last:border-0 hover:bg-[var(--ui-bg)] ${activeChapter === chapter ? 'font-bold text-[var(--accent-text)] bg-[var(--accent-bg)]' : 'text-[var(--text-secondary)]'}`}
+                                                    className={`w-full text-left px-5 py-3 text-sm border-b border-[var(--ui-border)] last:border-0 hover:bg-[var(--ui-bg)] flex items-center justify-between ${
+                                                        activeChapter === chapter 
+                                                        ? (isHighlighted ? 'font-bold text-[var(--warning-text)] bg-[var(--warning-bg)]/20' : 'font-bold text-[var(--accent-text)] bg-[var(--accent-bg)]')
+                                                        : (isHighlighted ? 'text-[var(--warning-text)] font-semibold' : 'text-[var(--text-secondary)]')
+                                                    }`}
                                                 >
-                                                    {t('chapter')} {chapter}
+                                                    <span>{t('chapter')} {chapter}</span>
+                                                    {isHighlighted && <StarSolidIcon className="w-3 h-3 text-[var(--warning-text)]" />}
                                                 </button>
-                                            ))}
+                                            )})}
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -232,13 +245,23 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                         {chapters.length > 0 ? (
                             <div className="space-y-16">
                                 {chapters.map(chapter => {
-                                    const title = getChapterTitle(chapter);
+                                    const info = getChapterInfo(chapter);
+                                    const title = info?.title;
+                                    const isHighlighted = info?.isHighlighted;
+                                    
                                     return (
                                     <section key={chapter} id={`chapter-${chapter}`} data-chapter={chapter} className="scroll-mt-40">
                                         <div className="flex flex-col items-start gap-1 mb-8 border-b border-[var(--ui-border)]/50 pb-4">
-                                            <span className="text-xs font-bold text-[var(--text-subtle)] uppercase tracking-widest font-mono">
-                                                {t('chapter')} {chapter}
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <span className={`text-xs font-bold uppercase tracking-widest font-mono ${isHighlighted ? 'text-[var(--warning-text)]' : 'text-[var(--text-subtle)]'}`}>
+                                                    {t('chapter')} {chapter}
+                                                </span>
+                                                {isHighlighted && (
+                                                    <span className="px-2 py-0.5 rounded-full bg-[var(--warning-solid-bg)] text-[var(--warning-solid-text)] text-[8px] font-bold uppercase tracking-wider shadow-sm">
+                                                        {t('finals_tag')}
+                                                    </span>
+                                                )}
+                                            </div>
                                             <h2 className="text-3xl font-bold font-serif text-[var(--text-primary)]">
                                                 {title || `${t('chapter')} ${chapter}`}
                                             </h2>

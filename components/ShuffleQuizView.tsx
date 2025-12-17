@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '../hooks/useTranslation';
 import type { Problem, View } from '../types';
-import { CodeBracketIcon, PlayIcon, ArrowPathIcon, CheckIcon } from './icons';
+import { CodeBracketIcon, PlayIcon, ArrowPathIcon, CheckIcon, StarSolidIcon } from './icons';
 import { useAppContext } from '../contexts/AppContext';
 import { SegmentedControl } from './common/SegmentedControl';
 import { useQuiz } from '../contexts/QuizContext';
@@ -66,6 +66,13 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
     }
   }, [maxQuestions, count]);
 
+  const finalsChapters = useMemo(() => {
+      if (!subjectData?.chapterList) return [];
+      return subjectData.chapterList
+          .filter(c => c.highlight)
+          .map(c => c.id.replace(/\D/g, '')); // Extract number
+  }, [subjectData]);
+
 
   const handleToggleChapter = (chapter: string) => {
     setSelectedChapters(prev =>
@@ -74,6 +81,7 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
   };
   
   const handleSelectAll = () => setSelectedChapters(chapters);
+  const handleSelectFinals = () => setSelectedChapters(chapters.filter(ch => finalsChapters.includes(ch)));
   const handleDeselectAll = () => setSelectedChapters([]);
 
   const getNewProblems = () => {
@@ -199,25 +207,44 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
                     <div>
                         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-3 gap-2">
                             <h3 className="text-md font-medium text-[var(--text-primary)]">{t('quiz_include_chapters')}</h3>
-                            <div className="flex-shrink-0 space-x-2">
+                            <div className="flex-shrink-0 space-x-2 flex flex-wrap gap-y-2">
                                 <button onClick={handleSelectAll} className="text-sm font-semibold bg-[var(--ui-bg)] hover:bg-[var(--ui-bg-hover)] text-[var(--text-secondary)] px-3 py-1.5 rounded-md transition-colors">{t('select_all')}</button>
+                                {finalsChapters.length > 0 && (
+                                     <button onClick={handleSelectFinals} className="text-sm font-semibold bg-[var(--warning-bg)]/30 hover:bg-[var(--warning-bg)] text-[var(--warning-text)] px-3 py-1.5 rounded-md transition-colors border border-[var(--warning-text)]/20">{t('select_finals')}</button>
+                                )}
                                 <button onClick={handleDeselectAll} className="text-sm font-semibold bg-[var(--ui-bg)] hover:bg-[var(--ui-bg-hover)] text-[var(--text-secondary)] px-3 py-1.5 rounded-md transition-colors">{t('deselect_all')}</button>
                             </div>
                         </div>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 max-h-48 overflow-y-auto p-3 bg-black/5 dark:bg-white/5 rounded-lg overscroll-contain">
-                        {chapters.map(chapter => (
-                            <button
-                            key={chapter}
-                            onClick={() => handleToggleChapter(chapter)}
-                            className={`p-3 rounded-lg text-sm font-semibold transition-colors ${
-                                selectedChapters.includes(chapter)
-                                ? 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)]'
-                                : 'bg-[var(--bg-translucent)] text-[var(--text-secondary)] hover:bg-[var(--ui-bg-hover)]'
-                            }`}
-                            >
-                            {`${t('chapter')} ${chapter}${t('chapter_unit')}`}
-                            </button>
-                        ))}
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 max-h-56 overflow-y-auto p-3 bg-black/5 dark:bg-white/5 rounded-lg overscroll-contain custom-scrollbar">
+                        {chapters.map(chapter => {
+                            const isFinals = finalsChapters.includes(chapter);
+                            const isSelected = selectedChapters.includes(chapter);
+                            
+                            return (
+                                <button
+                                key={chapter}
+                                onClick={() => handleToggleChapter(chapter)}
+                                className={`
+                                    relative p-3 rounded-lg text-sm font-semibold transition-all border
+                                    ${isSelected
+                                    ? (isFinals 
+                                        ? 'bg-[var(--warning-solid-bg)] text-[var(--warning-solid-text)] border-[var(--warning-solid-bg)]' 
+                                        : 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]'
+                                      )
+                                    : 'bg-[var(--bg-translucent)] text-[var(--text-secondary)] hover:bg-[var(--ui-bg-hover)] border-transparent hover:border-[var(--ui-border)]'
+                                    }
+                                    ${!isSelected && isFinals ? 'border-[var(--warning-text)]/30 bg-[var(--warning-bg)]/10 text-[var(--warning-text)]' : ''}
+                                `}
+                                >
+                                {isFinals && (
+                                    <div className="absolute -top-1 -right-1">
+                                        <StarSolidIcon className={`w-3 h-3 ${isSelected ? 'text-white' : 'text-[var(--warning-text)]'}`} />
+                                    </div>
+                                )}
+                                {`${t('chapter')} ${chapter}${t('chapter_unit')}`}
+                                </button>
+                            );
+                        })}
                         </div>
                     </div>
                 </div>
@@ -229,21 +256,21 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
                                 onClick={resumeQuiz}
                                 className="flex-1 px-4 py-3 rounded-xl bg-transparent border border-[var(--ui-border)] text-[var(--text-secondary)] font-semibold hover:bg-[var(--ui-bg)] transition-colors"
                             >
-                                Cancel (Resume)
+                                {t('quiz_cancel_resume')}
                             </button>
                             <button 
                                 onClick={handleStartNew} 
                                 disabled={count === 0 || (maxQuestions === 0 && selectedChapters.length > 0)} 
                                 className="flex-1 px-4 py-3 rounded-xl bg-[var(--error-bg)] text-[var(--error-text)] border border-[var(--error-border)] font-semibold hover:bg-[var(--error-border)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Restart New
+                                {t('quiz_restart_new')}
                             </button>
                             <button 
                                 onClick={handleUpdateAndContinue} 
                                 disabled={count === 0 || (maxQuestions === 0 && selectedChapters.length > 0)} 
                                 className="flex-[2] px-4 py-3 rounded-xl bg-[var(--accent-solid)] text-[var(--accent-solid-text)] font-semibold hover:bg-[var(--accent-solid-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
-                                <ArrowPathIcon className="w-5 h-5"/> Update & Continue
+                                <ArrowPathIcon className="w-5 h-5"/> {t('quiz_update_continue')}
                             </button>
                         </>
                     ) : (

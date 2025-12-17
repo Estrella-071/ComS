@@ -1,7 +1,7 @@
 
 export const zh = {
   // General
-  app_name: '互動學習題庫',
+  app_name: '電腦科學學習題庫',
   cancel: '取消',
   go_back: '返回',
   
@@ -97,7 +97,11 @@ export const zh = {
   quiz_description: '選擇要包含在測驗中的章節並設定測驗模式。',
   select_all: '全選',
   deselect_all: '全部取消',
+  select_finals: '選擇期末考範圍',
   start_quiz: '開始測驗',
+  quiz_cancel_resume: '取消（繼續測驗）',
+  quiz_restart_new: '重新開始',
+  quiz_update_continue: '更新設定並繼續',
   quiz_num_questions: '題目數量',
   quiz_all_questions: '全部',
   quiz_include_chapters: '包含的章節',

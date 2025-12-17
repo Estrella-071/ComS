@@ -181,7 +181,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
       visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 400, damping: 30 } }
   } as const;
   
-  const currentScore = Array.from(answers).reduce((count: number, [id, answer]) => {
+  const currentScore = Array.from(answers).reduce<number>((count, [id, answer]) => {
       const problem = problems.find(p => p.id === id);
       return problem && problem.answer === answer ? count + 1 : count;
   }, 0);

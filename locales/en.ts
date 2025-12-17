@@ -1,7 +1,7 @@
 
 export const en = {
   // General
-  app_name: 'Interactive Learning Bank',
+  app_name: 'CS Learning Bank',
   cancel: 'Cancel',
   go_back: 'Back',
 
@@ -97,7 +97,11 @@ export const en = {
   quiz_description: 'Select chapters and configure the quiz mode.',
   select_all: 'Select All',
   deselect_all: 'Deselect All',
+  select_finals: 'Select Finals',
   start_quiz: 'Start Quiz',
+  quiz_cancel_resume: 'Cancel (Resume)',
+  quiz_restart_new: 'Restart New',
+  quiz_update_continue: 'Update & Continue',
   quiz_num_questions: 'Number of Questions',
   quiz_all_questions: 'Max',
   quiz_include_chapters: 'Chapters to Include',

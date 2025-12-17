@@ -59,7 +59,7 @@ export const QuizNavigatorPopover: React.FC<QuizNavigatorPopoverProps> = ({ onNa
         
         let currentScore = 0;
         if (isFinished) {
-            currentScore = Array.from(answers).reduce((count, [id, answer]) => {
+            currentScore = Array.from(answers).reduce<number>((count, [id, answer]) => {
                 const problem = quizState.problems.find(p => p.id === id);
                 return problem && problem.answer === answer ? count + 1 : count;
             }, 0);

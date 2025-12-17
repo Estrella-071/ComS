@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { StarIcon, StarSolidIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppContext } from '../contexts/AppContext';
@@ -18,20 +18,25 @@ interface ProblemSolverProps {
   isSidebarOpen: boolean;
 }
 
-const variants = {
+const variants: Variants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? '50%' : '-50%',
-    opacity: 0,
+    x: direction > 0 ? '110%' : '-110%',
+    opacity: 1,
+    scale: 0.95,
+    zIndex: 1
   }),
   center: {
-    zIndex: 1,
+    zIndex: 2,
     x: 0,
     opacity: 1,
+    scale: 1,
   },
   exit: (direction: number) => ({
     zIndex: 0,
-    x: direction < 0 ? '50%' : '-50%',
-    opacity: 0,
+    x: direction < 0 ? '100%' : '-100%',
+    opacity: 0.8,
+    scale: 0.95,
+    transition: { duration: 0.4, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }
   }),
 };
 
@@ -73,9 +78,9 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                 </div>
             </div>
         </div>
-      <div className="flex-1 w-full flex justify-center items-center relative min-h-0 pt-4">
+      <div className="flex-1 w-full flex justify-center items-center relative min-h-0 pt-4 overflow-hidden">
         
-        <div className="relative w-full max-w-4xl">
+        <div className="relative w-full max-w-4xl h-full">
             <button onClick={() => navigate(-1)} disabled={problemIndex <= 0} className="hidden lg:flex items-center justify-center absolute top-1/2 -translate-y-1/2 right-full mr-4 w-12 h-12 bg-[var(--ui-bg)] rounded-full text-[var(--text-secondary)] disabled:opacity-50 hover:bg-[var(--ui-bg-hover)] transition-colors z-[var(--z-content-overlay)]">
               <ChevronLeftIcon className="w-6 h-6" />
             </button>
@@ -95,19 +100,24 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                     {showFlagToast && <Toast message={t('flagged_toast')} />}
                 </AnimatePresence>
 
-                <AnimatePresence initial={false} custom={direction} mode="wait">
+                <AnimatePresence initial={false} custom={direction} mode="popLayout">
                   <motion.div
                     key={id}
-                    className="w-full h-full"
+                    className="absolute inset-0 w-full h-full"
                     custom={direction}
                     variants={variants}
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    transition={{ type: 'spring' as const, stiffness: 500, damping: 50 }}
+                    transition={{ 
+                        type: 'spring', 
+                        stiffness: 300, 
+                        damping: 30,
+                        mass: 0.8
+                    }}
                     drag={!isSidebarOpen ? 'x' : false}
                     dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={0.25}
+                    dragElastic={0.2}
                     onDragEnd={(e, { offset, velocity }) => {
                       const swipeDistanceThreshold = 100;
                       if (Math.abs(offset.y) > Math.abs(offset.x)) return;

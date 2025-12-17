@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useSpring, useTransform, Variants } from 'framer-motion';
 import type { Problem } from '../types';
 import { QuestionCard } from './QuestionCard';
 import { useTranslation } from '../hooks/useTranslation';
@@ -113,13 +113,26 @@ export const QuizView: React.FC<QuizViewProps> = ({
     };
   }, [justAnswered, autoAdvance, paginate]);
 
-  const variants = {
+  // Smoother sliding transitions
+  const variants: Variants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? 50 : -50, opacity: 0, scale: 0.98
+      x: direction > 0 ? '110%' : '-110%',
+      opacity: 1,
+      scale: 0.95,
+      zIndex: 1
     }),
-    center: { zIndex: 1, x: 0, opacity: 1, scale: 1 },
+    center: { 
+      zIndex: 2, 
+      x: 0, 
+      opacity: 1, 
+      scale: 1 
+    },
     exit: (direction: number) => ({
-      zIndex: 0, x: direction < 0 ? 50 : -50, opacity: 0, scale: 0.98
+      zIndex: 0, 
+      x: direction < 0 ? '100%' : '-100%',
+      opacity: 0.8,
+      scale: 0.95,
+      transition: { duration: 0.4, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] } 
     }),
   };
 
@@ -262,8 +275,12 @@ export const QuizView: React.FC<QuizViewProps> = ({
          </div>
       </div>
       
-      <div className="flex-1 flex flex-col justify-center min-h-0 relative perspective-1000">
-        <AnimatePresence custom={direction} mode="wait">
+      {/* 
+        The parent div here acts as the viewport. 
+        `relative` and `overflow-hidden` are crucial for the `absolute` positioning of cards to work correctly.
+      */}
+      <div className="flex-1 relative w-full overflow-hidden">
+        <AnimatePresence custom={direction} mode="popLayout" initial={false}>
             <motion.div
                 key={currentIndex}
                 custom={direction}
@@ -271,11 +288,16 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 initial="enter"
                 animate="center"
                 exit="exit"
-                transition={{ type: "spring", stiffness: 500, damping: 50 }}
-                className="w-full h-full max-h-full"
+                transition={{ 
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 30,
+                    mass: 0.8
+                }}
+                className="absolute inset-0 w-full h-full"
                 drag={!isSidebarOpen ? 'x' : false}
                 dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.1}
+                dragElastic={0.2} // More elastic for a better 'preview' feel
                 onDragEnd={(e, { offset, velocity }) => {
                     const swipeDistanceThreshold = 50;
                     if (Math.abs(offset.y) > Math.abs(offset.x)) return;
@@ -297,7 +319,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
         </AnimatePresence>
       </div>
 
-      <div className="flex justify-between items-center mt-4 sm:mt-6 flex-shrink-0 gap-4 pointer-events-none">
+      <div className="flex justify-between items-center mt-4 sm:mt-6 flex-shrink-0 gap-4 pointer-events-none relative z-10">
         <motion.button
           onClick={() => paginate(-1)}
           disabled={currentIndex === 0 || isFinished}

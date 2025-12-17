@@ -161,6 +161,17 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
 
   const chapterListData = subjectData?.chapterList || [];
 
+  // Pre-calculate problem counts per chapter to disable empty chapters in Practice mode
+  const problemsByChapter = useMemo(() => {
+    if (!subjectData) return {};
+    const counts: Record<string, number> = {};
+    subjectData.problems.forEach(p => {
+        // Matches the chapter ID format used in handleStartChapterQuiz
+        counts[p.chapter] = (counts[p.chapter] || 0) + 1;
+    });
+    return counts;
+  }, [subjectData]);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -195,6 +206,10 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
       const chapterNum = chapterId.replace(/\D/g, '');
       if (!subjectData) return;
       const problems = subjectData.problems.filter(p => p.chapter === chapterNum);
+      
+      // If somehow clicked despite being disabled, prevent action
+      if (problems.length === 0) return;
+
       const chapterInfo = subjectData.chapterList.find(c => c.id === chapterId);
       const title = chapterInfo ? chapterInfo.title[language] : `${t('chapter')} ${chapterNum}`;
       
@@ -356,19 +371,24 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                              {isQuizSubject && (
                                  <>
                                     <SectionHeader>{t('practice_questions_for_chapter')}</SectionHeader>
-                                    {chapterListData.map((chapter, index) => (
-                                        <NavItem
-                                            key={chapter.id}
-                                            label={chapter.title[language]}
-                                            subLabel={index.toString().padStart(2, '0')}
-                                            active={activeChapterId === chapter.id}
-                                            onClick={() => handleStartChapterQuiz(chapter.id)}
-                                            isChapter={true}
-                                            disabled={chapter.disabled}
-                                            highlight={chapter.highlight}
-                                            actionIcon={<PlayIcon className="w-4 h-4" />}
-                                        />
-                                    ))}
+                                    {chapterListData.map((chapter, index) => {
+                                        const chapterNum = chapter.id.replace(/\D/g, '');
+                                        const hasProblems = (problemsByChapter[chapterNum] || 0) > 0;
+                                        
+                                        return (
+                                            <NavItem
+                                                key={chapter.id}
+                                                label={chapter.title[language]}
+                                                subLabel={index.toString().padStart(2, '0')}
+                                                active={activeChapterId === chapter.id}
+                                                onClick={() => handleStartChapterQuiz(chapter.id)}
+                                                isChapter={true}
+                                                disabled={chapter.disabled || !hasProblems}
+                                                highlight={chapter.highlight}
+                                                actionIcon={<PlayIcon className="w-4 h-4" />}
+                                            />
+                                        );
+                                    })}
                                  </>
                              )}
                         </motion.div>

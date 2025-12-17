@@ -4,7 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppContext } from '../contexts/AppContext';
 import { useQuiz } from '../contexts/QuizContext';
-import { ListBulletIcon, CheckBadgeIcon, CheckIcon, XMarkIcon, StarSolidIcon } from './icons';
+import { 
+    ListBulletIcon, 
+    CheckBadgeIcon, 
+    CheckIcon, 
+    XMarkIcon, 
+    StarSolidIcon, 
+    Squares2X2Icon,
+    ExclamationCircleIcon
+} from './icons';
 import type { View } from '../types';
 
 const spring = { type: 'spring' as const, stiffness: 500, damping: 40 };
@@ -13,135 +21,260 @@ interface QuizNavigatorPopoverProps {
   onNavigate: (view: View) => void;
 }
 
+type FilterType = 'all' | 'todo' | 'flagged' | 'incorrect';
+
 export const QuizNavigatorPopover: React.FC<QuizNavigatorPopoverProps> = ({ onNavigate }) => {
     const { t } = useTranslation();
     const { flaggedItems } = useAppContext();
     const { quizState, currentIndex, answers, isFinished, goToProblem } = useQuiz();
-    const [filter, setFilter] = useState<'all' | 'incorrect' | 'unanswered'>('all');
-    const [isNavOpen, setIsNavOpen] = useState(false);
-    const navRef = useRef<HTMLDivElement>(null);
-    const currentQuestionRef = React.useRef<HTMLButtonElement>(null);
+    
+    // Default filter depends on state: if finished, show all, otherwise show all
+    const [filter, setFilter] = useState<FilterType>('all');
+    const [isOpen, setIsOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const activeItemRef = useRef<HTMLButtonElement>(null);
 
-     useEffect(() => {
+    // Close when clicking outside
+    useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (navRef.current && !navRef.current.contains(event.target as Node)) {
-                setIsNavOpen(false);
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
             }
         };
-        document.addEventListener('mousedown', handleClickOutside);
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    }, [isOpen]);
 
+    // Auto-scroll to current question when opening
     useEffect(() => {
-        if(isNavOpen && currentQuestionRef.current) {
-            currentQuestionRef.current.scrollIntoView({ block: 'nearest' });
+        if(isOpen && activeItemRef.current) {
+            activeItemRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         }
-    }, [isNavOpen, currentIndex]);
+    }, [isOpen]);
 
-    const { score, problems } = useMemo(() => {
-        if (!quizState) return { score: 0, problems: [] };
-        const newScore = Array.from(answers).reduce((count: number, [id, answer]) => {
-            const problem = quizState.problems.find(p => p.id === id);
-            return problem && problem.answer === answer ? count + 1 : count;
-        }, 0);
-        return { score: newScore, problems: quizState.problems };
-    }, [quizState, answers]);
-    
-    const incorrectProblems = useMemo(() => {
-        return problems.filter(p => {
-            const userAnswer = answers.get(p.id);
-            return userAnswer && userAnswer !== p.answer;
-        });
-    }, [problems, answers, isFinished]);
-    
-    const filteredProblems = useMemo(() => {
-        const allProbs = problems.map((p, i) => ({...p, originalIndex: i}));
-        if (!isFinished || filter === 'all') return allProbs;
+    const { problems, score } = useMemo(() => {
+        if (!quizState) return { problems: [], score: 0 };
         
-        return allProbs.filter(p => {
-            const userAnswer = answers.get(p.id);
-            if (filter === 'incorrect') return userAnswer && userAnswer !== p.answer;
-            if (filter === 'unanswered') return !userAnswer;
-            return false;
-        });
-    }, [problems, answers, isFinished, filter]);
-    
-    const handleReviewIncorrect = () => {
-        if (incorrectProblems.length > 0) {
-            onNavigate({
-                type: 'quiz',
-                id: `review-incorrect-${Date.now()}`,
-                problems: incorrectProblems,
-                title: t('review_incorrect_questions'),
-                startIndex: 0,
-            });
+        let currentScore = 0;
+        if (isFinished) {
+            currentScore = Array.from(answers).reduce((count, [id, answer]) => {
+                const problem = quizState.problems.find(p => p.id === id);
+                return problem && problem.answer === answer ? count + 1 : count;
+            }, 0);
         }
+        return { problems: quizState.problems, score: currentScore };
+    }, [quizState, answers, isFinished]);
+
+    // Calculate stats for badges
+    const stats = useMemo(() => {
+        const total = problems.length;
+        const answeredCount = answers.size;
+        const flaggedCount = problems.filter(p => flaggedItems.includes(p.id)).length;
+        const remaining = total - answeredCount;
+        
+        // Calculate incorrect count only if finished to avoid spoilers
+        const incorrectCount = isFinished 
+            ? problems.filter(p => {
+                const ans = answers.get(p.id);
+                return ans && ans !== p.answer;
+            }).length
+            : 0;
+
+        return { total, remaining, flaggedCount, incorrectCount };
+    }, [problems, answers, flaggedItems, isFinished]);
+
+    const filteredProblems = useMemo(() => {
+        // Map to preserve original index
+        const all = problems.map((p, i) => ({...p, originalIndex: i}));
+        
+        return all.filter(p => {
+            const isFlagged = flaggedItems.includes(p.id);
+            const isAnswered = answers.has(p.id);
+            const answer = answers.get(p.id);
+            const isIncorrect = isFinished && isAnswered && answer !== p.answer;
+
+            switch (filter) {
+                case 'flagged': return isFlagged;
+                case 'todo': return !isAnswered;
+                case 'incorrect': return isIncorrect;
+                default: return true;
+            }
+        });
+    }, [problems, answers, flaggedItems, filter, isFinished]);
+
+    const handleJump = (index: number) => {
+        goToProblem(index);
+        setIsOpen(false);
     };
-    
+
     if (!quizState) return null;
 
     return (
-        <div ref={navRef} className="relative">
-             <div className="flex items-center gap-2">
-                <p className="text-[var(--text-secondary)] text-sm mt-1">{`${t('question')} ${currentIndex + 1} ${t('of')} ${problems.length}`}</p>
-                <button onClick={() => setIsNavOpen(v => !v)} className="p-1 -m-1 text-[var(--text-subtle)] hover:text-[var(--text-primary)] transition-colors"><ListBulletIcon className="w-5 h-5"/></button>
-            </div>
+        <div ref={containerRef} className="relative z-50">
+             {/* Trigger Button */}
+             <motion.button 
+                onClick={() => setIsOpen(!isOpen)} 
+                className={`group flex items-center gap-3 px-3 py-1.5 rounded-lg border transition-all ${
+                    isOpen 
+                    ? 'bg-[var(--ui-bg)] border-[var(--text-secondary)]' 
+                    : 'bg-transparent border-transparent hover:bg-[var(--ui-bg)]'
+                }`}
+                whileTap={{ scale: 0.95 }}
+            >
+                <div className="flex flex-col items-end mr-1">
+                    <span className="text-[10px] font-bold text-[var(--text-subtle)] uppercase tracking-wider leading-none mb-1">
+                        {t('question')}
+                    </span>
+                    <span className="text-sm font-mono font-bold text-[var(--text-primary)] leading-none">
+                        {currentIndex + 1} <span className="text-[var(--text-subtle)] font-normal">/ {problems.length}</span>
+                    </span>
+                </div>
+                <div className={`p-2 rounded-md transition-colors ${isOpen ? 'bg-[var(--text-primary)] text-[var(--bg-color)]' : 'bg-[var(--ui-bg)] text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'}`}>
+                    <Squares2X2Icon className="w-5 h-5"/>
+                </div>
+            </motion.button>
 
              <AnimatePresence>
-                {isNavOpen && (
+                {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        transition={spring}
-                        className="absolute top-full mt-2 right-0 w-80 max-w-[90vw] glass-pane rounded-xl shadow-lg z-10 p-3"
+                        initial={{ opacity: 0, y: 15, scale: 0.95, filter: 'blur(10px)' }}
+                        animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, y: 15, scale: 0.95, filter: 'blur(10px)' }}
+                        transition={{ type: "spring", duration: 0.4, bounce: 0 }}
+                        className="absolute top-full mt-4 right-0 w-[340px] max-w-[95vw] glass-pane rounded-2xl shadow-2xl border border-[var(--ui-border)] overflow-hidden flex flex-col"
+                        style={{ maxHeight: 'min(500px, 80vh)' }}
                     >
-                        {isFinished && (
-                            <div className="space-y-3 p-1 mb-2">
-                                <h3 className="flex items-center gap-2 text-md font-bold text-[var(--text-primary)]">
-                                    <CheckBadgeIcon className="w-5 h-5 text-[var(--text-secondary)]"/> {t('your_score')}: {score} / {problems.length}
+                        {/* Header Area */}
+                        <div className="flex-shrink-0 bg-[var(--ui-bg)]/50 backdrop-blur-md border-b border-[var(--ui-border)] p-4">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest">
+                                    {t('table_of_contents')}
                                 </h3>
-                                <div className="flex items-center bg-[var(--ui-bg)] rounded-lg p-1 text-xs">
-                                    <button onClick={() => setFilter('all')} className={`flex-1 p-1.5 rounded-md font-semibold ${filter === 'all' ? 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)]' : 'hover:bg-[var(--ui-bg-hover)]'}`}>{t('quiz_nav_all')}</button>
-                                    <button onClick={() => setFilter('incorrect')} className={`flex-1 p-1.5 rounded-md font-semibold ${filter === 'incorrect' ? 'bg-[var(--error-solid-bg)] text-[var(--error-solid-text)]' : 'hover:bg-[var(--ui-bg-hover)]'}`}>{t('quiz_nav_incorrect')}</button>
-                                    <button onClick={() => setFilter('unanswered')} className={`flex-1 p-1.5 rounded-md font-semibold ${filter === 'unanswered' ? 'text-[var(--text-secondary)]' : 'hover:bg-[var(--ui-bg-hover)]'}`}>{t('quiz_nav_unanswered')}</button>
-                                </div>
-                                {incorrectProblems.length > 0 && (
-                                    <button onClick={handleReviewIncorrect} className="w-full text-sm px-3 py-2 bg-[var(--error-bg)] text-[var(--error-text)] hover:bg-[var(--error-border)] rounded-lg font-semibold transition-colors">
-                                        {t('review_incorrect_questions')} ({incorrectProblems.length})
-                                    </button>
+                                {isFinished && (
+                                    <div className="flex items-center gap-1.5 bg-[var(--accent-bg)] px-2 py-1 rounded-md text-[var(--accent-text)]">
+                                        <CheckBadgeIcon className="w-4 h-4"/>
+                                        <span className="text-xs font-bold font-mono">{score} / {problems.length}</span>
+                                    </div>
                                 )}
                             </div>
-                        )}
-                        <div className="grid grid-cols-5 gap-2 max-h-64 overflow-y-auto pr-1">
-                            {filteredProblems.map(p => {
-                                const index = p.originalIndex;
-                                const isCurrent = index === currentIndex;
-                                const answerState = answers.get(p.id);
-                                const isCorrect = answerState === p.answer;
-                                
-                                return (
-                                    <div key={p.id} className="relative">
-                                    <button
-                                        ref={isCurrent ? currentQuestionRef : null}
-                                        onClick={() => { goToProblem(index); setIsNavOpen(false); }}
-                                        className={`h-11 w-full rounded-md text-sm font-bold transition-all flex items-center justify-center gap-1 ${
-                                            isCurrent ? 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)] ring-2 ring-offset-2 ring-[var(--accent-solid)] ring-offset-[var(--bg-color)]' : 
-                                            answerState ? (isCorrect ? 'bg-[var(--success-bg)] text-[var(--success-text)]' : 'bg-[var(--error-bg)] text-[var(--error-text)]') :
-                                            'bg-[var(--bg-translucent)] text-[var(--text-secondary)] hover:bg-[var(--ui-bg-hover)]'
-                                        }`}
-                                    >
-                                        {index + 1}
-                                        {isFinished && answerState && (isCorrect ? <CheckIcon className="w-3 h-3"/> : <XMarkIcon className="w-3 h-3"/>)}
-                                    </button>
-                                    {flaggedItems.includes(p.id) && (
-                                        <div className="absolute -top-1 -right-1 z-10 pointer-events-none">
-                                            <StarSolidIcon className="w-4 h-4 text-[var(--warning-text)] drop-shadow" />
-                                        </div>
-                                    )}
-                                    </div>
-                                );
-                            })}
+
+                            {/* Custom Tab Bar */}
+                            <div className="flex p-1 bg-[var(--ui-bg)] rounded-xl border border-[var(--ui-border)]">
+                                <FilterTab 
+                                    active={filter === 'all'} 
+                                    onClick={() => setFilter('all')} 
+                                    label="All" 
+                                    count={stats.total} 
+                                />
+                                <FilterTab 
+                                    active={filter === 'todo'} 
+                                    onClick={() => setFilter('todo')} 
+                                    label="To Do" 
+                                    count={stats.remaining}
+                                    disabled={isFinished} 
+                                />
+                                <FilterTab 
+                                    active={filter === 'flagged'} 
+                                    onClick={() => setFilter('flagged')} 
+                                    label="Flagged" 
+                                    count={stats.flaggedCount} 
+                                />
+                                {isFinished && (
+                                    <FilterTab 
+                                        active={filter === 'incorrect'} 
+                                        onClick={() => setFilter('incorrect')} 
+                                        label="Wrong" 
+                                        count={stats.incorrectCount} 
+                                        isError
+                                    />
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Grid Area */}
+                        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-[var(--bg-color)]/30">
+                            {filteredProblems.length === 0 ? (
+                                <div className="h-32 flex flex-col items-center justify-center text-[var(--text-subtle)]">
+                                    <ExclamationCircleIcon className="w-8 h-8 mb-2 opacity-50" />
+                                    <span className="text-xs font-medium">No questions found</span>
+                                </div>
+                            ) : (
+                                <motion.div 
+                                    layout
+                                    className="grid grid-cols-5 gap-2.5"
+                                >
+                                    <AnimatePresence mode="popLayout">
+                                        {filteredProblems.map((p) => {
+                                            const index = p.originalIndex;
+                                            const isCurrent = index === currentIndex;
+                                            const isFlagged = flaggedItems.includes(p.id);
+                                            const hasAnswer = answers.has(p.id);
+                                            const answer = answers.get(p.id);
+                                            const isCorrect = isFinished && hasAnswer && answer === p.answer;
+                                            const isWrong = isFinished && hasAnswer && answer !== p.answer;
+
+                                            // Determine visual state
+                                            let bgClass = 'bg-[var(--ui-bg)] border-[var(--ui-border)]';
+                                            let textClass = 'text-[var(--text-secondary)]';
+                                            
+                                            if (isCurrent) {
+                                                bgClass = 'bg-[var(--accent-solid)] border-[var(--accent-solid)] shadow-lg shadow-[var(--accent-solid)]/20';
+                                                textClass = 'text-[var(--accent-solid-text)]';
+                                            } else if (isWrong) {
+                                                bgClass = 'bg-[var(--error-bg)] border-[var(--error-border)]';
+                                                textClass = 'text-[var(--error-text)]';
+                                            } else if (isCorrect) {
+                                                bgClass = 'bg-[var(--success-bg)] border-[var(--success-border)]';
+                                                textClass = 'text-[var(--success-text)]';
+                                            } else if (hasAnswer) {
+                                                bgClass = 'bg-[var(--text-secondary)]/10 border-[var(--text-secondary)]/20';
+                                                textClass = 'text-[var(--text-primary)]';
+                                            }
+
+                                            return (
+                                                <motion.button
+                                                    layout
+                                                    key={p.id}
+                                                    ref={isCurrent ? activeItemRef : null}
+                                                    onClick={() => handleJump(index)}
+                                                    initial={{ scale: 0.8, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    exit={{ scale: 0.8, opacity: 0 }}
+                                                    whileHover={{ scale: 1.05, zIndex: 10 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                    className={`
+                                                        relative h-12 rounded-xl border text-sm font-bold font-mono transition-colors flex items-center justify-center
+                                                        ${bgClass} ${textClass}
+                                                    `}
+                                                >
+                                                    {index + 1}
+
+                                                    {/* Flag Badge */}
+                                                    {isFlagged && (
+                                                        <div className="absolute -top-1 -right-1">
+                                                            <div className="relative flex items-center justify-center">
+                                                                <div className="absolute w-2 h-2 bg-[var(--bg-color)] rounded-full"></div>
+                                                                <StarSolidIcon className="w-3.5 h-3.5 text-[var(--warning-text)] relative z-10" />
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Selection Indicator (Active) */}
+                                                    {isCurrent && (
+                                                        <motion.div
+                                                            layoutId="active-ring"
+                                                            className="absolute -inset-1 rounded-2xl border-2 border-[var(--accent-solid)] opacity-30"
+                                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                                        />
+                                                    )}
+                                                </motion.button>
+                                            );
+                                        })}
+                                    </AnimatePresence>
+                                </motion.div>
+                            )}
                         </div>
                     </motion.div>
                 )}
@@ -149,3 +282,28 @@ export const QuizNavigatorPopover: React.FC<QuizNavigatorPopoverProps> = ({ onNa
         </div>
     );
 };
+
+const FilterTab: React.FC<{ 
+    active: boolean; 
+    onClick: () => void; 
+    label: string; 
+    count: number;
+    disabled?: boolean;
+    isError?: boolean;
+}> = ({ active, onClick, label, count, disabled, isError }) => (
+    <button
+        onClick={onClick}
+        disabled={disabled || count === 0}
+        className={`
+            flex-1 flex flex-col items-center justify-center py-2 rounded-lg transition-all text-[10px] uppercase tracking-wide font-bold gap-0.5
+            ${disabled || count === 0 ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:bg-[var(--ui-bg-hover)]'}
+            ${active 
+                ? (isError ? 'bg-[var(--error-bg)] text-[var(--error-text)]' : 'bg-[var(--bg-color)] text-[var(--text-primary)] shadow-sm') 
+                : 'text-[var(--text-subtle)]'
+            }
+        `}
+    >
+        <span>{label}</span>
+        <span className="font-mono opacity-80">{count}</span>
+    </button>
+);

@@ -88,6 +88,38 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Base font size for mobile */
+  font-size: 16px;
+}
+
+/* 
+   Fluid Typography / Density Control 
+   Adjusting 1rem base allows all UI components (padding, margins, font-sizes) 
+   to scale proportionally without rewriting component code.
+*/
+
+/* Compact Desktop (Laptops 1280px - 1440px) */
+/* Reduces crowding by making 1rem = 14px */
+@media (min-width: 1024px) and (max-width: 1535px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Standard Desktop (1536px - 1920px) */
+/* Slightly tighter than mobile default to look professional on desktop */
+@media (min-width: 1536px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* Large Screens (2K/4K > 2000px) */
+/* Increases size to ensure readability on high-res monitors */
+@media (min-width: 2000px) {
+  html {
+    font-size: 18px;
+  }
 }
 
 body {
@@ -243,7 +275,7 @@ html.dark .glass-pane {
   border-collapse: separate;
   border-spacing: 0;
   margin: 2em 0;
-  font-size: 0.9em;
+  font-size: 0.9em; 
   border: 1px solid var(--ui-border);
   border-radius: 0.75rem;
   overflow: hidden;
@@ -314,8 +346,8 @@ html.dark .glass-pane {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px; /* Thinner scrollbar */
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -323,7 +355,7 @@ html.dark .glass-pane {
 ::-webkit-scrollbar-thumb {
   background-color: var(--ui-border);
   border-radius: 99px;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   background-clip: content-box;
   transition: background-color 0.2s;
 }
@@ -335,11 +367,4 @@ html.dark .glass-pane {
   outline: 2px solid var(--accent-solid);
   outline-offset: 2px;
   border-radius: 4px;
-}
-
-@media (max-width: 640px) {
-  .prose h1 { font-size: 2em; margin-top: 1.5em; }
-  .prose h2 { font-size: 1.5em; margin-top: 2em; }
-  .prose h3 { font-size: 1.25em; }
-  .prose { font-size: 16px !important; }
 }

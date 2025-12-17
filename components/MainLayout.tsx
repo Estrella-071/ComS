@@ -362,8 +362,6 @@ export const MainLayout: React.FC = () => {
                  </motion.button>
              )}
             </AnimatePresence>
-             
-             {/* Home Button moved to bottom of sidebar in Sidebar component to avoid clutter here */}
         </div>
 
         <AnimatePresence>
@@ -409,7 +407,9 @@ export const MainLayout: React.FC = () => {
         }}
       />
 
-      <div className={`relative h-full flex flex-col overflow-hidden lg:glass-pane lg:rounded-2xl transition-[margin-left] duration-300 ease-in-out ${isSidebarOpen ? 'lg:ml-80' : 'lg:ml-0'}`}>
+      <div className={`relative h-full flex flex-col overflow-hidden lg:glass-pane lg:rounded-2xl transition-[margin-left] duration-300 ease-in-out 
+          ${isSidebarOpen ? 'lg:ml-72 xl:ml-72 2xl:ml-80' : 'lg:ml-0'}
+      `}>
         <main 
             ref={mainContentRef} 
             className="flex-1 overflow-hidden" 

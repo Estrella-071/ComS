@@ -24,7 +24,7 @@ export const ProblemOptions: React.FC<ProblemOptionsProps> = ({
   showChinese = false,
 }) => {
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <div className="grid grid-cols-1 gap-3 sm:gap-4">
       {problem.options.map((option, index) => {
         const isSelected = userAnswer === option.key;
         const isCorrect = problem.answer === option.key;
@@ -34,13 +34,13 @@ export const ProblemOptions: React.FC<ProblemOptionsProps> = ({
         const optionText = showChinese ? option.text_zh : option.text_en;
         const optionTooltip = showChinese ? option.text_en : option.text_zh;
 
-        let containerClasses = "relative group w-full flex items-center gap-5 p-5 rounded-xl transition-all duration-300 border backdrop-blur-md ";
-        let indicatorClasses = "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center font-mono text-sm font-bold transition-all duration-300 border ";
-        let textClasses = "font-sans text-base md:text-lg transition-colors duration-300 text-left flex-1 leading-snug ";
+        let containerClasses = "relative group w-full flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl transition-all duration-300 border backdrop-blur-md ";
+        let indicatorClasses = "flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center font-mono text-sm font-bold transition-all duration-300 border ";
+        let textClasses = "font-sans text-sm sm:text-base transition-colors duration-300 text-left flex-1 leading-snug ";
 
         if (isRevealed) {
            if (isCorrect) {
-               containerClasses += "bg-[var(--success-bg)] border-[var(--success-text)] shadow-[0_0_30px_rgba(34,197,94,0.1)] ring-1 ring-[var(--success-text)]";
+               containerClasses += "bg-[var(--success-bg)] border-[var(--success-text)] shadow-[0_0_20px_rgba(34,197,94,0.1)] ring-1 ring-[var(--success-text)]";
                indicatorClasses += "bg-[var(--success-solid-bg)] text-white border-[var(--success-solid-bg)] shadow-sm";
                textClasses += "text-[var(--text-primary)] font-medium";
            } else if (isSelected && !isCorrect) {
@@ -90,7 +90,7 @@ export const ProblemOptions: React.FC<ProblemOptionsProps> = ({
             {!isRevealed && isSelected && (
                 <motion.div 
                     layoutId="selection-indicator"
-                    className="absolute right-6 w-2 h-2 rounded-full bg-[var(--bg-color)]"
+                    className="absolute right-4 w-1.5 h-1.5 rounded-full bg-[var(--bg-color)]"
                 />
             )}
           </motion.button>

@@ -193,13 +193,13 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 variants={resultContainerVariants}
                 initial="hidden"
                 animate="visible"
-                className="glass-pane p-8 rounded-3xl w-full max-w-md shadow-2xl border border-[var(--ui-border)]"
+                className="glass-pane p-6 md:p-8 rounded-3xl w-full max-w-md shadow-2xl border border-[var(--ui-border)]"
             >
-                <motion.h2 variants={resultItemVariants} className="text-3xl font-serif font-bold text-[var(--text-primary)] mb-2">{t('quiz_completed')}</motion.h2>
+                <motion.h2 variants={resultItemVariants} className="text-2xl md:text-3xl font-serif font-bold text-[var(--text-primary)] mb-2">{t('quiz_completed')}</motion.h2>
                 <motion.p variants={resultItemVariants} className="text-lg text-[var(--text-secondary)] mb-8 font-mono text-xs tracking-widest uppercase">{t('your_score')}</motion.p>
                 <div className="flex items-baseline justify-center gap-2 mb-4">
-                    <motion.div variants={resultItemVariants} className="text-7xl font-bold text-[var(--accent-solid)] font-serif">{displayScore}</motion.div>
-                    <motion.div variants={resultItemVariants} className="text-2xl font-bold text-[var(--text-subtle)] font-mono">/ {problems.length}</motion.div>
+                    <motion.div variants={resultItemVariants} className="text-6xl md:text-7xl font-bold text-[var(--accent-solid)] font-serif">{displayScore}</motion.div>
+                    <motion.div variants={resultItemVariants} className="text-xl md:text-2xl font-bold text-[var(--text-subtle)] font-mono">/ {problems.length}</motion.div>
                 </div>
                 <motion.div variants={resultItemVariants} className="text-sm font-medium text-[var(--text-secondary)] mb-10 font-mono">
                     ACCURACY: {problems.length > 0 ? ((currentScore / problems.length) * 100).toFixed(1) : 0}%
@@ -227,8 +227,9 @@ export const QuizView: React.FC<QuizViewProps> = ({
 
   return (
     <div className="max-w-5xl mx-auto h-full flex flex-col p-2 sm:p-4 lg:p-8 relative pt-20 lg:pt-8">
+      {/* Header Info Bar */}
       <div className="flex-shrink-0 mb-2 sm:mb-6 relative z-10">
-         <div className="flex flex-col md:flex-row justify-between md:items-start gap-2 sm:gap-4">
+         <div className="flex flex-col md:flex-row justify-between md:items-start gap-3 sm:gap-4">
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-1">
                      <span className="font-mono text-[10px] font-bold text-[var(--accent-solid)] border border-[var(--accent-solid)] px-1.5 py-0.5 rounded">
@@ -239,19 +240,20 @@ export const QuizView: React.FC<QuizViewProps> = ({
                      </span>
                 </div>
                 <div className="flex items-center gap-2">
-                     <h1 className="text-lg sm:text-xl md:text-2xl font-serif font-bold text-[var(--text-primary)] leading-tight truncate pr-4">{title}</h1>
+                     <h1 className="text-base sm:text-xl md:text-2xl font-serif font-bold text-[var(--text-primary)] leading-tight truncate pr-4">{title}</h1>
                      <div className="flex-shrink-0"><QuizNavigatorPopover onNavigate={onReturnHome} /></div>
                 </div>
             </div>
             
-             <div className="flex flex-row items-center justify-end gap-2 sm:gap-4 self-end md:self-auto bg-[var(--bg-translucent)] backdrop-blur-sm p-1.5 sm:p-2 rounded-full border border-[var(--ui-border)] shadow-sm scale-90 sm:scale-100 origin-right">
-                <label htmlFor="auto-show-explanation" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] cursor-pointer px-2 select-none">
+            {/* Control Toggles - Compact on mobile */}
+             <div className="flex flex-row items-center justify-end gap-3 self-end md:self-auto bg-[var(--bg-translucent)] backdrop-blur-sm p-1.5 sm:p-2 rounded-full border border-[var(--ui-border)] shadow-sm">
+                <label htmlFor="auto-show-explanation" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] cursor-pointer px-1 sm:px-2 select-none">
                     <span className="hidden sm:inline">{t('show_explanation_on_answer')}</span>
                     <span className="sm:hidden">Expl.</span>
                     <ToggleSwitch id="auto-show-explanation" checked={autoShowExplanation} onChange={setAutoShowExplanation} />
                 </label>
                 <div className="w-px h-4 bg-[var(--ui-border)]"></div>
-                <label htmlFor="auto-advance" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] cursor-pointer px-2 select-none">
+                <label htmlFor="auto-advance" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] cursor-pointer px-1 sm:px-2 select-none">
                     <span className="hidden sm:inline">{t('auto_advance_on_answer')}</span>
                     <span className="sm:hidden">Auto</span>
                     <ToggleSwitch id="auto-advance" checked={autoAdvance} onChange={setAutoAdvance} />
@@ -259,6 +261,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             </div>
         </div>
         
+        {/* Progress Bar */}
         <div className="absolute bottom-0 left-0 right-0 h-px bg-[var(--ui-border)] mt-2 hidden md:block">
             <motion.div
                 className="h-[2px] bg-[var(--accent-solid)] origin-left"
@@ -266,7 +269,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 transition={{ type: 'spring', stiffness: 200, damping: 30 }}
             />
         </div>
-         <div className="w-full h-1 bg-[var(--ui-bg)] mt-2 rounded-full overflow-hidden md:hidden">
+         <div className="w-full h-1 bg-[var(--ui-bg)] mt-3 rounded-full overflow-hidden md:hidden">
              <motion.div
                 className="h-full bg-[var(--accent-solid)] origin-left"
                 animate={{ width: `${((currentIndex + 1) / problems.length) * 100}%` }}
@@ -276,8 +279,9 @@ export const QuizView: React.FC<QuizViewProps> = ({
       </div>
       
       {/* 
-        The parent div here acts as the viewport. 
-        `relative` and `overflow-hidden` are crucial for the `absolute` positioning of cards to work correctly.
+        Quiz Card Container
+        Crucial for layout: `relative` to allow absolute positioning of sliding cards.
+        `overflow-hidden` to mask exiting cards.
       */}
       <div className="flex-1 relative w-full overflow-hidden">
         <AnimatePresence custom={direction} mode="popLayout" initial={false}>
@@ -297,7 +301,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 className="absolute inset-0 w-full h-full"
                 drag={!isSidebarOpen ? 'x' : false}
                 dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.2} // More elastic for a better 'preview' feel
+                dragElastic={0.2}
                 onDragEnd={(e, { offset, velocity }) => {
                     const swipeDistanceThreshold = 50;
                     if (Math.abs(offset.y) > Math.abs(offset.x)) return;
@@ -309,39 +313,64 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 }}
                 onClick={e => e.stopPropagation()}
             >
-                <QuestionCard
-                    problem={problems[currentIndex]}
-                    onAnswerSelected={(answer) => handleAnswer(problems[currentIndex].id, answer)}
-                    userAnswer={answers.get(problems[currentIndex].id)}
-                    shouldAutoShowExplanation={answers.has(problems[currentIndex].id) && autoShowExplanation}
-                />
+                {/* 
+                    Add extra bottom padding on mobile to account for the fixed footer 
+                    so the last option isn't hidden behind buttons.
+                */}
+                <div className="h-full pb-20 lg:pb-0 overflow-y-auto custom-scrollbar">
+                    <QuestionCard
+                        problem={problems[currentIndex]}
+                        onAnswerSelected={(answer) => handleAnswer(problems[currentIndex].id, answer)}
+                        userAnswer={answers.get(problems[currentIndex].id)}
+                        shouldAutoShowExplanation={answers.has(problems[currentIndex].id) && autoShowExplanation}
+                    />
+                </div>
             </motion.div>
         </AnimatePresence>
       </div>
 
-      <div className="flex justify-between items-center mt-4 sm:mt-6 flex-shrink-0 gap-4 pointer-events-none relative z-10">
+      {/* Desktop Navigation Buttons (hidden on mobile) */}
+      <div className="hidden lg:flex justify-between items-center mt-6 flex-shrink-0 gap-4 pointer-events-none relative z-10">
         <motion.button
           onClick={() => paginate(-1)}
           disabled={currentIndex === 0 || isFinished}
-          className="pointer-events-auto flex items-center gap-2 sm:gap-3 px-5 py-3 sm:px-6 sm:py-4 bg-[var(--bg-color)] text-[var(--text-primary)] rounded-full border border-[var(--ui-border)] shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--ui-bg)] hover:border-[var(--text-primary)] transition-all group"
+          className="pointer-events-auto flex items-center gap-3 px-6 py-4 bg-[var(--bg-color)] text-[var(--text-primary)] rounded-full border border-[var(--ui-border)] shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--ui-bg)] hover:border-[var(--text-primary)] transition-all group"
           whileTap={{ scale: 0.95 }}
         >
             <ChevronLeftIcon className="w-5 h-5 transition-transform group-hover:-translate-x-1"/>
-            <span className="hidden sm:inline font-bold text-sm tracking-wide">{t('previous_question')}</span>
+            <span className="font-bold text-sm tracking-wide">{t('previous_question')}</span>
         </motion.button>
 
         <motion.button
           onClick={() => paginate(1)}
           disabled={isFinished}
-          className="pointer-events-auto flex items-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] rounded-full shadow-xl shadow-[var(--accent-solid)]/20 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--accent-solid-hover)] transition-all group hover:scale-105 active:scale-95"
+          className="pointer-events-auto flex items-center gap-3 px-8 py-4 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] rounded-full shadow-xl shadow-[var(--accent-solid)]/20 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--accent-solid-hover)] transition-all group hover:scale-105 active:scale-95"
           whileTap={{ scale: 0.95 }}
           animate={justAnswered ? { scale: [1, 1.03, 1] } : {}}
           transition={justAnswered ? { duration: 0.2, ease: "easeInOut" } : {}}
         >
-            <span className="hidden sm:inline font-bold text-sm tracking-wide">{currentIndex === problems.length - 1 ? t('results') : t('next_question')}</span>
-            <span className="sm:hidden font-bold">{currentIndex === problems.length - 1 ? t('results') : t('next_question')}</span>
+            <span className="font-bold text-sm tracking-wide">{currentIndex === problems.length - 1 ? t('results') : t('next_question')}</span>
             <ChevronRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-1"/>
         </motion.button>
+      </div>
+
+      {/* Mobile Navigation Bar (Fixed Bottom) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 glass-pane border-t border-[var(--ui-border)] p-3 px-4 flex justify-between items-center gap-3 z-[var(--z-mobile-nav)] pb-safe">
+        <button 
+            onClick={() => paginate(-1)} 
+            disabled={currentIndex === 0} 
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--ui-bg)] text-[var(--text-primary)] rounded-xl font-bold disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-transform"
+        >
+          <ChevronLeftIcon className="w-5 h-5" /> 
+        </button>
+        
+        <button 
+            onClick={() => paginate(1)} 
+            disabled={isFinished} 
+            className="flex-[2] flex items-center justify-center gap-2 px-4 py-3 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] rounded-xl font-bold shadow-lg disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-transform"
+        >
+          {currentIndex === problems.length - 1 ? t('results') : t('next_question')} <ChevronRightIcon className="w-5 h-5" />
+        </button>
       </div>
     </div>
   );

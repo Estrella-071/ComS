@@ -24,7 +24,6 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
   const [showFlagToast, setShowFlagToast] = useState(false);
   
   // Local state to toggle Chinese translation. Default is FALSE (English).
-  // This simulates the real exam environment where questions are in English.
   const [showChinese, setShowChinese] = useState(false);
 
   // Reset language state when problem changes to maintain English default
@@ -43,11 +42,6 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
     toggleFlaggedItem(problem.id);
   };
 
-  // Logic: 
-  // Primary (Displayed) is English by default. 
-  // If user toggles 'showChinese', display Chinese as Primary.
-  // Tooltip always shows the OTHER language.
-  
   const questionText = showChinese ? problem.text_zh : problem.text_en;
   const tooltipText = showChinese ? problem.text_en : problem.text_zh;
 
@@ -58,44 +52,33 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
       </AnimatePresence>
 
       <div 
-        className="glass-pane rounded-[2rem] p-6 md:p-8 lg:p-10 h-full overflow-y-auto custom-scrollbar shadow-2xl relative border border-[var(--ui-border)]"
+        className="glass-pane rounded-2xl md:rounded-[2rem] p-5 sm:p-6 md:p-8 lg:p-10 h-full overflow-y-auto custom-scrollbar shadow-2xl relative border border-[var(--ui-border)]"
         style={{
             backdropFilter: 'blur(30px) saturate(150%)',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.05)'
         }}
       >
         
-        {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 p-8 pointer-events-none opacity-[0.03] select-none">
+        {/* Decorative Background Elements - Hidden on mobile to save space/performance */}
+        <div className="hidden md:block absolute top-0 right-0 p-8 pointer-events-none opacity-[0.03] select-none">
              <span className="text-[8rem] lg:text-[10rem] font-serif font-bold text-[var(--text-primary)] leading-none">Q</span>
         </div>
 
         {/* Question Header Area */}
-        <div className="mb-8 lg:mb-10 relative z-10">
-            <div className="flex justify-between items-start gap-4">
-                <div className="flex-1 space-y-4">
-                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="h-0.5 w-6 bg-[var(--accent-solid)] rounded-full"></div>
-                            <div className="font-mono text-[10px] text-[var(--text-subtle)] uppercase tracking-[0.25em] font-bold">
-                                Problem Statement
-                            </div>
-                        </div>
-                     </div>
-                     
-                     <div className="text-lg md:text-xl lg:text-2xl font-serif leading-relaxed text-[var(--text-primary)] font-medium tracking-tight">
-                        <Tooltip content={<span className="font-sans text-sm">{tooltipText}</span>}>
-                            <span className="cursor-help decoration-dashed decoration-[var(--ui-border)] underline underline-offset-4 hover:decoration-[var(--accent-solid)] transition-all">
-                                <TextWithHighlights text={questionText} />
-                            </span>
-                        </Tooltip>
+        <div className="mb-6 lg:mb-10 relative z-10">
+            {/* Header Controls Row */}
+            <div className="flex justify-between items-start gap-4 mb-4">
+                 <div className="flex items-center gap-3">
+                    <div className="h-0.5 w-6 bg-[var(--accent-solid)] rounded-full"></div>
+                    <div className="font-mono text-[10px] text-[var(--text-subtle)] uppercase tracking-[0.25em] font-bold truncate">
+                        Problem
                     </div>
                 </div>
                 
-                <div className="flex flex-col gap-2 flex-shrink-0">
+                <div className="flex items-center gap-2 flex-shrink-0">
                     <motion.button
                         onClick={handleFlagToggle}
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 backdrop-blur-md shadow-sm ${
+                        className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center border transition-all duration-300 backdrop-blur-md shadow-sm ${
                             isFlagged 
                             ? 'bg-[var(--warning-bg)] border-[var(--warning-text)] text-[var(--warning-text)]' 
                             : 'bg-[var(--ui-bg)] border-[var(--ui-border)] text-[var(--text-subtle)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)] hover:bg-[var(--ui-bg-hover)]'
@@ -104,30 +87,39 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ problem, userAnswer,
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                     >
-                        {isFlagged ? <StarSolidIcon className="w-4 h-4" /> : <StarIcon className="w-4 h-4" />}
+                        {isFlagged ? <StarSolidIcon className="w-4 h-4 md:w-4 md:h-4" /> : <StarIcon className="w-4 h-4 md:w-4 md:h-4" />}
                     </motion.button>
 
                     <motion.button
                         onClick={() => setShowChinese(prev => !prev)}
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 backdrop-blur-md shadow-sm ${showChinese ? 'bg-[var(--text-primary)] text-[var(--bg-color)]' : 'bg-[var(--ui-bg)] text-[var(--text-secondary)]'} border-[var(--ui-border)] hover:bg-[var(--ui-bg-hover)]`}
+                        className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center border transition-all duration-300 backdrop-blur-md shadow-sm ${showChinese ? 'bg-[var(--text-primary)] text-[var(--bg-color)]' : 'bg-[var(--ui-bg)] text-[var(--text-secondary)]'} border-[var(--ui-border)] hover:bg-[var(--ui-bg-hover)]`}
                         aria-label="Switch Language"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                     >
-                        <GlobeAltIcon className="w-4 h-4" />
+                        <GlobeAltIcon className="w-4 h-4 md:w-4 md:h-4" />
                         <span className="absolute -bottom-1 -right-1 text-[8px] font-bold px-1 rounded-sm bg-[var(--accent-solid)] text-[var(--accent-solid-text)]">
                             {showChinese ? '中' : 'EN'}
                         </span>
                     </motion.button>
                 </div>
             </div>
+
+            {/* Question Text */}
+            <div className="text-base md:text-xl lg:text-2xl font-serif leading-relaxed text-[var(--text-primary)] font-medium tracking-tight">
+                <Tooltip content={<span className="font-sans text-sm">{tooltipText}</span>}>
+                    <span className="cursor-help decoration-dashed decoration-[var(--ui-border)] underline underline-offset-4 hover:decoration-[var(--accent-solid)] transition-all">
+                        <TextWithHighlights text={questionText} />
+                    </span>
+                </Tooltip>
+            </div>
         </div>
 
-        <div className="w-full h-px bg-gradient-to-r from-[var(--ui-border)] via-[var(--ui-border)] to-transparent mb-8 opacity-50"></div>
+        <div className="w-full h-px bg-gradient-to-r from-[var(--ui-border)] via-[var(--ui-border)] to-transparent mb-6 md:mb-8 opacity-50"></div>
 
         {/* Options Area */}
-        <div className="mb-8 relative z-10">
-            <div className="font-mono text-[9px] text-[var(--text-subtle)] uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+        <div className="mb-6 md:mb-8 relative z-10">
+            <div className="font-mono text-[9px] text-[var(--text-subtle)] uppercase tracking-[0.2em] mb-4 md:mb-6 flex items-center gap-3">
                 <span>Select Option</span>
                 <div className="h-px flex-1 bg-[var(--ui-border)] opacity-50"></div>
             </div>

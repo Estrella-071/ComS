@@ -23,15 +23,15 @@ const GreetingHeader: React.FC<{ title: string, subtitle: string }> = ({ title, 
     else greeting = 'Good evening';
 
     return (
-        <div className="flex flex-col items-start space-y-2">
-            <div className="flex items-center gap-3 mb-2">
+        <div className="flex flex-col items-start space-y-1 md:space-y-2">
+            <div className="flex items-center gap-3 mb-1 md:mb-2">
                 <div className="h-px w-8 bg-[var(--text-primary)] opacity-30"></div>
-                <span className="text-xs font-bold font-mono text-[var(--text-secondary)] uppercase tracking-[0.2em]">{greeting}</span>
+                <span className="text-[10px] md:text-xs font-bold font-mono text-[var(--text-secondary)] uppercase tracking-[0.2em]">{greeting}</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-[var(--text-primary)] font-serif leading-none tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-[var(--text-primary)] font-serif leading-none tracking-tight">
                 {title}
             </h1>
-            <p className="text-sm md:text-base text-[var(--text-secondary)] max-w-2xl font-light leading-relaxed opacity-70 mt-3">
+            <p className="text-sm md:text-base text-[var(--text-secondary)] max-w-2xl font-light leading-relaxed opacity-70 mt-2">
                 {subtitle}
             </p>
         </div>
@@ -53,37 +53,38 @@ const LargeActionCard: React.FC<{
             onClick={onAction}
             whileHover={{ scale: 1.02, y: -4 }}
             whileTap={{ scale: 0.98 }}
-            className={`relative overflow-hidden rounded-[2rem] p-6 md:p-8 text-left shadow-2xl transition-all duration-300 group min-h-[200px] md:min-h-[240px] flex flex-col justify-between glass-pane border w-full
+            className={`relative overflow-hidden rounded-3xl p-5 md:p-8 text-left shadow-lg transition-all duration-300 group min-h-[160px] md:min-h-[240px] flex flex-col justify-between glass-pane border w-full
                 ${isPrimary 
                     ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg-color)]' 
                     : 'border-[var(--ui-border)] hover:border-[var(--text-subtle)]'
                 } ${className}`}
         >
-            <div className={`absolute top-4 right-6 font-mono text-7xl font-bold tracking-tighter select-none pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-12 ${isPrimary ? 'opacity-10 text-[var(--bg-color)]' : 'opacity-5 text-[var(--text-primary)]'}`}>
+            <div className={`absolute top-2 right-4 md:top-4 md:right-6 font-mono text-5xl md:text-7xl font-bold tracking-tighter select-none pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-12 ${isPrimary ? 'opacity-10 text-[var(--bg-color)]' : 'opacity-5 text-[var(--text-primary)]'}`}>
                 {indexStr}
             </div>
 
-            <div className="relative z-10 flex flex-col h-full justify-between">
+            <div className="relative z-10 flex flex-col h-full justify-between gap-4">
                 <div className="flex justify-between items-start w-full">
-                    <div className={`h-14 w-14 rounded-2xl flex items-center justify-center border transition-all duration-500 group-hover:rotate-12 group-hover:scale-110
+                    <div className={`h-10 w-10 md:h-14 md:w-14 rounded-2xl flex items-center justify-center border transition-all duration-500 group-hover:rotate-12 group-hover:scale-110
                          ${isPrimary 
                             ? 'bg-[var(--bg-color)] text-[var(--text-primary)] border-transparent' 
                             : 'bg-[var(--ui-bg)] text-[var(--text-primary)] border-[var(--ui-border)]'
                         }`}>
-                        {icon}
+                        {/* Adjust icon size for mobile */}
+                        <div className="scale-90 md:scale-100">{icon}</div>
                     </div>
                     {recentQuiz && isPrimary && (
-                        <span className="px-3 py-1 rounded-full bg-[var(--bg-color)] text-[var(--text-primary)] text-[9px] font-mono font-bold uppercase tracking-wider border border-transparent shadow-lg animate-pulse">
+                        <span className="px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-[var(--bg-color)] text-[var(--text-primary)] text-[8px] md:text-[9px] font-mono font-bold uppercase tracking-wider border border-transparent shadow-lg animate-pulse">
                             Resume
                         </span>
                     )}
                 </div>
 
-                <div className="mt-6 space-y-1.5">
-                    <h2 className={`text-2xl md:text-3xl lg:text-4xl font-bold font-serif leading-none tracking-tight transition-transform duration-300 group-hover:translate-x-2 ${isPrimary ? 'text-[var(--bg-color)]' : 'text-[var(--text-primary)]'}`}>
+                <div className="space-y-1">
+                    <h2 className={`text-xl md:text-3xl lg:text-4xl font-bold font-serif leading-none tracking-tight transition-transform duration-300 group-hover:translate-x-2 ${isPrimary ? 'text-[var(--bg-color)]' : 'text-[var(--text-primary)]'}`}>
                         {label}
                     </h2>
-                    <p className={`text-xs font-mono uppercase tracking-[0.15em] flex items-center gap-2 ${isPrimary ? 'text-[var(--bg-color)] opacity-70' : 'text-[var(--text-secondary)] opacity-60'}`}>
+                    <p className={`text-[10px] md:text-xs font-mono uppercase tracking-[0.15em] flex items-center gap-2 ${isPrimary ? 'text-[var(--bg-color)] opacity-70' : 'text-[var(--text-secondary)] opacity-60'}`}>
                         {subLabel} <ChevronRightIcon className="w-3 h-3" />
                     </p>
                 </div>
@@ -107,19 +108,19 @@ const SmallToolCard: React.FC<{
         onClick={onClick}
         whileHover={{ y: -4, scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="flex flex-col justify-between p-6 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--bg-translucent)] backdrop-blur-xl hover:border-[var(--text-subtle)] transition-all h-full w-full gap-5 group shadow-lg hover:shadow-2xl relative overflow-hidden"
+        className="flex flex-row md:flex-col items-center md:items-start justify-between p-4 md:p-6 rounded-2xl md:rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--bg-translucent)] backdrop-blur-xl hover:border-[var(--text-subtle)] transition-all h-full w-full gap-4 group shadow-sm hover:shadow-lg relative overflow-hidden"
     >
-        <div className="absolute top-5 right-5 font-mono text-xs text-[var(--text-subtle)] opacity-40 font-bold tracking-widest">{indexStr}</div>
+        <div className="absolute top-2 right-3 md:top-5 md:right-5 font-mono text-[10px] md:text-xs text-[var(--text-subtle)] opacity-40 font-bold tracking-widest">{indexStr}</div>
         
-        <div className="p-3 w-fit rounded-2xl bg-[var(--ui-bg)] text-[var(--text-primary)] group-hover:scale-110 group-hover:bg-[var(--text-primary)] group-hover:text-[var(--bg-color)] transition-all duration-300 border border-[var(--ui-border)]">
+        <div className="p-2.5 md:p-3 w-fit rounded-xl md:rounded-2xl bg-[var(--ui-bg)] text-[var(--text-primary)] group-hover:scale-110 group-hover:bg-[var(--text-primary)] group-hover:text-[var(--bg-color)] transition-all duration-300 border border-[var(--ui-border)] shrink-0">
             {icon}
         </div>
-        <div className="text-left">
-            <h3 className="text-xl font-bold text-[var(--text-primary)] leading-tight font-serif group-hover:translate-x-1 transition-transform">{title}</h3>
+        <div className="text-left flex-1 md:w-full">
+            <h3 className="text-lg md:text-xl font-bold text-[var(--text-primary)] leading-tight font-serif group-hover:translate-x-1 transition-transform">{title}</h3>
             {count !== undefined && (
-                <div className="flex items-center gap-3 mt-2">
-                    <div className="h-px w-6 bg-[var(--text-subtle)]"></div>
-                    <p className="text-[10px] text-[var(--text-secondary)] font-mono uppercase tracking-widest">{count} ITEMS</p>
+                <div className="flex items-center gap-2 md:gap-3 mt-1 md:mt-2">
+                    <div className="h-px w-4 md:w-6 bg-[var(--text-subtle)]"></div>
+                    <p className="text-[9px] md:text-[10px] text-[var(--text-secondary)] font-mono uppercase tracking-widest">{count} ITEMS</p>
                 </div>
             )}
         </div>
@@ -136,11 +137,8 @@ const ChapterCard: React.FC<{
 }> = ({ chapter, index, onClick, language, problemCount, mode = 'reading' }) => {
     const mainTitle = chapter.title[language];
     const subTitle = chapter.subtitle ? chapter.subtitle[language] : chapter.title[language === 'en' ? 'zh' : 'en'];
-    // Preface is index 0, should be "00". Chapter 1 is index 1, should be "01".
     const chapterNum = index.toString().padStart(2, '0');
     
-    // In reading mode, rely on chapter.disabled
-    // In practice mode, rely on problemCount
     const isDisabled = mode === 'reading' ? chapter.disabled : (!problemCount || problemCount === 0);
     const isHighlighted = chapter.highlight;
 
@@ -150,27 +148,27 @@ const ChapterCard: React.FC<{
             disabled={isDisabled}
             whileHover={isDisabled ? {} : { scale: 1.01, x: 4 }}
             whileTap={isDisabled ? {} : { scale: 0.99 }}
-            className={`w-full flex items-center justify-between p-5 rounded-[1.25rem] border transition-all relative overflow-hidden group text-left shadow-sm
+            className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all relative overflow-hidden group text-left shadow-sm
                 ${isDisabled 
                     ? 'border-[var(--ui-border)] bg-[var(--ui-bg)] opacity-60 cursor-not-allowed grayscale' 
-                    : 'bg-[var(--bg-translucent)] backdrop-blur-md hover:bg-[var(--ui-bg)] hover:shadow-lg'
+                    : 'bg-[var(--bg-translucent)] backdrop-blur-md hover:bg-[var(--ui-bg)] hover:shadow-md'
                 }
                 ${isHighlighted ? 'border-[var(--warning-text)] border-2 bg-[var(--warning-bg)]/10' : 'border-[var(--ui-border)] hover:border-[var(--text-subtle)]'}
                 `}
         >
-            <div className="flex items-center gap-5">
-                 <div className={`font-mono text-xl font-bold transition-all ${isDisabled ? 'text-[var(--text-subtle)]' : 'text-[var(--text-subtle)] opacity-40 group-hover:text-[var(--accent-solid)] group-hover:opacity-100'} ${isHighlighted ? 'text-[var(--warning-text)] opacity-100' : ''}`}>
+            <div className="flex items-center gap-4">
+                 <div className={`font-mono text-lg md:text-xl font-bold transition-all ${isDisabled ? 'text-[var(--text-subtle)]' : 'text-[var(--text-subtle)] opacity-40 group-hover:text-[var(--accent-solid)] group-hover:opacity-100'} ${isHighlighted ? 'text-[var(--warning-text)] opacity-100' : ''}`}>
                     {chapterNum}
                  </div>
-                 <div>
-                    <h3 className={`font-bold font-serif text-lg mb-1 transition-transform ${isDisabled ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)] group-hover:translate-x-1'}`}>
+                 <div className="min-w-0">
+                    <h3 className={`font-bold font-serif text-base md:text-lg mb-0.5 transition-transform truncate ${isDisabled ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)] group-hover:translate-x-1'}`}>
                         {mainTitle}
                     </h3>
-                    <p className={`text-[10px] font-mono uppercase tracking-wide ${isDisabled ? 'text-[var(--text-subtle)] font-bold' : 'text-[var(--text-secondary)] opacity-60 group-hover:opacity-80'}`}>
+                    <p className={`text-[10px] font-mono uppercase tracking-wide truncate ${isDisabled ? 'text-[var(--text-subtle)] font-bold' : 'text-[var(--text-secondary)] opacity-60 group-hover:opacity-80'}`}>
                         {subTitle}
                     </p>
                     {mode === 'practice' && problemCount !== undefined && !isDisabled && (
-                         <div className="flex items-center gap-2 mt-1.5">
+                         <div className="flex items-center gap-2 mt-1">
                              <div className="h-0.5 w-4 bg-[var(--accent-solid)] opacity-30"></div>
                              <span className="text-[10px] font-mono font-bold text-[var(--accent-text)]">{problemCount} Questions</span>
                          </div>
@@ -179,13 +177,13 @@ const ChapterCard: React.FC<{
             </div>
             
             {!isDisabled && !isHighlighted && (
-                <div className="w-8 h-8 rounded-full border border-[var(--ui-border)] flex items-center justify-center text-[var(--text-subtle)] group-hover:bg-[var(--text-primary)] group-hover:text-[var(--bg-color)] group-hover:border-[var(--text-primary)] transition-all transform group-hover:rotate-0 -rotate-45">
-                     <ChevronRightIcon className="w-4 h-4" />
+                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-[var(--ui-border)] flex items-center justify-center text-[var(--text-subtle)] group-hover:bg-[var(--text-primary)] group-hover:text-[var(--bg-color)] group-hover:border-[var(--text-primary)] transition-all transform group-hover:rotate-0 -rotate-45 shrink-0">
+                     <ChevronRightIcon className="w-3 h-3 md:w-4 md:h-4" />
                 </div>
             )}
-
+            
             {isHighlighted && (
-                 <div className="px-2.5 py-0.5 rounded-full bg-[var(--warning-solid-bg)] text-[var(--warning-solid-text)] text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                 <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-[var(--warning-solid-bg)] text-[var(--warning-solid-text)] text-[8px] font-bold uppercase tracking-wider shadow-sm">
                     Finals
                  </div>
             )}
@@ -237,14 +235,12 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
     };
     
     const handleChapterQuizClick = (chapterId: string) => {
-        // Extract chapter number from ID (e.g. "chapter1" -> "1")
         const chapterNumber = chapterId.replace(/\D/g, '');
         if (!chapterNumber || !subjectData) return;
         
         const problems = subjectData.problems.filter(p => p.chapter === chapterNumber);
         if (problems.length === 0) return;
         
-        // Find title
         const chapterInfo = subjectData.chapterList.find(c => c.id === chapterId);
         const title = chapterInfo ? chapterInfo.title[language] : `${t('chapter')} ${chapterNumber}`;
 
@@ -254,7 +250,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
             problems,
             title,
             startIndex: 0,
-            chapterId: chapterId // Pass chapterId to allow switching back to textbook
+            chapterId: chapterId 
         });
     };
 
@@ -263,7 +259,6 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
     }
     
     const handleContinueReading = () => {
-         // Default to first chapter if no lastActiveChapterId
          const targetChapterId = lastActiveChapterId || (subjectData?.chapterList[0]?.id);
          if (targetChapterId) {
              setView({ type: 'textbook', chapterId: targetChapterId });
@@ -272,10 +267,9 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
 
     const handleSwitchToPractice = () => {
         setPreferredMode('practice');
-        setView({ type: 'home' }); // Force re-render of home in practice mode
+        setView({ type: 'home' }); 
     }
     
-    // Pre-calculate problem counts per chapter
     const problemsByChapter = useMemo(() => {
         if (!subjectData) return {};
         const counts: Record<string, number> = {};
@@ -286,7 +280,6 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
         return counts;
     }, [subjectData]);
 
-    // Resolve chapter title for hero section
     const lastChapterTitle = useMemo(() => {
         if(!lastActiveChapterId || !subjectData) return null;
         const ch = subjectData.chapterList.find(c => c.id === lastActiveChapterId);
@@ -302,12 +295,12 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
         hidden: { opacity: 0 },
         visible: { 
             opacity: 1,
-            transition: { staggerChildren: 0.08 } 
+            transition: { staggerChildren: 0.05 } 
         }
     };
     
     const itemVariants = {
-        hidden: { y: 30, opacity: 0 },
+        hidden: { y: 20, opacity: 0 },
         visible: { y: 0, opacity: 1, transition: { type: 'spring' as const, stiffness: 400, damping: 30 } }
     };
 
@@ -317,13 +310,13 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                 <EdgeProgressBar containerRef={contentRef} />
                 <div className="max-w-[1300px] mx-auto pb-32 pt-20 lg:pt-12">
                     
-                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
+                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10 md:mb-12">
                         <GreetingHeader 
                             title={subject.name[language]} 
                             subtitle={subject.name[language === 'en' ? 'zh' : 'en']} 
                         />
                         
-                        <div className="w-full md:w-80 flex-shrink-0">
+                        <div className="w-full md:w-72 flex-shrink-0">
                             <SegmentedControl
                                 options={[
                                     { label: t('mode_reading'), value: 'reading' },
@@ -342,18 +335,18 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                             initial="hidden"
                             animate="visible"
                             exit={{ opacity: 0, transition: { duration: 0.15 } }}
-                            className="space-y-10"
+                            className="space-y-6 md:space-y-10"
                         >
                             {activeMode === 'practice' && (
                                 <>
                                     {isQuizSubject && (
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                                             <motion.div variants={itemVariants} className="h-full">
                                                 <LargeActionCard 
                                                     onAction={handleStartQuizClick}
                                                     label={t('start_quiz_session')}
                                                     subLabel={t('subtitle_randomized_practice')}
-                                                    icon={<PlayIcon className="w-7 h-7"/>}
+                                                    icon={<PlayIcon className="w-6 h-6 md:w-7 md:h-7"/>}
                                                     isPrimary={true}
                                                     recentQuiz={recentQuizzes.length > 0 ? recentQuizzes[0] : null}
                                                     indexStr="01"
@@ -365,7 +358,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                                     onAction={() => setView({ type: 'overview' })}
                                                     label={t('question_bank')}
                                                     subLabel={t('subtitle_question_bank')}
-                                                    icon={<ListBulletIcon className="w-7 h-7"/>}
+                                                    icon={<ListBulletIcon className="w-6 h-6 md:w-7 md:h-7"/>}
                                                     indexStr="02"
                                                 />
                                             </motion.div>
@@ -378,14 +371,14 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                                 onAction={() => setView({ type: 'programming' })}
                                                 label={t('programming_exercises')}
                                                 subLabel={t('subtitle_coding_practice')}
-                                                icon={<CodeBracketIcon className="w-7 h-7"/>}
+                                                icon={<CodeBracketIcon className="w-6 h-6 md:w-7 md:h-7"/>}
                                                 isPrimary={true}
                                                 indexStr="01"
                                             />
                                         </motion.div>
                                     )}
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                                         <motion.div variants={itemVariants}>
                                             <SmallToolCard 
                                                 icon={<StarIcon className="w-5 h-5"/>}
@@ -410,7 +403,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                     
                                     {isQuizSubject && (
                                         <motion.div variants={itemVariants}>
-                                            <div className="flex items-center gap-6 mb-6 mt-10">
+                                            <div className="flex items-center gap-6 mb-4 md:mb-6 mt-6 md:mt-10">
                                                 <h2 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em] flex items-center gap-2">
                                                     <FolderIcon className="w-4 h-4"/>
                                                     {t('practice_questions_for_chapter')}
@@ -418,7 +411,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                                 <div className="h-px flex-1 bg-[var(--ui-border)] opacity-60"></div>
                                             </div>
                                             
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                                                 {subjectData.chapterList.map((chapter, index) => (
                                                     <ChapterCard
                                                         key={chapter.id}
@@ -438,7 +431,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
 
                             {activeMode === 'reading' && (
                                 <>
-                                    <div className="flex flex-col lg:flex-row gap-6">
+                                    <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
                                         <motion.div variants={itemVariants} className="flex-[3]">
                                             <LargeActionCard 
                                                 onAction={handleContinueReading}
@@ -453,12 +446,12 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                         <motion.div variants={itemVariants} className="flex-1 min-w-[260px]">
                                              <button
                                                 onClick={handleSwitchToPractice}
-                                                className="w-full h-full relative overflow-hidden rounded-[2rem] p-6 text-left shadow-lg transition-all duration-300 group flex flex-col justify-between border border-[var(--ui-border)] bg-[var(--bg-translucent)] hover:bg-[var(--ui-bg)] hover:border-[var(--text-subtle)]"
+                                                className="w-full h-full relative overflow-hidden rounded-3xl p-6 text-left shadow-lg transition-all duration-300 group flex flex-col justify-between border border-[var(--ui-border)] bg-[var(--bg-translucent)] hover:bg-[var(--ui-bg)] hover:border-[var(--text-subtle)] min-h-[140px] md:min-h-auto"
                                              >
                                                 <div className="absolute top-4 right-6 font-mono text-3xl font-bold tracking-tighter opacity-10 text-[var(--text-primary)]">
                                                     Q
                                                 </div>
-                                                <div className="h-12 w-12 rounded-xl flex items-center justify-center bg-[var(--ui-bg)] text-[var(--text-primary)] border border-[var(--ui-border)] group-hover:scale-110 transition-transform">
+                                                <div className="h-12 w-12 rounded-2xl flex items-center justify-center bg-[var(--ui-bg)] text-[var(--text-primary)] border border-[var(--ui-border)] group-hover:scale-110 transition-transform">
                                                     <PlayIcon className="w-6 h-6" />
                                                 </div>
                                                 <div className="mt-4">
@@ -472,7 +465,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                     </div>
 
                                     <motion.div variants={itemVariants}>
-                                        <div className="flex items-center gap-6 mb-6 mt-6">
+                                        <div className="flex items-center gap-6 mb-4 md:mb-6 mt-6">
                                             <h2 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em] flex items-center gap-2">
                                                 <FolderIcon className="w-4 h-4"/>
                                                 {t('by_chapter')}
@@ -480,7 +473,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                                             <div className="h-px flex-1 bg-[var(--ui-border)] opacity-60"></div>
                                         </div>
                                         
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                                             {subjectData.chapterList.map((chapter, index) => (
                                                 <ChapterCard
                                                     key={chapter.id}

@@ -115,12 +115,8 @@ export const MainLayout: React.FC = () => {
 
   const navigateTo = (newView: View, navDirection: number) => {
     setDirection(navDirection);
-    
-    // Only end quiz if we are completely leaving the quiz context (e.g. to Home)
-    // If we are switching chapters, the new chapter init will handle reset.
-    // If we are starting a standalone quiz (shuffle/bookmark), we might need to reset previous quiz state.
     if (newView.type !== 'quiz' && newView.type !== 'textbook') {
-        // endQuiz(); // Disable auto-ending to allow "Change Scope" to see current quiz state
+        // endQuiz(); 
     }
 
     setView(newView);
@@ -161,9 +157,7 @@ export const MainLayout: React.FC = () => {
       const hasProblems = subjectData.problems.some(p => p.chapter === chapterNum);
       const chapterExists = subjectData.chapterList.some(c => c.id === currentChapterId && !c.disabled);
       
-      // If in quiz, we can switch to textbook if chapter exists and is enabled
       if (view.type === 'quiz') return chapterExists;
-      // If in textbook, we can switch to quiz if problems exist
       if (view.type === 'textbook') return hasProblems;
       
       return false;
@@ -197,7 +191,6 @@ export const MainLayout: React.FC = () => {
   };
 
   const renderView = () => {
-      // If we are in chapter context, we render the persistent wrapper instead
       if (isChapterContext && currentChapterId) {
           return (
               <PersistentChapterWrapper
@@ -240,7 +233,6 @@ export const MainLayout: React.FC = () => {
   };
   
   const getAnimationKey = () => {
-      // If in chapter context, use chapterId so we don't animate when switching modes inside
     if (isChapterContext && currentChapterId) return currentChapterId;
     if (view.type === 'problem') return view.id;
     if (view.type === 'exercise') return view.id;
@@ -280,106 +272,119 @@ export const MainLayout: React.FC = () => {
 
   return (
     <div className="h-full">
-      <div className="absolute top-4 left-4 z-[var(--z-fab)] flex flex-col items-start gap-2 pointer-events-none">
-        <div className="flex items-center gap-2 pointer-events-auto p-1 rounded-full transition-colors duration-300">
-            <motion.button
-                onClick={() => setIsSidebarOpen(o => !o)}
-                className="w-12 h-12 bg-[var(--accent-solid)] rounded-full text-[var(--accent-solid-text)] flex items-center justify-center shadow-lg hover:bg-[var(--accent-solid-hover)] transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                aria-label="Toggle menu"
-            >
-                <AnimatePresence mode="wait">
-                  <motion.div 
-                    key={isSidebarOpen ? 'close' : 'open'}
-                    initial={{ opacity: 0, scale: 0.6, rotate: -45 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                    exit={{ opacity: 0, scale: 0.6, rotate: 45 }}
-                    transition={{ duration: 0.15, ease: 'easeOut' }}
-                  >
-                    {isSidebarOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
-                  </motion.div>
+      {/* Top Floating Navigation Bar */}
+      <div className="absolute top-3 left-4 right-4 z-[var(--z-fab)] flex justify-between items-start pointer-events-none">
+        
+        {/* Left Side Controls */}
+        <div className="flex flex-col items-start gap-2 pointer-events-auto">
+            <div className="flex items-center gap-2 p-1 rounded-full transition-colors duration-300">
+                <motion.button
+                    onClick={() => setIsSidebarOpen(o => !o)}
+                    className="w-10 h-10 md:w-12 md:h-12 bg-[var(--accent-solid)] rounded-full text-[var(--accent-solid-text)] flex items-center justify-center shadow-lg hover:bg-[var(--accent-solid-hover)] transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label="Toggle menu"
+                >
+                    <AnimatePresence mode="wait">
+                      <motion.div 
+                        key={isSidebarOpen ? 'close' : 'open'}
+                        initial={{ opacity: 0, scale: 0.6, rotate: -45 }}
+                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                        exit={{ opacity: 0, scale: 0.6, rotate: 45 }}
+                        transition={{ duration: 0.15, ease: 'easeOut' }}
+                      >
+                        {isSidebarOpen ? <XMarkIcon className="w-5 h-5 md:w-6 md:h-6" /> : <Bars3Icon className="w-5 h-5 md:w-6 md:h-6" />}
+                      </motion.div>
+                    </AnimatePresence>
+                </motion.button>
+                
+                <AnimatePresence>
+                  {history.length > 0 && (
+                      <motion.button
+                          key="back"
+                          onClick={handleBack}
+                          className="h-10 md:h-12 px-3 md:px-4 bg-[var(--accent-solid)] rounded-full text-[var(--accent-solid-text)] flex items-center justify-center gap-2 shadow-lg hover:bg-[var(--accent-solid-hover)] transition-colors"
+                          initial={{ scale: 0.8, opacity: 0, x: -15 }}
+                          animate={{ scale: 1, opacity: 1, x: 0 }}
+                          exit={{ scale: 0.8, opacity: 0, x: -15 }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          aria-label={t('go_back')}
+                      >
+                          <ArrowUturnLeftIcon className="w-4 h-4 md:w-5 md:h-5" />
+                          <span className="text-sm font-semibold whitespace-nowrap hidden sm:inline">{t('go_back')}</span>
+                      </motion.button>
+                  )}
                 </AnimatePresence>
-            </motion.button>
-            
+                
+                {/* Change Subject Button */}
+                <motion.button
+                    onClick={() => setSubject(null)}
+                    className="h-10 md:h-12 px-3 md:px-4 bg-[var(--accent-solid)] rounded-full text-[var(--accent-solid-text)] flex items-center justify-center gap-2 shadow-lg hover:bg-[var(--accent-solid-hover)] transition-colors"
+                    initial={{ scale: 0.8, opacity: 0, x: -15 }}
+                    animate={{ scale: 1, opacity: 1, x: 0 }}
+                    exit={{ scale: 0.8, opacity: 0, x: -15 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                >
+                    <HomeIcon className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="text-sm font-semibold whitespace-nowrap hidden sm:inline">{t('change_subject')}</span>
+                </motion.button>
+                
+                {/* Mode Switch Button Positioned Here */}
+                <AnimatePresence>
+                {canSwitchMode && (
+                     <motion.button
+                         key="switch-mode"
+                         onClick={handleToggleMode}
+                         className="h-10 md:h-12 px-3 md:px-4 bg-[var(--accent-solid)] rounded-full text-[var(--accent-solid-text)] flex items-center justify-center gap-2 shadow-lg hover:bg-[var(--accent-solid-hover)] transition-colors"
+                         initial={{ scale: 0.8, opacity: 0, x: -15 }}
+                         animate={{ scale: 1, opacity: 1, x: 0 }}
+                         exit={{ scale: 0.8, opacity: 0, x: -15 }}
+                         whileHover={{ scale: 1.05 }}
+                         whileTap={{ scale: 0.95 }}
+                     >
+                         {view.type === 'textbook' ? (
+                             <>
+                                <PlayIcon className="w-4 h-4 md:w-5 md:h-5" />
+                                <span className="text-sm font-semibold whitespace-nowrap hidden sm:inline">Quiz</span>
+                             </>
+                         ) : (
+                             <>
+                                <BookOpenIcon className="w-4 h-4 md:w-5 md:h-5" />
+                                <span className="text-sm font-semibold whitespace-nowrap hidden sm:inline">Text</span>
+                             </>
+                         )}
+                     </motion.button>
+                 )}
+                </AnimatePresence>
+            </div>
+
             <AnimatePresence>
-              {history.length > 0 && (
-                  <motion.button
-                      key="back"
-                      onClick={handleBack}
-                      className="h-12 px-4 bg-[var(--accent-solid)] rounded-full text-[var(--accent-solid-text)] flex items-center justify-center gap-2 shadow-lg hover:bg-[var(--accent-solid-hover)] transition-colors"
-                      initial={{ scale: 0.8, opacity: 0, x: -15 }}
-                      animate={{ scale: 1, opacity: 1, x: 0 }}
-                      exit={{ scale: 0.8, opacity: 0, x: -15 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      aria-label={t('go_back')}
+                {view.type === 'textbook' && !isSidebarOpen && (
+                  <motion.div
+                      className="flex flex-col items-start gap-3 pointer-events-auto mt-1"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
                   >
-                      <ArrowUturnLeftIcon className="w-5 h-5" />
-                      <span className="text-sm font-semibold whitespace-nowrap hidden sm:inline">{t('go_back')}</span>
-                  </motion.button>
-              )}
-            </AnimatePresence>
-            
-            {/* Change Subject Button */}
-            <motion.button
-                onClick={() => setSubject(null)}
-                className="h-12 px-4 bg-[var(--accent-solid)] rounded-full text-[var(--accent-solid-text)] flex items-center justify-center gap-2 shadow-lg hover:bg-[var(--accent-solid-hover)] transition-colors"
-                initial={{ scale: 0.8, opacity: 0, x: -15 }}
-                animate={{ scale: 1, opacity: 1, x: 0 }}
-                exit={{ scale: 0.8, opacity: 0, x: -15 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-            >
-                <HomeIcon className="w-5 h-5" />
-                <span className="text-sm font-semibold whitespace-nowrap hidden sm:inline">{t('change_subject')}</span>
-            </motion.button>
-            
-            {/* Mode Switch Button Positioned Here */}
-            <AnimatePresence>
-            {canSwitchMode && (
-                 <motion.button
-                     key="switch-mode"
-                     onClick={handleToggleMode}
-                     className="h-12 px-4 bg-[var(--accent-solid)] rounded-full text-[var(--accent-solid-text)] flex items-center justify-center gap-2 shadow-lg hover:bg-[var(--accent-solid-hover)] transition-colors"
-                     initial={{ scale: 0.8, opacity: 0, x: -15 }}
-                     animate={{ scale: 1, opacity: 1, x: 0 }}
-                     exit={{ scale: 0.8, opacity: 0, x: -15 }}
-                     whileHover={{ scale: 1.05 }}
-                     whileTap={{ scale: 0.95 }}
-                 >
-                     {view.type === 'textbook' ? (
-                         <>
-                            <PlayIcon className="w-5 h-5" />
-                            <span className="text-sm font-semibold whitespace-nowrap">題目</span>
-                         </>
-                     ) : (
-                         <>
-                            <BookOpenIcon className="w-5 h-5" />
-                            <span className="text-sm font-semibold whitespace-nowrap">內文</span>
-                         </>
-                     )}
-                 </motion.button>
-             )}
+                    <TableOfContentsDropdown 
+                        chapterId={view.chapterId} 
+                        activeTocId={activeTocId} 
+                    />
+                  </motion.div>
+                )}
             </AnimatePresence>
         </div>
 
-        <AnimatePresence>
-            {view.type === 'textbook' && !isSidebarOpen && (
-              <motion.div
-                  className="flex flex-col items-start gap-3 pointer-events-auto"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-              >
-                <TableOfContentsDropdown 
-                    chapterId={view.chapterId} 
-                    activeTocId={activeTocId} 
-                />
-              </motion.div>
-            )}
-        </AnimatePresence>
+        {/* Right Side Settings (Desktop only here, mobile moves to bottom or sidebar) */}
+        <div className="pointer-events-auto hidden lg:block">
+            {/* Settings button is actually fixed at bottom right in the main div structure, 
+                but we could add top-right shortcuts here if needed. 
+                For now keeping clean. */}
+        </div>
+
       </div>
 
       <AnimatePresence>
@@ -431,7 +436,7 @@ export const MainLayout: React.FC = () => {
         </main>
         
         <div className="pointer-events-none">
-            <div className="absolute bottom-6 right-6 z-[var(--z-fab)] pointer-events-auto">
+            <div className="absolute bottom-20 right-4 lg:bottom-6 lg:right-6 z-[var(--z-fab)] pointer-events-auto">
                 <Settings 
                 isOpen={isSettingsOpen}
                 setIsOpen={setIsSettingsOpen}

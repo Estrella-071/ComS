@@ -1,71 +1,91 @@
+
 import React, { useMemo } from 'react';
 import { Tooltip } from '../components/Tooltip';
 import { slugify } from '../utils/textUtils';
 import type { GlossaryTerm } from '../types';
+import { LinkIcon } from '../components/icons';
 
 // Helper to extract raw text from a React node tree
 const getNodeText = (node: any): string => {
     if (['string', 'number'].includes(typeof node)) return node.toString();
     if (node instanceof Array) return node.map(getNodeText).join('');
     if (typeof node === 'object' && node) {
-        // react-markdown AST node structure
         if (node.value) return node.value;
         if (node.children) return getNodeText(node.children);
-        // React element props structure
         if (node.props && node.props.children) return getNodeText(node.props.children);
     }
     return '';
 };
 
+const HeaderLink: React.FC<{ id: string }> = ({ id }) => (
+    <a 
+        href={`#${id}`} 
+        className="ml-2 opacity-0 group-hover:opacity-100 text-[var(--text-subtle)] hover:text-[var(--accent-solid)] transition-opacity duration-200 inline-flex items-center align-middle"
+        aria-label="Link to section"
+    >
+        <LinkIcon className="w-4 h-4" />
+    </a>
+);
+
+// Optimized recursive renderer
 const renderWithGlossary = (
     node: React.ReactNode, 
     glossaryMap: Record<string, GlossaryTerm>, 
     glossaryRegex: RegExp,
-    seenTerms: Set<string> // Pass seenTerms to track uniqueness within a block
+    seenTerms: Set<string>
 ): React.ReactNode => {
-    // Short-circuit if no glossary terms exist to avoid expensive tree traversal and regex splitting
+    // Short-circuit if no glossary terms or regex is effectively empty
     if (Object.keys(glossaryMap).length === 0 || glossaryRegex.source === '(?:)' || glossaryRegex.source === '(?!') {
         return node;
     }
 
     return React.Children.map(node, child => {
         if (typeof child === 'string') {
+            // Optimization: Skip short strings to avoid regex overhead
+            if (child.length < 3) return child;
+            
+            // Optimization: Check if string potentially contains any match before splitting
+            if (!glossaryRegex.test(child)) return child;
+            
+            // Reset regex lastIndex because we just tested it (if global flag is set)
+            glossaryRegex.lastIndex = 0;
+
             const parts = child.split(glossaryRegex);
-            // Optimization: If split results in the original string (length 1), return it directly
             if (parts.length === 1) return child;
 
             return parts.map((part, i) => {
-                if (!part) {
-                    return part;
-                }
+                if (!part) return part;
+                
                 const lowerPart = part.toLowerCase();
                 const termData = glossaryMap[lowerPart];
                 
-                // Check if term exists AND hasn't been seen in this block yet
                 if (termData) {
-                    // Optimization: Only highlight if we haven't seen it in this block yet
                     if (seenTerms.has(lowerPart)) {
-                        return part; // Already highlighted in this block, return raw text
+                        return part; // Already highlighted in this block
                     }
 
-                    seenTerms.add(lowerPart); // Mark as seen for this block
+                    seenTerms.add(lowerPart);
                     return (
-                        <Tooltip key={i} content={
+                        <Tooltip key={`${i}-${part}`} content={
                             <div className="text-left max-w-xs">
-                                <p className="font-bold">{termData.term} ({termData.chinese})</p>
-                                <p className="mt-2 text-xs">{termData.definition}</p>
-                                <p className="mt-1 text-xs text-[var(--text-subtle)]">{termData.definition_zh}</p>
+                                <p className="font-bold font-serif text-base">{termData.term} <span className="text-[var(--text-secondary)] font-normal text-sm">({termData.chinese})</span></p>
+                                <p className="mt-2 text-sm leading-relaxed text-gray-200">{termData.definition}</p>
+                                <p className="mt-1 text-xs text-gray-400 border-t border-gray-600 pt-1 mt-2">{termData.definition_zh}</p>
                             </div>
                         }>
-                            <span className="border-b border-dashed border-sky-500/50 dark:border-sky-400/50 cursor-help font-medium text-[var(--text-primary)] hover:bg-[var(--accent-bg)] transition-colors rounded-sm px-0.5 mx-[-0.125rem]">{part}</span>
+                            <span className="border-b-[1.5px] border-dotted border-[var(--accent-solid)]/40 cursor-help font-medium text-[var(--text-primary)] hover:bg-[var(--accent-bg)] hover:border-transparent transition-all rounded-sm px-0.5 mx-[-0.125rem] decoration-clone">{part}</span>
                         </Tooltip>
                     );
                 }
                 return part;
             });
         }
+        
         if (React.isValidElement<{ children?: React.ReactNode }>(child) && child.props.children) {
-            return React.cloneElement(child, { ...child.props, children: renderWithGlossary(child.props.children, glossaryMap, glossaryRegex, seenTerms) });
+            return React.cloneElement(child, { 
+                ...child.props, 
+                children: renderWithGlossary(child.props.children, glossaryMap, glossaryRegex, seenTerms) 
+            });
         }
         return child;
     });
@@ -77,39 +97,51 @@ export const useMarkdownComponents = (
     setZoomImage: (img: {src: string, alt?: string} | null) => void
 ) => {
     return useMemo(() => ({
-        h1: ({ node, ...props }: any) => (
-            <h1 id={slugify(getNodeText(node))} className="scroll-mt-32 text-[var(--text-primary)] mb-12 mt-8 font-serif text-4xl md:text-5xl font-bold tracking-tight leading-tight" {...props}>
-                {renderWithGlossary(props.children, glossaryMap, glossaryRegex, new Set())}
-            </h1>
-        ),
-        h2: ({ node, ...props }: any) => (
-            <h2 id={slugify(getNodeText(node))} className="scroll-mt-32 text-[var(--text-primary)] mt-16 mb-8 font-serif text-2xl md:text-3xl font-bold border-b-2 border-[var(--ui-border)] pb-3 flex items-center gap-3" {...props}>
-                <span className="w-1.5 h-8 rounded-full bg-[var(--accent-solid)] inline-block mr-1"></span>
-                {renderWithGlossary(props.children, glossaryMap, glossaryRegex, new Set())}
-            </h2>
-        ),
-        h3: ({ node, ...props }: any) => (
-            <h3 id={slugify(getNodeText(node))} className="scroll-mt-28 text-[var(--text-primary)] mt-10 mb-4 font-sans text-xl font-bold tracking-wide" {...props}>
-                {renderWithGlossary(props.children, glossaryMap, glossaryRegex, new Set())}
-            </h3>
-        ),
+        h1: ({ node, ...props }: any) => {
+            const id = slugify(getNodeText(node));
+            return (
+                <h1 id={id} className="group scroll-mt-32 text-[var(--text-primary)] mb-12 mt-8 font-serif text-4xl md:text-5xl font-bold tracking-tight leading-tight relative" {...props}>
+                    {renderWithGlossary(props.children, glossaryMap, glossaryRegex, new Set())}
+                    <HeaderLink id={id} />
+                </h1>
+            );
+        },
+        h2: ({ node, ...props }: any) => {
+            const id = slugify(getNodeText(node));
+            return (
+                <h2 id={id} className="group scroll-mt-32 text-[var(--text-primary)] mt-16 mb-8 font-serif text-2xl md:text-3xl font-bold border-b border-[var(--ui-border)] pb-3 flex items-baseline gap-2" {...props}>
+                    <span className="text-[var(--accent-solid)] opacity-40 text-lg mr-1 font-sans">#</span>
+                    <span className="flex-1">{renderWithGlossary(props.children, glossaryMap, glossaryRegex, new Set())}</span>
+                    <HeaderLink id={id} />
+                </h2>
+            );
+        },
+        h3: ({ node, ...props }: any) => {
+            const id = slugify(getNodeText(node));
+            return (
+                <h3 id={id} className="group scroll-mt-28 text-[var(--text-primary)] mt-10 mb-4 font-sans text-xl font-bold tracking-wide flex items-center" {...props}>
+                    {renderWithGlossary(props.children, glossaryMap, glossaryRegex, new Set())}
+                    <HeaderLink id={id} />
+                </h3>
+            );
+        },
         h4: ({ node, ...props }: any) => (
-            <h4 id={slugify(getNodeText(node))} className="scroll-mt-24 text-[var(--text-secondary)] mt-8 mb-3 font-sans text-lg font-semibold italic" {...props}>
+            <h4 id={slugify(getNodeText(node))} className="scroll-mt-24 text-[var(--text-secondary)] mt-8 mb-3 font-sans text-lg font-semibold" {...props}>
                 {renderWithGlossary(props.children, glossaryMap, glossaryRegex, new Set())}
             </h4>
         ),
         p: ({children}: {children: React.ReactNode}) => (
-            <p className="text-[var(--text-secondary)] mb-6">
+            <p className="text-[var(--text-secondary)] mb-6 leading-relaxed">
                 {renderWithGlossary(children, glossaryMap, glossaryRegex, new Set())}
             </p>
         ),
         ul: ({children}: {children: React.ReactNode}) => (
-            <ul className="list-disc list-outside ml-6 mb-6 space-y-2 marker:text-[var(--accent-solid)] text-[var(--text-secondary)]">
+            <ul className="list-disc list-outside ml-6 mb-6 space-y-2 marker:text-[var(--text-subtle)] text-[var(--text-secondary)]">
                 {children}
             </ul>
         ),
         ol: ({children}: {children: React.ReactNode}) => (
-            <ol className="list-decimal list-outside ml-6 mb-6 space-y-2 marker:text-[var(--accent-solid)] marker:font-bold text-[var(--text-secondary)]">
+            <ol className="list-decimal list-outside ml-6 mb-6 space-y-2 marker:text-[var(--text-primary)] marker:font-bold text-[var(--text-secondary)]">
                 {children}
             </ol>
         ),
@@ -119,8 +151,8 @@ export const useMarkdownComponents = (
             </li>
         ),
         blockquote: ({children}: {children: React.ReactNode}) => (
-            <blockquote className="relative my-8 pl-6 py-4 border-l-4 border-[var(--accent-solid)] bg-[var(--ui-bg)] rounded-r-xl italic text-[var(--text-secondary)] shadow-sm">
-                <div>{children}</div>
+            <blockquote className="relative my-8 pl-6 py-1 border-l-4 border-[var(--accent-solid)] bg-[var(--ui-bg)] rounded-r-lg italic text-[var(--text-secondary)]">
+                <div className="py-4 pr-4">{children}</div>
             </blockquote>
         ),
         code: ({node, inline, className, children, ...props}: any) => {
@@ -129,7 +161,7 @@ export const useMarkdownComponents = (
             
             if (isBlock) {
                 return (
-                    <div className="relative group my-8 rounded-xl overflow-hidden shadow-xl border border-[var(--ui-border)] bg-[#1e1e1e]">
+                    <div className="relative group my-8 rounded-lg overflow-hidden shadow-lg border border-[var(--ui-border)] bg-[#1e1e1e]">
                          <div className="flex items-center justify-between px-4 py-2 bg-[#252526] border-b border-white/10">
                             <div className="flex gap-1.5">
                                 <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
@@ -146,7 +178,7 @@ export const useMarkdownComponents = (
             }
             
             return (
-                <code className="bg-[var(--accent-bg)] text-[var(--accent-solid)] px-1.5 py-0.5 rounded-md text-[0.9em] font-mono border border-[var(--ui-border)] font-medium tracking-tight" {...props}>
+                <code className="bg-[var(--accent-bg)] text-[var(--text-primary)] px-1.5 py-0.5 rounded text-[0.9em] font-mono border border-[var(--ui-border)] tracking-tight whitespace-pre-wrap break-words" {...props}>
                     {children}
                 </code>
             );
@@ -165,10 +197,10 @@ export const useMarkdownComponents = (
             />
         ),
         hr: () => (
-            <div className="my-12 flex items-center justify-center opacity-30">
-                <div className="h-px w-1/4 bg-[var(--text-secondary)]"></div>
-                <div className="mx-4 text-[var(--text-secondary)] text-xl">***</div>
-                <div className="h-px w-1/4 bg-[var(--text-secondary)]"></div>
+            <div className="my-16 flex items-center justify-center opacity-30">
+                <div className="h-px w-24 bg-[var(--text-secondary)]"></div>
+                <div className="mx-4 text-[var(--text-secondary)] text-xl tracking-[0.5em]">***</div>
+                <div className="h-px w-24 bg-[var(--text-secondary)]"></div>
             </div>
         ),
         table: ({node, ...props}: any) => (
@@ -189,21 +221,21 @@ export const useMarkdownComponents = (
             </tbody>
         ),
         tr: ({children}: {children: React.ReactNode}) => (
-            <tr className="transition-colors hover:bg-[var(--ui-bg-hover)] even:bg-[var(--ui-bg)]/30">
+            <tr className="transition-colors hover:bg-[var(--ui-bg-hover)]">
                 {children}
             </tr>
         ),
         th: ({children, ...props}: any) => (
-            <th className="px-6 py-4 font-semibold text-[var(--text-primary)]" {...props}>{children}</th>
+            <th className="px-6 py-4 font-semibold text-[var(--text-primary)] whitespace-nowrap" {...props}>{children}</th>
         ),
         td: ({children, ...props}: any) => (
-            <td className="px-6 py-4 whitespace-nowrap text-[var(--text-secondary)]" {...props}>
+            <td className="px-6 py-4 text-[var(--text-secondary)]" {...props}>
                 {renderWithGlossary(children, glossaryMap, glossaryRegex, new Set())}
             </td>
         ),
         img: ({node, ...props}: any) => (
-            <figure className="my-10 group">
-                <div className="relative rounded-xl overflow-hidden border border-[var(--ui-border)] bg-[var(--ui-bg)]/50 shadow-sm group-hover:shadow-md transition-shadow">
+            <figure className="my-12 group">
+                <div className="relative rounded-xl overflow-hidden border border-[var(--ui-border)] bg-[var(--ui-bg)]/30 shadow-sm group-hover:shadow-md transition-shadow">
                     <img 
                         {...props} 
                         className="w-full max-h-[600px] object-contain cursor-zoom-in transition-transform duration-500 group-hover:scale-[1.01]"

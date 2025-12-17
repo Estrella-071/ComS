@@ -100,7 +100,6 @@ export const ProgrammingView: React.FC<ProgrammingViewProps> = ({ setView }) => 
         <>
             <div ref={contentRef} className="h-full overflow-y-auto relative">
                 <EdgeProgressBar containerRef={contentRef} />
-                {/* Added pt-20 for mobile spacing */}
                 <div className="sticky top-0 z-[var(--z-sticky-l2)] bg-[var(--bg-color)]/80 backdrop-blur-md pt-20 lg:pt-4 pb-4 space-y-4">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="relative w-full">

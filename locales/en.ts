@@ -9,10 +9,10 @@ export const en = {
   home: 'Home',
   table_of_contents: 'Table of Contents',
   practice_modes: 'Practice Modes',
-  question_bank: 'Question Bank', // Renamed from all_questions
-  start_quiz_session: 'Start Quiz', // Renamed from question_bank_quiz
+  question_bank: 'Question Bank',
+  start_quiz_session: 'Start Quiz',
   programming_exercises: 'Programming Exercises',
-  starred_items: 'Starred', // Renamed from flagged_for_review
+  starred_items: 'Starred',
   tools: 'Tools',
   quiz_history: 'Quiz History',
   by_chapter: 'Chapters',
@@ -136,7 +136,6 @@ export const en = {
   reading_settings_page_width: 'Page Width',
   reading_settings_theme: 'Theme',
   reading_settings_formatting: 'Initial Mode',
-  // FIX: Added missing translation keys for reading settings language options to fix TypeScript errors in TextbookView.tsx.
   reading_settings_language: 'Display Language',
   reading_settings_lang_en: 'EN',
   reading_settings_lang_zh: 'ZH',

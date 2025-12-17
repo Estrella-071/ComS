@@ -17,32 +17,24 @@ export function SegmentedControl<T extends string>({
   const [containerWidth, setContainerWidth] = useState(0);
   const isDragging = useRef(false);
   
-  // Local state to handle visual updates during drag without triggering parent re-renders
   const [activeValue, setActiveValue] = useState(value);
   
-  // Motion Values for performant animations
   const x = useMotionValue(0);
   const scale = useMotionValue(1);
 
-  // Calculate dimensions
-  const padding = 4; // Corresponds to p-1 (4px)
+  const padding = 4;
   const availableWidth = Math.max(0, containerWidth - (padding * 2));
   const itemWidth = availableWidth / options.length;
   const maxPos = Math.max(0, availableWidth - itemWidth);
   
-  // Active Index based on PROP (for auto-correction/snapping)
   const propIndex = options.findIndex(o => o.value === value);
   const safePropIndex = propIndex === -1 ? 0 : propIndex;
 
-  // Sync activeValue with prop value when prop changes (external update)
   useLayoutEffect(() => {
     setActiveValue(value);
   }, [value]);
 
-  // Auto-Correction / Snapping Logic
-  // This runs when the PROP value changes (or on resize/mount)
   useLayoutEffect(() => {
-    // Only snap if NOT dragging. This prevents fighting between the spring and the user's finger.
     if (!isDragging.current && containerWidth > 0) {
       const targetX = safePropIndex * itemWidth;
       animate(x, targetX, {
@@ -53,7 +45,6 @@ export function SegmentedControl<T extends string>({
     }
   }, [safePropIndex, itemWidth, containerWidth]);
 
-  // Resize Observer to handle responsive width
   useLayoutEffect(() => {
     if (!containerRef.current) return;
     
@@ -81,7 +72,6 @@ export function SegmentedControl<T extends string>({
     return () => observer.disconnect();
   }, []);
 
-  // -- Interaction Handlers --
 
   const handlePointerDown = (e: React.PointerEvent) => {
       e.stopPropagation();
@@ -103,7 +93,6 @@ export function SegmentedControl<T extends string>({
     const currentX = x.get();
     const newX = currentX + info.delta.x;
     
-    // Strict Clamp
     const clampedX = Math.max(0, Math.min(newX, maxPos));
     
     x.set(clampedX);
@@ -132,13 +121,11 @@ export function SegmentedControl<T extends string>({
     
     finalIndex = Math.max(0, Math.min(finalIndex, options.length - 1));
 
-    // Commit the change
     if (options[finalIndex]) {
         const finalValue = options[finalIndex].value;
         if (finalValue !== value) {
             onChange(finalValue);
         } else {
-            // If value didn't change, we still need to snap back visually
              const targetX = finalIndex * itemWidth;
              animate(x, targetX, {
                 type: "spring",
@@ -170,7 +157,6 @@ export function SegmentedControl<T extends string>({
         className="relative flex h-12 w-full select-none items-center rounded-full bg-[var(--ui-bg)] p-1 cursor-pointer"
         style={{ touchAction: 'none' }}
     >
-        {/* The Sliding Knob - z-10 */}
         {containerWidth > 0 && (
             <motion.div
                 className="absolute top-1 bottom-1 left-1 rounded-full bg-[var(--accent-solid)] shadow-sm z-10 cursor-grab active:cursor-grabbing"
@@ -187,7 +173,6 @@ export function SegmentedControl<T extends string>({
             />
         )}
 
-        {/* Text Labels - z-20 (On top of knob) */}
         <div className="relative z-20 flex w-full h-full pointer-events-none"> 
             {options.map((option) => (
                 <div

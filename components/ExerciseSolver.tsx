@@ -69,8 +69,7 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
   const handleRun = () => {
     setIsRunning(true);
     setOutput('');
-    // Reduced from 1000ms to 250ms. 
-    // Just enough to show the "Running..." state without making the user wait.
+    // Simulate execution delay
     setTimeout(() => {
       setOutput(exercise.sampleOutput || 'Execution complete. No output.');
       setIsRunning(false);
@@ -95,7 +94,6 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
         const start = target.selectionStart;
         const end = target.selectionEnd;
         
-        // Insert 2 spaces
         const spaces = "  ";
         const newCode = code.substring(0, start) + spaces + code.substring(end);
         
@@ -149,7 +147,6 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
         </div>
       <div className="flex-1 w-full flex justify-center items-center relative min-h-0 pt-4">
         <div className="relative w-full max-w-4xl">
-            {/* Desktop side navigation */}
             <button onClick={() => navigate(-1)} disabled={exerciseIndex <= 0} className="hidden lg:flex items-center justify-center absolute top-1/2 -translate-y-1/2 right-full mr-4 w-12 h-12 bg-[var(--ui-bg)] rounded-full text-[var(--text-secondary)] disabled:opacity-50 hover:bg-[var(--ui-bg-hover)] transition-colors z-[var(--z-content-overlay)]">
               <ChevronLeftIcon className="w-6 h-6" />
             </button>
@@ -219,7 +216,6 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
                         </div>
                         
                         <div className="bg-[#1e1e1e] rounded-lg overflow-hidden relative border border-gray-700 shadow-inner flex">
-                          {/* Line Numbers */}
                           <div 
                             ref={lineNumbersRef}
                             className="flex-none w-10 bg-[#1e1e1e] text-gray-600 text-right pr-3 pt-4 font-mono text-sm select-none leading-relaxed tracking-wide overflow-hidden border-r border-gray-800"
@@ -230,7 +226,6 @@ export const ExerciseSolver: React.FC<ExerciseSolverProps> = ({ id, setView, isS
                             ))}
                           </div>
                           
-                          {/* Code Area */}
                           <textarea 
                             ref={textareaRef}
                             value={code}

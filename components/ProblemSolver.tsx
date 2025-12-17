@@ -10,7 +10,7 @@ import type { View } from '../types';
 import { ProblemOptions } from './ProblemOptions';
 import { ProblemExplanation } from './ProblemExplanation';
 import { Toast } from './common/Toast';
-
+import { QuestionCard } from './QuestionCard';
 
 interface ProblemSolverProps {
   id: string;
@@ -59,22 +59,6 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
     return <div className="text-center py-10">Problem not found.</div>;
   }
   
-  const isFlagged = flaggedItems.includes(problem.id);
-
-  const handleFlagToggle = () => {
-    if (!problem) return;
-    const isCurrentlyFlagged = flaggedItems.includes(problem.id);
-    if (!isCurrentlyFlagged) {
-      setShowFlagToast(true);
-      setTimeout(() => setShowFlagToast(false), 2000);
-    }
-    toggleFlaggedItem(problem.id);
-  };
-
-  // Force English questions but keep Chinese interface
-  const questionText = problem.text_en;
-  const tooltipText = problem.text_zh;
-
   return (
     <div className="h-full flex flex-col">
        <div className="flex-shrink-0 px-4 sm:px-8 pt-20 lg:pt-4">
@@ -92,7 +76,6 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
       <div className="flex-1 w-full flex justify-center items-center relative min-h-0 pt-4">
         
         <div className="relative w-full max-w-4xl">
-            {/* Desktop side navigation */}
             <button onClick={() => navigate(-1)} disabled={problemIndex <= 0} className="hidden lg:flex items-center justify-center absolute top-1/2 -translate-y-1/2 right-full mr-4 w-12 h-12 bg-[var(--ui-bg)] rounded-full text-[var(--text-secondary)] disabled:opacity-50 hover:bg-[var(--ui-bg-hover)] transition-colors z-[var(--z-content-overlay)]">
               <ChevronLeftIcon className="w-6 h-6" />
             </button>
@@ -132,47 +115,17 @@ export const ProblemSolver: React.FC<ProblemSolverProps> = ({ id, setView, isSid
                       else if (offset.x > swipeDistanceThreshold || velocity.x > 400) navigate(-1);
                     }}
                   >
-                    <div className="h-full overflow-y-auto pb-24 lg:pb-0 px-4">
-                      <div className="glass-pane rounded-2xl p-4 sm:p-8 mb-6">
-                        <div className="flex justify-between items-start">
-                          <span className="text-sm font-semibold bg-[var(--accent-bg)] text-[var(--accent-text)] px-3 py-1 rounded-full">
-                            {t('problem_header')} {problem.number}
-                          </span>
-                          <div className="relative flex items-center">
-                            <button
-                              onClick={handleFlagToggle}
-                              className="text-[var(--warning-text)] hover:text-[var(--warning-text-hover)] transition-colors p-1"
-                              aria-label={isFlagged ? 'Unflag problem' : 'Flag problem'}
-                            >
-                              {isFlagged ? <StarSolidIcon className="w-6 h-6" /> : <StarIcon className="w-6 h-6" />}
-                            </button>
-                          </div>
+                     <div className="h-full overflow-y-auto pb-24 lg:pb-0 px-4">
+                        {/* Reuse QuestionCard for consistent look and feel, but with view-only props */}
+                        <div className="mb-6">
+                            <QuestionCard 
+                                problem={problem}
+                                onAnswerSelected={() => {}}
+                                userAnswer={problem.answer} // Show correct answer implicitly or revealed
+                                shouldAutoShowExplanation={true}
+                            />
                         </div>
-                        <div className="text-base sm:text-lg leading-relaxed text-[var(--text-secondary)] mt-4">
-                          <Tooltip content={tooltipText}>
-                            <p className="border-b border-dashed border-slate-400 dark:border-slate-600 cursor-help inline">
-                              <TextWithHighlights text={questionText} />
-                            </p>
-                          </Tooltip>
-                        </div>
-                      </div>
-
-                      <div className="glass-pane rounded-2xl p-4 sm:p-8">
-                        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">{t('options')}</h2>
-                        
-                        <ProblemOptions 
-                            problem={problem} 
-                            isRevealed={true} // In ProblemSolver mode, we always reveal the correct answer
-                            onAnswerSelected={() => {}} // Read-only in this mode
-                            disabled={true}
-                        />
-
-                        <ProblemExplanation 
-                            explanation={problem.explanation_zh} 
-                            isVisible={false} // Initially hidden, can be toggled
-                        />
-                      </div>
-                    </div>
+                     </div>
                   </motion.div>
                 </AnimatePresence>
             </div>

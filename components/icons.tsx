@@ -91,12 +91,6 @@ export const ClockIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-export const CheckCircleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-    </svg>
-);
-
 export const CheckBadgeIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.745 3.745 0 0 1 3.296-1.043A3.745 3.745 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.745 3.745 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
@@ -141,7 +135,7 @@ export const SparklesIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export const Cog6ToothIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213.852c.079.317.36.563.68.656.32.092.658.026 1.03-.178l.62-.358a1.125 1.125 0 0 1 1.45.12l1.83 1.83c.39.39.44 1.022.12 1.45l-.358.62c-.204.372-.27.81-.178 1.03l.852.213c.542.09.94.56.94 1.11v2.593c0 .55-.398 1.02-.94 1.11l-.852.213c-.092.32-.026.658.178 1.03l.358.62c.32.427.27 1.06-.12 1.45l-1.83 1.83a1.125 1.125 0 0 1-1.45.12l-.62-.358c-.372-.204-.81-.27-1.03-.178-.317.079-.563.36-.656.68l-.213.852c-.09.542-.56.94-1.11.94h-2.593c-.55 0-1.02-.398-1.11-.94l-.213-.852c-.079-.317-.36-.563-.68-.656-.32-.092-.658-.026-1.03.178l-.62.358a1.125 1.125 0 0 1-1.45-.12l-1.83-1.83a1.125 1.125 0 0 1-.12-1.45l.358-.62c.204-.372.27-.81.178-1.03l-.852-.213c-.542-.09-.94-.56-.94-1.11v-2.593c0-.55.398-1.02.94-1.11l.852-.213c.092-.32.026-.658-.178-1.03l-.358-.62a1.125 1.125 0 0 1 .12-1.45l1.83-1.83a1.125 1.125 0 0 1 1.45-.12l.62.358c.372.204.81.27 1.03.178.317-.079.563-.36.656-.68l.213-.852z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213.852c.079.317.36.563.68.656.32.092.658.026 1.03-.178l.62-.358a1.125 1.125 0 0 1 1.45.12l1.83 1.83c.39.39.44 1.022.12 1.45l-.358.62c-.204.372-.27.81-.178 1.03l.852.213c.542.09.94.56.94 1.11v2.593c0 .55-.398 1.02-.94 1.11l-.852.213c-.092.32.026-.658-.178-1.03l-.358-.62a1.125 1.125 0 0 1 .12-1.45l1.83-1.83a1.125 1.125 0 0 1 1.45-.12l.62.358c.372.204.81.27 1.03.178.317-.079.563-.36.656-.68l.213-.852z" />
     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
   </svg>
 );
@@ -187,4 +181,10 @@ export const PaperAirplaneIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
     </svg>
+);
+
+export const LinkIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+  </svg>
 );

@@ -1,11 +1,12 @@
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '../hooks/useTranslation';
 import type { Problem, View } from '../types';
-import { CodeBracketIcon } from './icons';
+import { CodeBracketIcon, PlayIcon, ArrowPathIcon, CheckIcon } from './icons';
 import { useAppContext } from '../contexts/AppContext';
 import { SegmentedControl } from './common/SegmentedControl';
+import { useQuiz } from '../contexts/QuizContext';
 
 interface ShuffleQuizViewProps {
   setView: (view: View) => void;
@@ -14,6 +15,7 @@ interface ShuffleQuizViewProps {
 export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => {
   const { t } = useTranslation();
   const { subjectData } = useAppContext();
+  const { quizState, updateQuiz, startQuiz: startNewQuiz } = useQuiz();
   
   const problems = useMemo(() => subjectData?.problems || [], [subjectData]);
 
@@ -26,6 +28,17 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
   const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
   const [count, setCount] = useState<number>(20);
   const [quizMode, setQuizMode] = useState<'shuffled' | 'sequential'>('shuffled');
+
+  // Pre-fill from active quiz if available (Change Scope feature)
+  useEffect(() => {
+    if (quizState && quizState.problems.length > 0) {
+        // Infer chapters from current problems
+        const currentChapters = new Set(quizState.problems.map(p => p.chapter));
+        setSelectedChapters(Array.from(currentChapters));
+        setCount(quizState.problems.length);
+        // Note: Detecting 'shuffled' vs 'sequential' from problems list is hard, defaulting to shuffled is safer or keeping user state
+    }
+  }, [quizState]);
 
   const problemsByChapter = useMemo(() => {
     return problems.reduce<Record<string, Problem[]>>((acc, problem) => {
@@ -43,7 +56,7 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
     return selectedChapters.reduce((total, ch) => total + (problemsByChapter[ch]?.length || 0), 0);
   }, [selectedChapters, problemsByChapter, problems.length]);
   
-  React.useEffect(() => {
+  useEffect(() => {
     const newMax = maxQuestions > 0 ? maxQuestions : 1;
     if (count > newMax) {
         setCount(newMax);
@@ -63,7 +76,7 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
   const handleSelectAll = () => setSelectedChapters(chapters);
   const handleDeselectAll = () => setSelectedChapters([]);
 
-  const startQuiz = () => {
+  const getNewProblems = () => {
     let availableProblems = problems;
     if (selectedChapters.length > 0) {
         availableProblems = problems.filter(p => selectedChapters.includes(p.chapter));
@@ -75,18 +88,53 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
     } else {
         quizProblems = availableProblems.slice(0, count);
     }
+    return quizProblems;
+  };
 
-    const title = selectedChapters.length > 0 && selectedChapters.length < chapters.length
+  const getNewTitle = () => {
+    return selectedChapters.length > 0 && selectedChapters.length < chapters.length
         ? `${t('start_quiz_session')} (${selectedChapters.map(c => `${t('chapter_short')}${c}${t('chapter_unit')}`).join(', ')})`
         : t('start_quiz_session');
+  }
 
-    setView({ 
-        type: 'quiz', 
-        id: `shuffle-${Date.now()}`,
+  const handleStartNew = () => {
+    const quizProblems = getNewProblems();
+    const title = getNewTitle();
+    const quizId = `shuffle-${Date.now()}`;
+
+    startNewQuiz({ 
+        id: quizId,
         problems: quizProblems, 
         title, 
         startIndex: 0 
     });
+
+    setView({ 
+        type: 'quiz', 
+        id: quizId,
+        problems: quizProblems,
+        title,
+        startIndex: 0
+    });
+  };
+
+  const handleUpdateAndContinue = () => {
+      const quizProblems = getNewProblems();
+      const title = getNewTitle();
+      updateQuiz(quizProblems, title);
+      resumeQuiz();
+  };
+  
+  const resumeQuiz = () => {
+      if (quizState) {
+          setView({
+              type: 'quiz',
+              id: quizState.id,
+              problems: quizState.problems,
+              title: quizState.title,
+              startIndex: 0 
+          });
+      }
   };
   
   if (!subjectData) return null;
@@ -100,18 +148,19 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
                 transition={{ duration: 0.3 }}
                 className="w-full glass-pane rounded-2xl p-6 md:p-8"
             >
-                <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-[var(--accent-bg)] flex items-center justify-center flex-shrink-0">
-                        <CodeBracketIcon className="w-7 h-7 text-[var(--accent-text)]" />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">{t('quiz_settings')}</h1>
-                        <p className="text-md text-[var(--text-secondary)] mt-1">{t('quiz_description')}</p>
+                <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-[var(--accent-bg)] flex items-center justify-center flex-shrink-0">
+                            <CodeBracketIcon className="w-7 h-7 text-[var(--accent-text)]" />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">{t('quiz_settings')}</h1>
+                            <p className="text-md text-[var(--text-secondary)] mt-1">{t('quiz_description')}</p>
+                        </div>
                     </div>
                 </div>
                 
-                <div className="space-y-6 mt-8">
-                    {/* Quiz Mode */}
+                <div className="space-y-6">
                     <SettingRow label={t('quiz_mode')}>
                          <SegmentedControl
                             options={[
@@ -123,7 +172,6 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
                         />
                     </SettingRow>
 
-                    {/* Number of Questions */}
                     <SettingRow label={t('quiz_num_questions')}>
                         <div className="flex items-center gap-2 w-full">
                             <input
@@ -148,7 +196,6 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
                         </div>
                     </SettingRow>
 
-                    {/* Chapters */}
                     <div>
                         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-3 gap-2">
                             <h3 className="text-md font-medium text-[var(--text-primary)]">{t('quiz_include_chapters')}</h3>
@@ -175,10 +222,39 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
                     </div>
                 </div>
 
-                <div className="mt-8">
-                <button onClick={startQuiz} disabled={count === 0 || (maxQuestions === 0 && selectedChapters.length > 0)} className="w-full px-4 py-3 rounded-xl bg-[var(--accent-solid)] text-[var(--accent-solid-text)] font-semibold hover:bg-[var(--accent-solid-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                    {t('start_quiz')}
-                </button>
+                <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                    {quizState ? (
+                        <>
+                            <button 
+                                onClick={resumeQuiz}
+                                className="flex-1 px-4 py-3 rounded-xl bg-transparent border border-[var(--ui-border)] text-[var(--text-secondary)] font-semibold hover:bg-[var(--ui-bg)] transition-colors"
+                            >
+                                Cancel (Resume)
+                            </button>
+                            <button 
+                                onClick={handleStartNew} 
+                                disabled={count === 0 || (maxQuestions === 0 && selectedChapters.length > 0)} 
+                                className="flex-1 px-4 py-3 rounded-xl bg-[var(--error-bg)] text-[var(--error-text)] border border-[var(--error-border)] font-semibold hover:bg-[var(--error-border)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Restart New
+                            </button>
+                            <button 
+                                onClick={handleUpdateAndContinue} 
+                                disabled={count === 0 || (maxQuestions === 0 && selectedChapters.length > 0)} 
+                                className="flex-[2] px-4 py-3 rounded-xl bg-[var(--accent-solid)] text-[var(--accent-solid-text)] font-semibold hover:bg-[var(--accent-solid-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                <ArrowPathIcon className="w-5 h-5"/> Update & Continue
+                            </button>
+                        </>
+                    ) : (
+                         <button 
+                            onClick={handleStartNew} 
+                            disabled={count === 0 || (maxQuestions === 0 && selectedChapters.length > 0)} 
+                            className="w-full px-4 py-3 rounded-xl bg-[var(--accent-solid)] text-[var(--accent-solid-text)] font-semibold hover:bg-[var(--accent-solid-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            <PlayIcon className="w-5 h-5"/> {t('start_quiz')}
+                        </button>
+                    )}
                 </div>
             </motion.div>
         </div>

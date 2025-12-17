@@ -81,7 +81,7 @@ export type View =
   | { type: 'home' }
   | { type: 'overview' }
   | { type: 'textbook'; chapterId: string }
-  | { type: 'quiz'; id: string; problems: Problem[]; title: string; startIndex?: number; }
+  | { type: 'quiz'; id: string; problems: Problem[]; title: string; startIndex?: number; chapterId?: string }
   | { type: 'glossary' }
   | { type: 'history' }
   | { type: 'problem'; id: string }

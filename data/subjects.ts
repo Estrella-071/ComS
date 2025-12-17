@@ -1,58 +1,69 @@
-import type { Subject, Problem, GlossaryTerm, ProgrammingExercise } from '../types';
+
+import { problems as introProblems } from './intro_to_cs/problems';
+import { glossaryData as introGlossary } from './intro_to_cs/glossary';
+import { textbookData as introTextbook, chapterList as introChapters } from './intro_to_cs/textbook';
+
+import { problems as cProblems } from './c_programming/problems';
+import { exercises as cExercises } from './c_programming/exercises';
+import { glossaryData as cGlossary } from './c_programming/glossary';
+import { textbookData as cTextbook, chapterList as cChapters } from './c_programming/textbook';
+
+import type { Problem, ProgrammingExercise, GlossaryTerm, Subject } from '../types';
 
 export interface SubjectData {
   problems: Problem[];
-  textbookData: any; // Can be different structures
-  chapterList: any[]; // Can be different structures
+  exercises: ProgrammingExercise[];
   glossaryData: GlossaryTerm[];
-  exercises?: ProgrammingExercise[];
+  textbookData: any;
+  chapterList: Array<{ 
+      id: string; 
+      title: { en: string; zh: string };
+      subtitle?: { en: string; zh: string };
+      disabled?: boolean;
+      highlight?: boolean;
+  }>;
 }
 
-interface AllData {
-  [key: string]: {
-    name: { en: string; zh: string; };
-    description: { en: string; zh: string; };
-    enabled: boolean;
-    type: 'quiz' | 'programming';
-    loader: () => Promise<SubjectData>;
-  };
-}
-
-export const allData: AllData = {
-  'intro-to-cs': {
-    name: { en: 'Introduction to Computers', zh: '計算機概論' },
-    description: { en: 'An interactive textbook and question bank for an introductory computer science course.', zh: '一本為計算機科學入門課程設計的互動式教科書與題庫。' },
-    enabled: true,
-    type: 'quiz',
-    loader: async (): Promise<SubjectData> => {
-      const [
-        { problems },
-        { textbookData, chapterList },
-        { glossaryData }
-      ] = await Promise.all([
-        import('./problems'),
-        import('./textbook'),
-        import('./glossary'),
-      ]);
-      return { problems, textbookData, chapterList, glossaryData };
+export const subjects: Subject[] = [
+  {
+    id: 'intro-to-cs',
+    name: { en: 'Intro to Computers', zh: '計算機概論' },
+    description: {
+      en: 'A comprehensive introduction to computer science concepts including hardware, software, data representation, and algorithms.',
+      zh: '電腦科學概念的全面介紹，包括硬體、軟體、資料表示和演算法。'
     },
+    type: 'quiz',
+    enabled: true,
+  },
+  {
+    id: 'c-programming',
+    name: { en: 'C Programming', zh: 'C 語言程式設計' },
+    description: {
+      en: 'Master the fundamentals of C programming, from basic syntax to advanced topics like pointers and data structures.',
+      zh: '掌握 C 語言程式設計的基礎，從基本語法到指標和資料結構等進階主題。'
+    },
+    type: 'programming',
+    enabled: true,
+  }
+];
+
+export const allData: Record<string, { loader: () => Promise<SubjectData> }> = {
+  'intro-to-cs': {
+    loader: async () => ({
+        problems: introProblems,
+        exercises: [],
+        glossaryData: introGlossary,
+        textbookData: introTextbook,
+        chapterList: introChapters
+    })
   },
   'c-programming': {
-    name: { en: 'C How to Program', zh: 'C 語言程式設計' },
-    description: { en: 'The complete textbook for "C How to Program, 8th Edition". Explore C and C++ programming concepts.', zh: '《C 語言程式設計，第八版》完整教科書內容。探索 C 與 C++ 程式設計概念。' },
-    enabled: true,
-    type: 'programming',
-    loader: async (): Promise<SubjectData> => {
-      const { problems, exercises, textbookData, chapterList, glossaryData } = await import('./c_programming');
-      return { problems, exercises, textbookData, chapterList, glossaryData };
-    }
+    loader: async () => ({
+        problems: cProblems,
+        exercises: cExercises,
+        glossaryData: cGlossary,
+        textbookData: cTextbook,
+        chapterList: cChapters
+    })
   }
 };
-
-export const subjects: Subject[] = Object.entries(allData).map(([id, details]) => ({
-    id,
-    name: details.name,
-    description: details.description,
-    enabled: details.enabled,
-    type: details.type,
-}));

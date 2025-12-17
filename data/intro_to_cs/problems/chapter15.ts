@@ -1,8 +1,9 @@
-import type { Problem } from '../types';
+
+import type { Problem } from '../../../types';
 
 export const problems: Problem[] = [
   {
-    id: '15.1', chapter: '15', number: '15-1',
+    id: '15.1', chapter: '16', number: '16-1',
     text_en: "Data is compressed using a dictionary with indexes to strings. This is ________.",
     text_zh: "使用帶有字串索引的字典壓縮資料。這是 ________。",
     options: [
@@ -15,7 +16,7 @@ export const problems: Problem[] = [
     explanation_zh: "Lempel Ziv (LZ) 編碼是一種基於字典的壓縮方法，它將重複出現的字串儲存在字典中，並用索引代替。",
   },
   {
-    id: '15.2', chapter: '15', number: '15-2',
+    id: '15.2', chapter: '16', number: '16-2',
     text_en: "A string of one hundred 0s is replaced by two markers, a 0, and the number 100. This is ________.",
     text_zh: "一百個 0 的字串被兩個標記、一個 0 和數字 100 取代。這是 ________。",
     options: [
@@ -28,7 +29,7 @@ export const problems: Problem[] = [
     explanation_zh: "連長編碼（Run-Length Encoding, RLE）將連續重複的資料值替換為該值和其重複次數，非常適合壓縮具有大量連續相同值的資料。",
   },
   {
-    id: '15.3', chapter: '15', number: '15-3',
+    id: '15.3', chapter: '16', number: '16-3',
     text_en: "________ is an example of lossy compression.",
     text_zh: "________ 是失真壓縮的一個例子。",
     options: [
@@ -41,7 +42,7 @@ export const problems: Problem[] = [
     explanation_zh: "JPEG 是一種用於圖像的失真壓縮標準，它透過丟棄人眼不敏感的資訊來減少檔案大小。RLE、Huffman 和 LZ 都是無損壓縮。",
   },
   {
-    id: '15.4', chapter: '15', number: '15-4',
+    id: '15.4', chapter: '16', number: '16-4',
     text_en: "In a ________ data compression method, the received data is an exact copy of the original message.",
     text_zh: "在 ________ 資料壓縮方法中，接收到的資料是原始訊息的精確複本。",
     options: [
@@ -54,7 +55,7 @@ export const problems: Problem[] = [
     explanation_zh: "無損壓縮（Lossless Compression）保證解壓縮後的資料與原始資料完全一致，沒有任何資訊丟失。",
   },
   {
-    id: '15.5', chapter: '15', number: '15-5',
+    id: '15.5', chapter: '16', number: '16-5',
     text_en: "________ data compression method, the received data need not be an exact copy of the original message.",
     text_zh: "________ 資料壓縮方法，接收到的資料不必是原始訊息的精確複本。",
     options: [
@@ -67,7 +68,7 @@ export const problems: Problem[] = [
     explanation_zh: "MP3（音訊）、JPEG（圖像）和 MPEG（視訊）都是失真壓縮技術，它們通過捨棄部分細節來換取更高的壓縮率。",
   },
   {
-    id: '15.6', chapter: '15', number: '15-6',
+    id: '15.6', chapter: '16', number: '16-6',
     text_en: "________ encoding is a lossless data compression method.",
     text_zh: "________ 編碼是一種無損資料壓縮方法。",
     options: [
@@ -80,7 +81,7 @@ export const problems: Problem[] = [
     explanation_zh: "霍夫曼編碼、連長編碼 (RLE) 和 Lempel Ziv (LZ) 都是常見的無損壓縮演算法。",
   },
   {
-    id: '15.7', chapter: '15', number: '15-7',
+    id: '15.7', chapter: '16', number: '16-7',
     text_en: "In ________ encoding, the more frequently occurring characters have shorter codes than the less frequently occurring characters.",
     text_zh: "在 ________ 編碼中，出現頻率較高的字元比出現頻率較低的字元具有更短的代碼。",
     options: [
@@ -93,7 +94,7 @@ export const problems: Problem[] = [
     explanation_zh: "霍夫曼編碼利用字元出現的頻率來構建編碼樹，頻率高的字元分配較短的位元編碼，從而減少總位元數。",
   },
   {
-    id: '15.8', chapter: '15', number: '15-8',
+    id: '15.8', chapter: '16', number: '16-8',
     text_en: "In ________ encoding, PPPPPPPPPPPPPPP can be replaced by P15.",
     text_zh: "在 ________ 編碼中，PPPPPPPPPPPPPPP 可以被 P15 取代。",
     options: [
@@ -106,7 +107,7 @@ export const problems: Problem[] = [
     explanation_zh: "這是連長編碼 (RLE) 的典型應用，將重複的 'P' 替換為 'P' 及其重複次數 '15'。",
   },
   {
-    id: '15.9', chapter: '15', number: '15-9',
+    id: '15.9', chapter: '16', number: '16-9',
     text_en: "LZ encoding requires ________.",
     text_zh: "LZ 編碼需要 ________。",
     options: [
@@ -119,7 +120,7 @@ export const problems: Problem[] = [
     explanation_zh: "LZ 編碼使用滑動視窗（緩衝區）和字典來查找和壓縮重複的字串模式。",
   },
   {
-    id: '15.10', chapter: '15', number: '15-10',
+    id: '15.10', chapter: '16', number: '16-10',
     text_en: "JPEG encoding involves ________, a process that reveals the redundancies in a block.",
     text_zh: "JPEG 編碼涉及 ________，這是一個揭示區塊中冗餘的過程。",
     options: [
@@ -132,7 +133,7 @@ export const problems: Problem[] = [
     explanation_zh: "離散餘弦變換 (DCT) 將圖像區塊從空間域轉換到頻率域，從而揭示其冗餘性，便於後續壓縮。",
   },
   {
-    id: '15.11', chapter: '15', number: '15-11',
+    id: '15.11', chapter: '16', number: '16-11',
     text_en: "In JPEG encoding, the ________ process breaks the original picture into smaller blocks and assigns a value to each pixel in a block.",
     text_zh: "在 JPEG 編碼中，________ 過程將原始圖片分解為更小的區塊，並為區塊中的每個像素分配一個值。",
     options: [
@@ -145,7 +146,7 @@ export const problems: Problem[] = [
     explanation_zh: "分塊（Blocking）是 JPEG 編碼的第一步，通常將圖像分成 8x8 的像素塊進行處理。",
   },
   {
-    id: '15.12', chapter: '15', number: '15-12',
+    id: '15.12', chapter: '16', number: '16-12',
     text_en: "The last step in JPEG, ________, removes redundancies.",
     text_zh: "JPEG 的最後一步，________，移除了冗餘。",
     options: [
@@ -158,7 +159,7 @@ export const problems: Problem[] = [
     explanation_zh: "JPEG 的最後一步通常是使用無損壓縮算法（如霍夫曼編碼或 RLE）對量化後的數據進行編碼，進一步移除冗餘。",
   },
   {
-    id: '15.13', chapter: '15', number: '15-13',
+    id: '15.13', chapter: '16', number: '16-13',
     text_en: "________ is a lossy compression method for pictures and graphics, whereas ________ is a lossy compression method for video.",
     text_zh: "________ 是一種用於圖片和圖形的失真壓縮方法，而 ________ 是一種用於視訊的失真壓縮方法。",
     options: [

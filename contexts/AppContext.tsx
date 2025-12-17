@@ -1,8 +1,10 @@
+
 import React, { createContext, useState, useEffect, useContext, useCallback, useMemo } from 'react';
 import { LOCAL_STORAGE_KEYS } from '../types';
 import { subjects, allData, type SubjectData } from '../data/subjects';
 import type { Subject } from '../types';
 import { computeGlossaryMaps, type GlossaryMaps } from '../utils/textUtils';
+import { safeStorage } from '../utils/storage';
 
 type Theme = 'light' | 'dark';
 type Language = 'en' | 'zh';
@@ -17,7 +19,6 @@ interface ReadingSettings {
   preferredMode: 'reading' | 'practice';
 }
 
-// New interface for Canvas State
 interface CanvasState {
     isInteractive: boolean;
 }
@@ -47,35 +48,14 @@ interface AppContextType {
   setDisplayMode: (mode: 'bilingual' | 'en' | 'zh') => void;
   setPreferredMode: (mode: 'reading' | 'practice') => void;
   
-  // Canvas Controls
   canvasState: CanvasState;
   setCanvasInteractive: (isInteractive: boolean) => void;
+
+  lastActiveChapterId: string | null;
+  setLastActiveChapterId: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
-
-// Safe LocalStorage Helper
-const safeStorage = {
-  getItem: (key: string) => {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        return window.localStorage.getItem(key);
-      }
-    } catch (e) {
-      // console.warn('LocalStorage access denied');
-    }
-    return null;
-  },
-  setItem: (key: string, value: string) => {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.setItem(key, value);
-      }
-    } catch (e) {
-      // console.warn('LocalStorage write denied');
-    }
-  }
-};
 
 const getInitialTheme = (): Theme => {
   const storedTheme = safeStorage.getItem(LOCAL_STORAGE_KEYS.THEME);
@@ -88,24 +68,21 @@ const getInitialTheme = (): Theme => {
   return 'light';
 };
 
-// Force Chinese as initial language
 const getInitialLanguage = (): Language => 'zh';
 
+// Utilizes safeStorage which already handles try-catch and environment checks
 const getSubjectSpecificValue = <T,>(subjectId: string, key: string, defaultValue: T): T => {
     const stored = safeStorage.getItem(`${key}_${subjectId}`);
+    if (!stored) return defaultValue;
     try {
-        return stored ? JSON.parse(stored) : defaultValue;
-    } catch (error) {
+        return JSON.parse(stored);
+    } catch {
         return defaultValue;
     }
 }
 
 const setSubjectSpecificValue = <T,>(subjectId: string, key: string, value: T) => {
-    try {
-      safeStorage.setItem(`${key}_${subjectId}`, JSON.stringify(value));
-    } catch (e) {
-      // ignore
-    }
+    safeStorage.setItem(`${key}_${subjectId}`, JSON.stringify(value));
 }
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -115,7 +92,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [autoShowExplanation, setAutoShowExplanation] = useState<boolean>(true);
   const [autoAdvance, setAutoAdvance] = useState<boolean>(false);
   const [readingSettings, setReadingSettings] = useState<ReadingSettings>({
-    fontSize: 18, lineHeight: 1.7, pageWidth: 'max-w-6xl', readTheme: 'default', initialMode: false, 
+    fontSize: 18, lineHeight: 1.7, pageWidth: 'max-w-5xl', readTheme: 'default', initialMode: false, 
     displayMode: language === 'zh' ? 'zh' : 'en', 
     preferredMode: 'reading'
   });
@@ -124,10 +101,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [subjectData, setSubjectData] = useState<SubjectData | null>(null);
   const [isSubjectLoading, setIsSubjectLoading] = useState<boolean>(false);
   const [glossaryMaps, setGlossaryMaps] = useState<GlossaryMaps | null>(null);
+  const [lastActiveChapterId, setLastActiveChapterIdState] = useState<string | null>(null);
 
-  // Canvas State
   const [canvasState, setCanvasState] = useState<CanvasState>({
-      isInteractive: false, // Default to false for Subject Selection screen
+      isInteractive: false,
   });
 
   const subject = useMemo(() => {
@@ -135,24 +112,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return subjects.find(s => s.id === subjectId) || null;
   }, [subjectId]);
 
-  // Load subject-specific settings when subject changes
   useEffect(() => {
     if (subject) {
       setFlaggedItems(getSubjectSpecificValue(subject.id, LOCAL_STORAGE_KEYS.FLAGGED_ITEMS, []));
       setAutoShowExplanation(getSubjectSpecificValue(subject.id, LOCAL_STORAGE_KEYS.AUTO_SHOW_EXPLANATION, true));
       setAutoAdvance(getSubjectSpecificValue(subject.id, LOCAL_STORAGE_KEYS.AUTO_ADVANCE, false));
       setReadingSettings(getSubjectSpecificValue(subject.id, LOCAL_STORAGE_KEYS.READING_SETTINGS, {
-        fontSize: 18, lineHeight: 1.7, pageWidth: 'max-w-6xl', readTheme: 'default', initialMode: false, 
+        fontSize: 18, lineHeight: 1.7, pageWidth: 'max-w-5xl', readTheme: 'default', initialMode: false, 
         displayMode: language === 'zh' ? 'zh' : 'en', 
         preferredMode: 'reading'
       }));
+      setLastActiveChapterIdState(getSubjectSpecificValue(subject.id, 'lastActiveChapterId', null));
       
-      // When entering a subject, ensure canvas is interactive and lit
       setCanvasState(prev => ({ ...prev, isInteractive: true }));
     } else {
       setFlaggedItems([]);
-      // When returning to subject selection, reset canvas to dark and non-interactive
-      // setCanvasState({ isInteractive: false });
     }
   }, [subject, language]);
 
@@ -165,6 +139,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setLanguageState(newLanguage);
     safeStorage.setItem('language', newLanguage);
   };
+
+  const setLastActiveChapterId = useCallback((id: string) => {
+      if (!subject) return;
+      setLastActiveChapterIdState(id);
+      setSubjectSpecificValue(subject.id, 'lastActiveChapterId', id);
+  }, [subject]);
   
   const createSubjectSpecificSetter = <T,>(setter: React.Dispatch<React.SetStateAction<T>>, key: string) => {
       return useCallback((value: T | ((prevState: T) => T)) => {
@@ -209,7 +189,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setSubjectId(null);
       setSubjectData(null);
       setGlossaryMaps(null);
-      // Reset canvas when going back to home
       setCanvasState({ isInteractive: false });
     }
   }, []);
@@ -251,11 +230,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setDisplayMode = useCallback((mode: 'bilingual' | 'en' | 'zh') => updateReadingSettings({ displayMode: mode }), [updateReadingSettings]);
   const setPreferredMode = useCallback((mode: 'reading' | 'practice') => updateReadingSettings({ preferredMode: mode }), [updateReadingSettings]);
 
-  // Canvas Actions
   const setCanvasInteractive = useCallback((isInteractive: boolean) => {
       setCanvasState(prev => ({ ...prev, isInteractive }));
   }, []);
-
 
   const value = useMemo(() => ({
     theme,
@@ -282,14 +259,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setDisplayMode,
     setPreferredMode,
     canvasState,
-    setCanvasInteractive
+    setCanvasInteractive,
+    lastActiveChapterId,
+    setLastActiveChapterId
   }), [
     theme, setTheme, language, setLanguage, flaggedItems, toggleFlaggedItem, autoShowExplanation, setAutoShowExplanationCallback,
     autoAdvance, setAutoAdvanceCallback, subject, setSubject, subjectData, isSubjectLoading, glossaryMaps,
     readingSettings, setFontSize, setLineHeight, setPageWidth, setReadTheme, setInitialMode, setDisplayMode, setPreferredMode,
-    canvasState, setCanvasInteractive
+    canvasState, setCanvasInteractive, lastActiveChapterId, setLastActiveChapterId
   ]);
-
 
   return (
     <AppContext.Provider value={value}>

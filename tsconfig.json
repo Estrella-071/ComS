@@ -18,7 +18,13 @@
     "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": ["**/*"],
   "exclude": ["node_modules", "dist"]

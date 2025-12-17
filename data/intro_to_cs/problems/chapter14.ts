@@ -1,8 +1,9 @@
-import type { Problem } from '../types';
+
+import type { Problem } from '../../../types';
 
 export const problems: Problem[] = [
   {
-    id: '14.1', chapter: '14', number: '14-1',
+    id: '14.1', chapter: '15', number: '15-1',
     text_en: "In a three-level DBMS architecture, the layer that interacts directly with the hardware is the ________ level.",
     text_zh: "在三層 DBMS 架構中，直接與硬體互動的層是 ________ 層。",
     options: [
@@ -15,7 +16,7 @@ export const problems: Problem[] = [
     explanation_zh: "內部層級（Internal Level）負責資料在儲存裝置上的實際物理儲存細節，是直接與硬體互動的層級。",
   },
   {
-    id: '14.2', chapter: '14', number: '14-2',
+    id: '14.2', chapter: '15', number: '15-2',
     text_en: "In a three-level DBMS architecture, the ________ level determines where data is actually stored on the storage devices.",
     text_zh: "在三層 DBMS 架構中，________ 層決定資料實際儲存在儲存設備上的位置。",
     options: [
@@ -28,7 +29,7 @@ export const problems: Problem[] = [
     explanation_zh: "內部層級決定了資料在實體儲存裝置上的具體配置和存取方法。",
   },
   {
-    id: '14.3', chapter: '14', number: '14-3',
+    id: '14.3', chapter: '15', number: '15-3',
     text_en: "The ________ level of a three-level DBMS architecture defines the logical view of the data.",
     text_zh: "三層 DBMS 架構的 ________ 層定義了資料的邏輯視圖。",
     options: [
@@ -41,7 +42,7 @@ export const problems: Problem[] = [
     explanation_zh: "概念層級（Conceptual Level）代表資料庫的整體邏輯結構，獨立於實體儲存方式，是資料庫管理員看到的視圖。",
   },
   {
-    id: '14.4', chapter: '14', number: '14-4',
+    id: '14.4', chapter: '15', number: '15-4',
     text_en: "The data model and the schema of a DBMS are often defined at the ________ level.",
     text_zh: "DBMS 的資料模型和架構通常在 ________ 層定義。",
     options: [
@@ -54,7 +55,7 @@ export const problems: Problem[] = [
     explanation_zh: "資料模型和整體架構（Schema）是在概念層級定義的，描述了資料之間的關係和約束。",
   },
   {
-    id: '14.5', chapter: '14', number: '14-5',
+    id: '14.5', chapter: '15', number: '15-5',
     text_en: "In a three-level DBMS architecture, the ________ level interacts directly with the users.",
     text_zh: "在三層 DBMS 架構中，________ 層直接與使用者互動。",
     options: [
@@ -67,7 +68,7 @@ export const problems: Problem[] = [
     explanation_zh: "外部層級（External Level）也稱為使用者視圖，它提供給最終使用者或應用程式特定的資料視圖。",
   },
   {
-    id: '14.6', chapter: '14', number: '14-6',
+    id: '14.6', chapter: '15', number: '15-6',
     text_en: "Of the various database models, the ________ model is the most prevalent today.",
     text_zh: "在各種資料庫模型中，________ 模型是當今最普遍的。",
     options: [
@@ -80,7 +81,7 @@ export const problems: Problem[] = [
     explanation_zh: "關聯式資料庫模型（Relational Model）因為其嚴謹的數學基礎和靈活性，是目前最廣泛使用的資料庫模型。",
   },
   {
-    id: '14.7', chapter: '14', number: '14-7',
+    id: '14.7', chapter: '15', number: '15-7',
     text_en: "Each column in a relation is called ________.",
     text_zh: "關聯中的每一列稱為 ________。",
     options: [
@@ -93,7 +94,7 @@ export const problems: Problem[] = [
     explanation_zh: "在關聯式資料庫中，表格的直列（column）代表資料的特徵，稱為屬性（Attribute）。",
   },
   {
-    id: '14.8', chapter: '14', number: '14-8',
+    id: '14.8', chapter: '15', number: '15-8',
     text_en: "Each row in a relation is called ________.",
     text_zh: "關聯中的每一行稱為 ________。",
     options: [
@@ -106,7 +107,7 @@ export const problems: Problem[] = [
     explanation_zh: "在關聯式資料庫中，表格的橫行（row）代表一筆記錄，稱為元組（Tuple）。",
   },
   {
-    id: '14.9', chapter: '14', number: '14-9',
+    id: '14.9', chapter: '15', number: '15-9',
     text_en: "A unary operator is applied to ________ relation(s) and creates an output of ________ relation(s).",
     text_zh: "一元運算子應用於 ________ 個關聯並產生 ________ 個關聯的輸出。",
     options: [
@@ -119,7 +120,7 @@ export const problems: Problem[] = [
     explanation_zh: "一元運算子（如選擇 Select、投影 Project）作用於單一個關聯表，並產生一個新的結果關聯表。",
   },
   {
-    id: '14.10', chapter: '14', number: '14-10',
+    id: '14.10', chapter: '15', number: '15-10',
     text_en: "A binary operator is applied to ________ relation(s) and creates an output of ________ relation(s).",
     text_zh: "二元運算子應用於 ________ 個關聯並產生 ________ 個關聯的輸出。",
     options: [
@@ -132,7 +133,7 @@ export const problems: Problem[] = [
     explanation_zh: "二元運算子（如連接 Join、聯集 Union）作用於兩個關聯表，並產生一個新的結果關聯表。",
   },
   {
-    id: '14.11', chapter: '14', number: '14-11',
+    id: '14.11', chapter: '15', number: '15-11',
     text_en: "The unary ________ operation always results in a relation that has exactly one more row than the original relation.",
     text_zh: "一元 ________ 操作總是導致一個比原始關聯多一行的關聯。",
     options: [
@@ -145,7 +146,7 @@ export const problems: Problem[] = [
     explanation_zh: "插入（Insert）操作會向關聯中新增一筆記錄（元組），因此行數會增加一。",
   },
   {
-    id: '14.12', chapter: '14', number: '14-12',
+    id: '14.12', chapter: '15', number: '15-12',
     text_en: "If you want to change the value of an attribute of a tuple, you use the ________ operation.",
     text_zh: "如果你想改變元組屬性的值，你使用 ________ 操作。",
     options: [
@@ -158,7 +159,7 @@ export const problems: Problem[] = [
     explanation_zh: "更新（Update）操作用於修改現有記錄中的資料值。",
   },
   {
-    id: '14.13', chapter: '14', number: '14-13',
+    id: '14.13', chapter: '15', number: '15-13',
     text_en: "The operation that takes two relations and combines them based on common attributes is the ________ operation.",
     text_zh: "獲取兩個關聯並基於共同屬性將它們組合起來的操作是 ________ 操作。",
     options: [
@@ -171,7 +172,7 @@ export const problems: Problem[] = [
     explanation_zh: "連接（Join）操作是關聯式資料庫中最強大的功能之一，它根據共同的欄位將兩個表的資料合併起來。",
   },
   {
-    id: '14.14', chapter: '14', number: '14-14',
+    id: '14.14', chapter: '15', number: '15-14',
     text_en: "If you need to delete an attribute in a relation, you can use the ________ operation.",
     text_zh: "如果你需要刪除關聯中的一個屬性，你可以使用 ________ 操作。",
     options: [
@@ -184,7 +185,7 @@ export const problems: Problem[] = [
     explanation_zh: "投影（Project）操作用於選擇關聯中的特定欄位（屬性）。通過選擇不想刪除的欄位，實際上就過濾掉了未被選擇的屬性（即刪除）。",
   },
   {
-    id: '14.15', chapter: '14', number: '14-15',
+    id: '14.15', chapter: '15', number: '15-15',
     text_en: "You want to create a relation called New that contains tuples that belong to both relation A and relation B. For this, you can use the ________ operation.",
     text_zh: "你想創建一個名為 New 的關聯，其中包含同時屬於關聯 A 和關聯 B 的元組。為此，你可以使用 ________ 操作。",
     options: [
@@ -197,7 +198,7 @@ export const problems: Problem[] = [
     explanation_zh: "交集（Intersection）操作返回兩個集合中共有的元素。",
   },
   {
-    id: '14.16', chapter: '14', number: '14-16',
+    id: '14.16', chapter: '15', number: '15-16',
     text_en: "Which of the following is a unary operator?",
     text_zh: "以下哪個是一元運算子？",
     options: [
@@ -210,7 +211,7 @@ export const problems: Problem[] = [
     explanation_zh: "投影（Project）只作用於一個關聯表，因此是一元運算子。聯集、交集和連接都需要兩個表。",
   },
   {
-    id: '14.17', chapter: '14', number: '14-17',
+    id: '14.17', chapter: '15', number: '15-17',
     text_en: "Which of the following is a binary operator?",
     text_zh: "以下哪個是二元運算子？",
     options: [
@@ -223,7 +224,7 @@ export const problems: Problem[] = [
     explanation_zh: "差集（Difference）操作需要兩個關聯表（A - B），因此是二元運算子。選擇和更新通常作用於單個表。",
   },
   {
-    id: '14.18', chapter: '14', number: '14-18',
+    id: '14.18', chapter: '15', number: '15-18',
     text_en: "________ is a declarative language used on relational databases.",
     text_zh: "________ 是一種用於關聯式資料庫的宣告式語言。",
     options: [

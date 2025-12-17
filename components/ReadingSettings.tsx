@@ -94,11 +94,8 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                     initial="closed"
                     animate="open"
                     exit="closed"
-                    // On mobile/tablet (<lg), use fixed positioning to center or bottom-sheet style since the trigger button is hidden.
-                    // On desktop (lg+), maintain absolute positioning relative to the trigger.
                     className="fixed bottom-4 left-4 right-4 lg:absolute lg:bottom-[calc(100%+1rem)] lg:right-0 lg:left-auto lg:w-[22rem] glass-pane rounded-2xl shadow-2xl text-[var(--text-primary)] overflow-hidden ring-1 ring-[var(--ui-border)] origin-bottom-right z-[var(--z-modal-content)]"
                 >
-                    {/* Header */}
                     <div className="flex justify-between items-center px-5 py-4 border-b border-[var(--ui-border)] bg-[var(--bg-translucent)]/50 backdrop-blur-md">
                         <div className="flex items-center gap-2">
                             <SparklesIcon className="w-4 h-4 text-[var(--accent-solid)]" />
@@ -111,11 +108,9 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                     
                     <div className="p-5 max-h-[60vh] overflow-y-auto space-y-6 custom-scrollbar">
                         
-                        {/* Quick Toggles Grid */}
                         <div>
                             <SectionHeader>{t('tools')}</SectionHeader>
                             <div className="grid grid-cols-2 gap-3">
-                                {/* Theme Toggle */}
                                 <div className="bg-[var(--ui-bg)] rounded-xl p-3 flex flex-col items-center justify-center gap-2 hover:bg-[var(--ui-bg-hover)] transition-colors">
                                     <span className="text-[10px] font-bold text-[var(--text-subtle)] uppercase">{t('reading_settings_theme')}</span>
                                     <SegmentedControl
@@ -131,7 +126,6 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                                     />
                                 </div>
 
-                                {/* Fullscreen Toggle */}
                                 <div className="bg-[var(--ui-bg)] rounded-xl p-3 flex flex-col items-center justify-center gap-2 hover:bg-[var(--ui-bg-hover)] transition-colors">
                                     <span className="text-[10px] font-bold text-[var(--text-subtle)] uppercase">Display</span>
                                     <button 
@@ -145,7 +139,6 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                             </div>
                         </div>
 
-                        {/* Textbook Specific Settings */}
                         <AnimatePresence initial={false}>
                             {isTextbook && (
                                 <motion.div 
@@ -154,11 +147,9 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                                     exit={{ opacity: 0, height: 0 }}
                                     className="space-y-6 overflow-hidden"
                                 >
-                                    {/* Reading Preferences */}
                                     <div>
                                         <SectionHeader>{t('reading_settings_title')}</SectionHeader>
                                         
-                                        {/* Language */}
                                         <div className="mb-4">
                                             <ControlLabel icon={<GlobeAltIcon className="w-3.5 h-3.5" />} label={t('reading_settings_language')} />
                                             <SegmentedControl 
@@ -172,7 +163,6 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                                             />
                                         </div>
 
-                                        {/* Font Size */}
                                         <div className="mb-4">
                                             <div className="flex justify-between items-center mb-2">
                                                 <ControlLabel icon={<PencilIcon className="w-3.5 h-3.5" />} label={t('reading_settings_font_size')} />
@@ -193,7 +183,6 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                                             </div>
                                         </div>
 
-                                        {/* Layout Grid */}
                                         <div className="grid grid-cols-2 gap-4 mb-4">
                                             <div>
                                                 <ControlLabel label={t('reading_settings_line_height')} />
@@ -206,14 +195,13 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                                             <div>
                                                 <ControlLabel label={t('reading_settings_page_width')} />
                                                 <SegmentedControl 
-                                                    options={[{ label: 'S', value: 'max-w-4xl' }, { label: 'M', value: 'max-w-6xl' }, { label: 'L', value: 'max-w-7xl' }]} 
+                                                    options={[{ label: 'S', value: 'max-w-4xl' }, { label: 'M', value: 'max-w-5xl' }, { label: 'L', value: 'max-w-6xl' }]} 
                                                     value={settings.pageWidth} 
                                                     onChange={setPageWidth} 
                                                 />
                                             </div>
                                         </div>
 
-                                        {/* Toggles */}
                                         <div className="grid grid-cols-1 gap-3">
                                             {theme === 'light' && (
                                                 <div className="flex items-center justify-between bg-[var(--ui-bg)] p-3 rounded-xl">
@@ -248,7 +236,6 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
 
         <motion.button 
             onClick={() => setIsOpen(!isOpen)} 
-            // HIDE THIS BUTTON ON MOBILE/TABLET (lg and below)
             className={`hidden lg:flex w-14 h-14 rounded-full items-center justify-center shadow-lg transition-colors z-20 ${isOpen ? 'bg-[var(--ui-bg)] text-[var(--text-primary)]' : 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)] hover:bg-[var(--accent-solid-hover)]'}`}
             whileHover={{ scale: 1.05 }} 
             whileTap={{ scale: 0.95 }} 
@@ -261,8 +248,9 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, setIsOpen, view }) =
                     animate={{ opacity: 1, rotate: 0 }} 
                     exit={{ opacity: 0, rotate: 90 }} 
                     transition={{ duration: 0.15 }}
+                    className="flex items-center justify-center w-full h-full"
                 >
-                    {isOpen ? <XMarkIcon className="w-6 h-6" /> : <Cog6ToothIcon className="w-7 h-7" />}
+                    {isOpen ? <XMarkIcon className="w-6 h-6 flex-shrink-0" /> : <Cog6ToothIcon className="w-6 h-6 flex-shrink-0" />}
                 </motion.div>
             </AnimatePresence>
         </motion.button>

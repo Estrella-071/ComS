@@ -1,8 +1,9 @@
-import type { Problem } from '../types';
+
+import type { Problem } from '../../../types';
 
 export const problems: Problem[] = [
   {
-    id: '11.1', chapter: '11', number: '11-1',
+    id: '11.1', chapter: '12', number: '12-1',
     text_en: "A data structure can be ________.",
     text_zh: "資料結構可以是 ________。",
     options: [
@@ -15,7 +16,7 @@ export const problems: Problem[] = [
     explanation_zh: "資料結構是組織和儲存資料的方式。陣列、記錄和鏈結串列都是常見的基本資料結構類型。",
   },
   {
-    id: '11.2', chapter: '11', number: '11-2',
+    id: '11.2', chapter: '12', number: '12-2',
     text_en: "An array that consists of just rows and columns is a ________ array.",
     text_zh: "一個僅由行和列組成的陣列是 ________ 陣列。",
     options: [
@@ -28,7 +29,7 @@ export const problems: Problem[] = [
     explanation_zh: "這個問題的措辭有歧義。通常，具有行和列的陣列被稱為二維陣列。然而，一維陣列可以被視覺化為單行或單列。鑒於提供的答案是 d，題目可能意指陣列的基本組成單位是行或列，而一個單獨的行或列本身是一維的。",
   },
   {
-    id: '11.3', chapter: '11', number: '11-3',
+    id: '11.3', chapter: '12', number: '12-3',
     text_en: "Each element in a record is called ________.",
     text_zh: "記錄中的每個元素稱為 ________。",
     options: [
@@ -41,7 +42,7 @@ export const problems: Problem[] = [
     explanation_zh: "記錄（Record）是由一組相關的資料項組成的集合，其中每個資料項稱為一個欄位（field）。",
   },
   {
-    id: '11.4', chapter: '11', number: '11-4',
+    id: '11.4', chapter: '12', number: '12-4',
     text_en: "All the members of a record must be ________.",
     text_zh: "記錄的所有成員必須是 ________。",
     options: [
@@ -54,7 +55,7 @@ export const problems: Problem[] = [
     explanation_zh: "記錄中的欄位可以是不同的資料類型（例如，一個學生記錄可以包含字串類型的姓名和整數類型的年齡），但它們在邏輯上是相關的，共同描述一個實體。",
   },
   {
-    id: '11.5', chapter: '11', number: '11-5',
+    id: '11.5', chapter: '12', number: '12-5',
     text_en: "________ is an ordered collection of data in which each element contains the location of the next element.",
     text_zh: "________ 是一個有序的資料集合，其中每個元素包含下一個元素的位置。",
     options: [
@@ -67,7 +68,7 @@ export const problems: Problem[] = [
     explanation_zh: "鏈結串列（Linked list）是一種線性資料結構，其元素不儲存在連續的記憶體位置，而是透過每個元素中的指標（或連結）來指向下一個元素。",
   },
   {
-    id: '11.6', chapter: '11', number: '11-6',
+    id: '11.6', chapter: '12', number: '12-6',
     text_en: "In a linked list, each element contains ________.",
     text_zh: "在鏈結串列中，每個元素包含 ________。",
     options: [
@@ -80,7 +81,7 @@ export const problems: Problem[] = [
     explanation_zh: "鏈結串列中的每個元素，通常稱為節點（node），包含兩個部分：儲存的資料（data）和指向下一個節點的連結（link）或指標（pointer）。",
   },
   {
-    id: '11.7', chapter: '11', number: '11-7',
+    id: '11.7', chapter: '12', number: '12-7',
     text_en: "The ________ is a pointer that identifies the next element in the linked list.",
     text_zh: "________ 是一個識別鏈結串列中下一個元素的指標。",
     options: [
@@ -93,7 +94,7 @@ export const problems: Problem[] = [
     explanation_zh: "在節點中，連結（link）部分儲存了下一個節點的記憶體位址，它就像一個指向下一個元素的指標。",
   },
   {
-    id: '11.8', chapter: '11', number: '11-8',
+    id: '11.8', chapter: '12', number: '12-8',
     text_en: "Given a linked list called children, the pointer variable children identifies ________ element of the linked list.",
     text_zh: "給定一個名為 children 的鏈結串列，指標變數 children 識別鏈結串列的 ________ 元素。",
     options: [
@@ -106,7 +107,7 @@ export const problems: Problem[] = [
     explanation_zh: "通常，一個指向鏈結串列的指標變數（稱為頭指標，head pointer）儲存的是串列中第一個節點的位址。",
   },
   {
-    id: '11.9', chapter: '11', number: '11-9',
+    id: '11.9', chapter: '12', number: '12-9',
     text_en: "An empty linked list consists of ________.",
     text_zh: "一個空的鏈結串列包含 ________。",
     options: [
@@ -119,7 +120,7 @@ export const problems: Problem[] = [
     explanation_zh: "如果一個鏈結串列是空的（不包含任何節點），那麼它的頭指標將會是一個空指標（null pointer）。",
   },
   {
-    id: '11.10', chapter: '11', number: '11-10',
+    id: '11.10', chapter: '12', number: '12-10',
     text_en: "To traverse a list, you need a ________ pointer.",
     text_zh: "要遍歷一個串列，你需要一個 ________ 指標。",
     options: [

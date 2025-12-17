@@ -1,5 +1,5 @@
 
-import type { GlossaryTerm } from '../types';
+import type { GlossaryTerm } from '../../types';
 
 export const glossaryData: GlossaryTerm[] = [
   // Chapter 1: Introduction
@@ -224,120 +224,120 @@ export const glossaryData: GlossaryTerm[] = [
   { term: 'summation', chinese: '總和', category: 'Algorithms', chapter: '8', importance: 1, definition: 'Adding a list of numbers.', definition_zh: '將一列數字相加。' },
   { term: 'UML', chinese: '統一建模語言 (UML)', category: 'Algorithms', chapter: '8', importance: 2, definition: 'Unified Modeling Language.', definition_zh: '統一建模語言。' },
 
-  // Chapter 9: Programming Languages
-  { term: 'assembler', chinese: '組譯器', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'Translates assembly to machine language.', definition_zh: '將組合語言翻譯成機器語言。' },
-  { term: 'assembly language', chinese: '組合語言', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'Symbolic low-level language.', definition_zh: '符號低階語言。' },
-  { term: 'C language', chinese: 'C 語言', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'A procedural high-level language.', definition_zh: '一種程序化高階語言。' },
-  { term: 'C++', chinese: 'C++', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'An object-oriented language based on C.', definition_zh: '基於 C 的物件導向語言。' },
-  { term: 'compiler', chinese: '編譯器', category: 'Programming Languages', chapter: '9', importance: 3, definition: 'Translates high-level source code to object code.', definition_zh: '將高階原始程式碼翻譯成目的碼。' },
-  { term: 'declarative paradigm', chinese: '宣告式範式', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'Paradigm based on logic/what to solve.', definition_zh: '基於邏輯/解決什麼的範式。' },
-  { term: 'functional paradigm', chinese: '函數式範式', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'Paradigm based on mathematical functions.', definition_zh: '基於數學函數的範式。' },
-  { term: 'high-level language', chinese: '高階語言', category: 'Programming Languages', chapter: '9', importance: 3, definition: 'Portable language close to human language.', definition_zh: '接近人類語言的可移植語言。' },
-  { term: 'imperative paradigm', chinese: '指令式範式', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'Procedural paradigm.', definition_zh: '程序化範式。' },
-  { term: 'inheritance', chinese: '繼承', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'Acquiring properties from a parent class.', definition_zh: '從父類別獲取屬性。' },
-  { term: 'interpreter', chinese: '直譯器', category: 'Programming Languages', chapter: '9', importance: 3, definition: 'Translates and executes code line by line.', definition_zh: '逐行翻譯並執行代碼。' },
-  { term: 'Java', chinese: 'Java', category: 'Programming Languages', chapter: '9', importance: 3, definition: 'A popular object-oriented language.', definition_zh: '流行的物件導向語言。' },
-  { term: 'machine language', chinese: '機器語言', category: 'Programming Languages', chapter: '9', importance: 3, definition: 'Binary code understood by CPU.', definition_zh: 'CPU 可理解的二進位代碼。' },
-  { term: 'method', chinese: '方法', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'Function in an object.', definition_zh: '物件中的函數。' },
-  { term: 'object-oriented paradigm', chinese: '物件導向範式', category: 'Programming Languages', chapter: '9', importance: 3, definition: 'Paradigm based on objects and classes.', definition_zh: '基於物件和類別的範式。' },
-  { term: 'polymorphism', chinese: '多型', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'Ability to take multiple forms.', definition_zh: '採取多種形式的能力。' },
-  { term: 'procedural paradigm', chinese: '程序化範式', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'Paradigm based on procedure calls.', definition_zh: '基於程序呼叫的範式。' },
-  { term: 'source program', chinese: '原始程式', category: 'Programming Languages', chapter: '9', importance: 2, definition: 'Program written in high-level language.', definition_zh: '用高階語言編寫的程式。' },
+  // Chapter 10: Programming Languages (Was 9)
+  { term: 'assembler', chinese: '組譯器', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'Translates assembly to machine language.', definition_zh: '將組合語言翻譯成機器語言。' },
+  { term: 'assembly language', chinese: '組合語言', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'Symbolic low-level language.', definition_zh: '符號低階語言。' },
+  { term: 'C language', chinese: 'C 語言', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'A procedural high-level language.', definition_zh: '一種程序化高階語言。' },
+  { term: 'C++', chinese: 'C++', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'An object-oriented language based on C.', definition_zh: '基於 C 的物件導向語言。' },
+  { term: 'compiler', chinese: '編譯器', category: 'Programming Languages', chapter: '10', importance: 3, definition: 'Translates high-level source code to object code.', definition_zh: '將高階原始程式碼翻譯成目的碼。' },
+  { term: 'declarative paradigm', chinese: '宣告式範式', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'Paradigm based on logic/what to solve.', definition_zh: '基於邏輯/解決什麼的範式。' },
+  { term: 'functional paradigm', chinese: '函數式範式', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'Paradigm based on mathematical functions.', definition_zh: '基於數學函數的範式。' },
+  { term: 'high-level language', chinese: '高階語言', category: 'Programming Languages', chapter: '10', importance: 3, definition: 'Portable language close to human language.', definition_zh: '接近人類語言的可移植語言。' },
+  { term: 'imperative paradigm', chinese: '指令式範式', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'Procedural paradigm.', definition_zh: '程序化範式。' },
+  { term: 'inheritance', chinese: '繼承', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'Acquiring properties from a parent class.', definition_zh: '從父類別獲取屬性。' },
+  { term: 'interpreter', chinese: '直譯器', category: 'Programming Languages', chapter: '10', importance: 3, definition: 'Translates and executes code line by line.', definition_zh: '逐行翻譯並執行代碼。' },
+  { term: 'Java', chinese: 'Java', category: 'Programming Languages', chapter: '10', importance: 3, definition: 'A popular object-oriented language.', definition_zh: '流行的物件導向語言。' },
+  { term: 'machine language', chinese: '機器語言', category: 'Programming Languages', chapter: '10', importance: 3, definition: 'Binary code understood by CPU.', definition_zh: 'CPU 可理解的二進位代碼。' },
+  { term: 'method', chinese: '方法', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'Function in an object.', definition_zh: '物件中的函數。' },
+  { term: 'object-oriented paradigm', chinese: '物件導向範式', category: 'Programming Languages', chapter: '10', importance: 3, definition: 'Paradigm based on objects and classes.', definition_zh: '基於物件和類別的範式。' },
+  { term: 'polymorphism', chinese: '多型', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'Ability to take multiple forms.', definition_zh: '採取多種形式的能力。' },
+  { term: 'procedural paradigm', chinese: '程序化範式', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'Paradigm based on procedure calls.', definition_zh: '基於程序呼叫的範式。' },
+  { term: 'source program', chinese: '原始程式', category: 'Programming Languages', chapter: '10', importance: 2, definition: 'Program written in high-level language.', definition_zh: '用高階語言編寫的程式。' },
 
-  // Chapter 10: Software Engineering
-  { term: 'analysis phase', chinese: '分析階段', category: 'Software Engineering', chapter: '10', importance: 2, definition: 'Defining requirements.', definition_zh: '定義需求。' },
-  { term: 'black-box testing', chinese: '黑箱測試', category: 'Software Engineering', chapter: '10', importance: 2, definition: 'Testing without knowing internal structure.', definition_zh: '在不知道內部結構的情況下進行測試。' },
-  { term: 'coupling', chinese: '耦合', category: 'Software Engineering', chapter: '10', importance: 2, definition: 'Dependency between modules.', definition_zh: '模組之間的依賴關係。' },
-  { term: 'cohesion', chinese: '內聚', category: 'Software Engineering', chapter: '10', importance: 2, definition: 'Strength of relationship within a module.', definition_zh: '模組內部關係的強度。' },
-  { term: 'design phase', chinese: '設計階段', category: 'Software Engineering', chapter: '10', importance: 2, definition: 'Defining how to build the system.', definition_zh: '定義如何構建系統。' },
-  { term: 'glass-box testing', chinese: '玻璃箱測試', category: 'Software Engineering', chapter: '10', importance: 2, definition: 'White-box testing; knowing internals.', definition_zh: '白箱測試；了解內部結構。' },
-  { term: 'implementation phase', chinese: '實作階段', category: 'Software Engineering', chapter: '10', importance: 2, definition: 'Writing the code.', definition_zh: '編寫代碼。' },
-  { term: 'incremental model', chinese: '增量模型', category: 'Software Engineering', chapter: '10', importance: 2, definition: 'Development in steps.', definition_zh: '分步驟開發。' },
-  { term: 'modularity', chinese: '模組化', category: 'Software Engineering', chapter: '10', importance: 2, definition: 'Breaking system into modules.', definition_zh: '將系統分解為模組。' },
-  { term: 'software engineering', chinese: '軟體工程', category: 'Software Engineering', chapter: '10', importance: 3, definition: 'Engineering approach to software development.', definition_zh: '軟體開發的工程方法。' },
-  { term: 'software lifecycle', chinese: '軟體生命週期', category: 'Software Engineering', chapter: '10', importance: 3, definition: 'Phases a software goes through.', definition_zh: '軟體經歷的階段。' },
-  { term: 'testing phase', chinese: '測試階段', category: 'Software Engineering', chapter: '10', importance: 2, definition: 'Finding errors in software.', definition_zh: '在軟體中尋找錯誤。' },
-  { term: 'waterfall model', chinese: '瀑布模型', category: 'Software Engineering', chapter: '10', importance: 2, definition: 'Sequential development model.', definition_zh: '順序開發模型。' },
+  // Chapter 11: Software Engineering (Was 10)
+  { term: 'analysis phase', chinese: '分析階段', category: 'Software Engineering', chapter: '11', importance: 2, definition: 'Defining requirements.', definition_zh: '定義需求。' },
+  { term: 'black-box testing', chinese: '黑箱測試', category: 'Software Engineering', chapter: '11', importance: 2, definition: 'Testing without knowing internal structure.', definition_zh: '在不知道內部結構的情況下進行測試。' },
+  { term: 'coupling', chinese: '耦合', category: 'Software Engineering', chapter: '11', importance: 2, definition: 'Dependency between modules.', definition_zh: '模組之間的依賴關係。' },
+  { term: 'cohesion', chinese: '內聚', category: 'Software Engineering', chapter: '11', importance: 2, definition: 'Strength of relationship within a module.', definition_zh: '模組內部關係的強度。' },
+  { term: 'design phase', chinese: '設計階段', category: 'Software Engineering', chapter: '11', importance: 2, definition: 'Defining how to build the system.', definition_zh: '定義如何構建系統。' },
+  { term: 'glass-box testing', chinese: '玻璃箱測試', category: 'Software Engineering', chapter: '11', importance: 2, definition: 'White-box testing; knowing internals.', definition_zh: '白箱測試；了解內部結構。' },
+  { term: 'implementation phase', chinese: '實作階段', category: 'Software Engineering', chapter: '11', importance: 2, definition: 'Writing the code.', definition_zh: '編寫代碼。' },
+  { term: 'incremental model', chinese: '增量模型', category: 'Software Engineering', chapter: '11', importance: 2, definition: 'Development in steps.', definition_zh: '分步驟開發。' },
+  { term: 'modularity', chinese: '模組化', category: 'Software Engineering', chapter: '11', importance: 2, definition: 'Breaking system into modules.', definition_zh: '將系統分解為模組。' },
+  { term: 'software engineering', chinese: '軟體工程', category: 'Software Engineering', chapter: '11', importance: 3, definition: 'Engineering approach to software development.', definition_zh: '軟體開發的工程方法。' },
+  { term: 'software lifecycle', chinese: '軟體生命週期', category: 'Software Engineering', chapter: '11', importance: 3, definition: 'Phases a software goes through.', definition_zh: '軟體經歷的階段。' },
+  { term: 'testing phase', chinese: '測試階段', category: 'Software Engineering', chapter: '11', importance: 2, definition: 'Finding errors in software.', definition_zh: '在軟體中尋找錯誤。' },
+  { term: 'waterfall model', chinese: '瀑布模型', category: 'Software Engineering', chapter: '11', importance: 2, definition: 'Sequential development model.', definition_zh: '順序開發模型。' },
 
-  // Chapter 11: Data Structures
-  { term: 'array', chinese: '陣列', category: 'Data Structures', chapter: '11', importance: 3, definition: 'Sequenced collection of same type elements.', definition_zh: '相同類型元素的序列集合。' },
-  { term: 'index', chinese: '索引', category: 'Data Structures', chapter: '11', importance: 2, definition: 'Position of element in array.', definition_zh: '元素在陣列中的位置。' },
-  { term: 'linked list', chinese: '鏈結串列', category: 'Data Structures', chapter: '11', importance: 3, definition: 'Collection of nodes with data and links.', definition_zh: '具有資料和連結的節點集合。' },
-  { term: 'node', chinese: '節點', category: 'Data Structures', chapter: '11', importance: 2, definition: 'Element in a linked list or tree.', definition_zh: '鏈結串列或樹中的元素。' },
-  { term: 'pointer', chinese: '指標', category: 'Data Structures', chapter: '11', importance: 2, definition: 'Variable holding an address.', definition_zh: '保存位址的變數。' },
-  { term: 'record', chinese: '記錄 (Record)', category: 'Data Structures', chapter: '11', importance: 2, definition: 'Collection of related fields.', definition_zh: '相關欄位的集合。' },
+  // Chapter 12: Data Structures (Was 11)
+  { term: 'array', chinese: '陣列', category: 'Data Structures', chapter: '12', importance: 3, definition: 'Sequenced collection of same type elements.', definition_zh: '相同類型元素的序列集合。' },
+  { term: 'index', chinese: '索引', category: 'Data Structures', chapter: '12', importance: 2, definition: 'Position of element in array.', definition_zh: '元素在陣列中的位置。' },
+  { term: 'linked list', chinese: '鏈結串列', category: 'Data Structures', chapter: '12', importance: 3, definition: 'Collection of nodes with data and links.', definition_zh: '具有資料和連結的節點集合。' },
+  { term: 'node', chinese: '節點', category: 'Data Structures', chapter: '12', importance: 2, definition: 'Element in a linked list or tree.', definition_zh: '鏈結串列或樹中的元素。' },
+  { term: 'pointer', chinese: '指標', category: 'Data Structures', chapter: '12', importance: 2, definition: 'Variable holding an address.', definition_zh: '保存位址的變數。' },
+  { term: 'record', chinese: '記錄 (Record)', category: 'Data Structures', chapter: '12', importance: 2, definition: 'Collection of related fields.', definition_zh: '相關欄位的集合。' },
 
-  // Chapter 12: Abstract Data Types
-  { term: 'ADT', chinese: '抽象資料型別 (ADT)', category: 'Abstract Data Types', chapter: '12', importance: 3, definition: 'Abstract Data Type.', definition_zh: '抽象資料型別。' },
-  { term: 'binary search tree', chinese: '二元搜尋樹 (BST)', category: 'Abstract Data Types', chapter: '12', importance: 3, definition: 'Ordered binary tree.', definition_zh: '有序二元樹。' },
-  { term: 'binary tree', chinese: '二元樹', category: 'Abstract Data Types', chapter: '12', importance: 3, definition: 'Tree with at most 2 children per node.', definition_zh: '每個節點最多有 2 個子節點的樹。' },
-  { term: 'graph', chinese: '圖形', category: 'Abstract Data Types', chapter: '12', importance: 3, definition: 'Set of vertices and edges.', definition_zh: '頂點和邊的集合。' },
-  { term: 'queue', chinese: '佇列', category: 'Abstract Data Types', chapter: '12', importance: 3, definition: 'FIFO structure.', definition_zh: '先進先出結構。' },
-  { term: 'stack', chinese: '堆疊', category: 'Abstract Data Types', chapter: '12', importance: 3, definition: 'LIFO structure.', definition_zh: '後進先出結構。' },
-  { term: 'tree', chinese: '樹 (Tree)', category: 'Abstract Data Types', chapter: '12', importance: 2, definition: 'Hierarchical structure.', definition_zh: '階層結構。' },
+  // Chapter 13: Abstract Data Types (Was 12)
+  { term: 'ADT', chinese: '抽象資料型別 (ADT)', category: 'Abstract Data Types', chapter: '13', importance: 3, definition: 'Abstract Data Type.', definition_zh: '抽象資料型別。' },
+  { term: 'binary search tree', chinese: '二元搜尋樹 (BST)', category: 'Abstract Data Types', chapter: '13', importance: 3, definition: 'Ordered binary tree.', definition_zh: '有序二元樹。' },
+  { term: 'binary tree', chinese: '二元樹', category: 'Abstract Data Types', chapter: '13', importance: 3, definition: 'Tree with at most 2 children per node.', definition_zh: '每個節點最多有 2 個子節點的樹。' },
+  { term: 'graph', chinese: '圖形', category: 'Abstract Data Types', chapter: '13', importance: 3, definition: 'Set of vertices and edges.', definition_zh: '頂點和邊的集合。' },
+  { term: 'queue', chinese: '佇列', category: 'Abstract Data Types', chapter: '13', importance: 3, definition: 'FIFO structure.', definition_zh: '先進先出結構。' },
+  { term: 'stack', chinese: '堆疊', category: 'Abstract Data Types', chapter: '13', importance: 3, definition: 'LIFO structure.', definition_zh: '後進先出結構。' },
+  { term: 'tree', chinese: '樹 (Tree)', category: 'Abstract Data Types', chapter: '13', importance: 2, definition: 'Hierarchical structure.', definition_zh: '階層結構。' },
 
-  // Chapter 13: File Structure
-  { term: 'collision', chinese: '碰撞', category: 'File Structures', chapter: '13', importance: 2, definition: 'Hashing to an occupied address.', definition_zh: '雜湊到已佔用的位址。' },
-  { term: 'directory', chinese: '目錄', category: 'File Structures', chapter: '13', importance: 2, definition: 'File containing info about other files.', definition_zh: '包含有關其他檔案資訊的檔案。' },
-  { term: 'hashing', chinese: '雜湊', category: 'File Structures', chapter: '13', importance: 2, definition: 'Mapping key to address.', definition_zh: '將鍵映射到位址。' },
-  { term: 'indexed file', chinese: '索引檔案', category: 'File Structures', chapter: '13', importance: 2, definition: 'File accessed via index.', definition_zh: '透過索引存取的檔案。' },
-  { term: 'random access', chinese: '隨機存取', category: 'File Structures', chapter: '13', importance: 2, definition: 'Accessing any record directly.', definition_zh: '直接存取任何記錄。' },
-  { term: 'sequential access', chinese: '循序存取', category: 'File Structures', chapter: '13', importance: 2, definition: 'Accessing records one by one.', definition_zh: '逐一存取記錄。' },
-  { term: 'sequential file', chinese: '循序檔案', category: 'File Structures', chapter: '13', importance: 2, definition: 'Records stored one after another.', definition_zh: '記錄一個接一個地儲存。' },
-  { term: 'text file', chinese: '文字檔', category: 'File Structures', chapter: '13', importance: 2, definition: 'File of characters.', definition_zh: '字元檔案。' },
-  { term: 'binary file', chinese: '二進位檔', category: 'File Structures', chapter: '13', importance: 2, definition: 'File stored in computer format.', definition_zh: '以電腦格式儲存的檔案。' },
+  // Chapter 14: File Structure (Was 13)
+  { term: 'collision', chinese: '碰撞', category: 'File Structures', chapter: '14', importance: 2, definition: 'Hashing to an occupied address.', definition_zh: '雜湊到已佔用的位址。' },
+  { term: 'directory', chinese: '目錄', category: 'File Structures', chapter: '14', importance: 2, definition: 'File containing info about other files.', definition_zh: '包含有關其他檔案資訊的檔案。' },
+  { term: 'hashing', chinese: '雜湊', category: 'File Structures', chapter: '14', importance: 2, definition: 'Mapping key to address.', definition_zh: '將鍵映射到位址。' },
+  { term: 'indexed file', chinese: '索引檔案', category: 'File Structures', chapter: '14', importance: 2, definition: 'File accessed via index.', definition_zh: '透過索引存取的檔案。' },
+  { term: 'random access', chinese: '隨機存取', category: 'File Structures', chapter: '14', importance: 2, definition: 'Accessing any record directly.', definition_zh: '直接存取任何記錄。' },
+  { term: 'sequential access', chinese: '循序存取', category: 'File Structures', chapter: '14', importance: 2, definition: 'Accessing records one by one.', definition_zh: '逐一存取記錄。' },
+  { term: 'sequential file', chinese: '循序檔案', category: 'File Structures', chapter: '14', importance: 2, definition: 'Records stored one after another.', definition_zh: '記錄一個接一個地儲存。' },
+  { term: 'text file', chinese: '文字檔', category: 'File Structures', chapter: '14', importance: 2, definition: 'File of characters.', definition_zh: '字元檔案。' },
+  { term: 'binary file', chinese: '二進位檔', category: 'File Structures', chapter: '14', importance: 2, definition: 'File stored in computer format.', definition_zh: '以電腦格式儲存的檔案。' },
 
-  // Chapter 14: Databases
-  { term: 'cardinality', chinese: '基數 (Cardinality)', category: 'Databases', chapter: '14', importance: 2, definition: 'Total number of rows in a relation.', definition_zh: '關聯中的總行數。' },
-  { term: 'database', chinese: '資料庫', category: 'Databases', chapter: '14', importance: 3, definition: 'Collection of related data.', definition_zh: '相關資料的集合。' },
-  { term: 'DBMS', chinese: '資料庫管理系統 (DBMS)', category: 'Databases', chapter: '14', importance: 3, definition: 'Database Management System.', definition_zh: '資料庫管理系統。' },
-  { term: 'ERM', chinese: '實體關係模型 (ERM)', category: 'Databases', chapter: '14', importance: 2, definition: 'Entity-Relationship Model.', definition_zh: '實體關係模型。' },
-  { term: 'normalization', chinese: '正規化', category: 'Databases', chapter: '14', importance: 2, definition: 'Restructuring relations to minimize redundancy.', definition_zh: '重組關聯以最小化冗餘。' },
-  { term: 'relation', chinese: '關聯', category: 'Databases', chapter: '14', importance: 2, definition: 'Table in relational DB.', definition_zh: '關聯式資料庫中的表格。' },
-  { term: 'relational model', chinese: '關聯式模型', category: 'Databases', chapter: '14', importance: 3, definition: 'Data organized in tables.', definition_zh: '資料組織在表格中。' },
-  { term: 'SQL', chinese: 'SQL', category: 'Databases', chapter: '14', importance: 3, definition: 'Structured Query Language.', definition_zh: '結構化查詢語言。' },
+  // Chapter 15: Databases (Was 14)
+  { term: 'cardinality', chinese: '基數 (Cardinality)', category: 'Databases', chapter: '15', importance: 2, definition: 'Total number of rows in a relation.', definition_zh: '關聯中的總行數。' },
+  { term: 'database', chinese: '資料庫', category: 'Databases', chapter: '15', importance: 3, definition: 'Collection of related data.', definition_zh: '相關資料的集合。' },
+  { term: 'DBMS', chinese: '資料庫管理系統 (DBMS)', category: 'Databases', chapter: '15', importance: 3, definition: 'Database Management System.', definition_zh: '資料庫管理系統。' },
+  { term: 'ERM', chinese: '實體關係模型 (ERM)', category: 'Databases', chapter: '15', importance: 2, definition: 'Entity-Relationship Model.', definition_zh: '實體關係模型。' },
+  { term: 'normalization', chinese: '正規化', category: 'Databases', chapter: '15', importance: 2, definition: 'Restructuring relations to minimize redundancy.', definition_zh: '重組關聯以最小化冗餘。' },
+  { term: 'relation', chinese: '關聯', category: 'Databases', chapter: '15', importance: 2, definition: 'Table in relational DB.', definition_zh: '關聯式資料庫中的表格。' },
+  { term: 'relational model', chinese: '關聯式模型', category: 'Databases', chapter: '15', importance: 3, definition: 'Data organized in tables.', definition_zh: '資料組織在表格中。' },
+  { term: 'SQL', chinese: 'SQL', category: 'Databases', chapter: '15', importance: 3, definition: 'Structured Query Language.', definition_zh: '結構化查詢語言。' },
 
-  // Chapter 15: Data Compression
-  { term: 'data compression', chinese: '資料壓縮', category: 'Data Compression', chapter: '15', importance: 3, definition: 'Reducing data size.', definition_zh: '減少資料大小。' },
-  { term: 'Huffman coding', chinese: '霍夫曼編碼', category: 'Data Compression', chapter: '15', importance: 2, definition: 'Statistical compression method.', definition_zh: '統計壓縮方法。' },
-  { term: 'Lempel Ziv', chinese: 'Lempel Ziv (LZ)', category: 'Data Compression', chapter: '15', importance: 2, definition: 'Dictionary-based compression.', definition_zh: '基於字典的壓縮。' },
-  { term: 'lossless', chinese: '無損', category: 'Data Compression', chapter: '15', importance: 2, definition: 'No data lost.', definition_zh: '無資料丟失。' },
-  { term: 'lossy', chinese: '失真', category: 'Data Compression', chapter: '15', importance: 2, definition: 'Some data lost.', definition_zh: '部分資料丟失。' },
-  { term: 'run-length encoding', chinese: '連長編碼', category: 'Data Compression', chapter: '15', importance: 2, definition: 'Simple compression for repeated data.', definition_zh: '重複資料的簡單壓縮。' },
+  // Chapter 16: Data Compression (Was 15)
+  { term: 'data compression', chinese: '資料壓縮', category: 'Data Compression', chapter: '16', importance: 3, definition: 'Reducing data size.', definition_zh: '減少資料大小。' },
+  { term: 'Huffman coding', chinese: '霍夫曼編碼', category: 'Data Compression', chapter: '16', importance: 2, definition: 'Statistical compression method.', definition_zh: '統計壓縮方法。' },
+  { term: 'Lempel Ziv', chinese: 'Lempel Ziv (LZ)', category: 'Data Compression', chapter: '16', importance: 2, definition: 'Dictionary-based compression.', definition_zh: '基於字典的壓縮。' },
+  { term: 'lossless', chinese: '無損', category: 'Data Compression', chapter: '16', importance: 2, definition: 'No data lost.', definition_zh: '無資料丟失。' },
+  { term: 'lossy', chinese: '失真', category: 'Data Compression', chapter: '16', importance: 2, definition: 'Some data lost.', definition_zh: '部分資料丟失。' },
+  { term: 'run-length encoding', chinese: '連長編碼', category: 'Data Compression', chapter: '16', importance: 2, definition: 'Simple compression for repeated data.', definition_zh: '重複資料的簡單壓縮。' },
 
-  // Chapter 16: Security
-  { term: 'availability', chinese: '可用性', category: 'Security', chapter: '16', importance: 2, definition: 'Data is accessible.', definition_zh: '資料可存取。' },
-  { term: 'confidentiality', chinese: '機密性', category: 'Security', chapter: '16', importance: 2, definition: 'Data is hidden.', definition_zh: '資料被隱藏。' },
-  { term: 'cryptography', chinese: '密碼學', category: 'Security', chapter: '16', importance: 3, definition: 'Science of secret writing.', definition_zh: '秘密寫作的科學。' },
-  { term: 'digital signature', chinese: '數位簽章', category: 'Security', chapter: '16', importance: 2, definition: 'Authentication of sender.', definition_zh: '發送者的驗證。' },
-  { term: 'firewall', chinese: '防火牆', category: 'Security', chapter: '16', importance: 3, definition: 'Network security device.', definition_zh: '網路安全設備。' },
-  { term: 'integrity', chinese: '完整性', category: 'Security', chapter: '16', importance: 2, definition: 'Data is accurate.', definition_zh: '資料準確。' },
-  { term: 'message digest', chinese: '訊息摘要', category: 'Security', chapter: '16', importance: 2, definition: 'Fixed-size hash of message.', definition_zh: '訊息的固定大小雜湊。' },
-  { term: 'public key', chinese: '公鑰', category: 'Security', chapter: '16', importance: 2, definition: 'Key shared with everyone.', definition_zh: '與每個人共享的金鑰。' },
-  { term: 'private key', chinese: '私鑰', category: 'Security', chapter: '16', importance: 2, definition: 'Key kept secret.', definition_zh: '保密的金鑰。' },
-  { term: 'RSA', chinese: 'RSA', category: 'Security', chapter: '16', importance: 2, definition: 'Public-key cryptosystem.', definition_zh: '公鑰密碼系統。' },
-  { term: 'symmetric-key', chinese: '對稱金鑰', category: 'Security', chapter: '16', importance: 2, definition: 'Same key for enc/dec.', definition_zh: '加密/解密使用相同的金鑰。' },
+  // Chapter 17: Security (Was 16)
+  { term: 'availability', chinese: '可用性', category: 'Security', chapter: '17', importance: 2, definition: 'Data is accessible.', definition_zh: '資料可存取。' },
+  { term: 'confidentiality', chinese: '機密性', category: 'Security', chapter: '17', importance: 2, definition: 'Data is hidden.', definition_zh: '資料被隱藏。' },
+  { term: 'cryptography', chinese: '密碼學', category: 'Security', chapter: '17', importance: 3, definition: 'Science of secret writing.', definition_zh: '秘密寫作的科學。' },
+  { term: 'digital signature', chinese: '數位簽章', category: 'Security', chapter: '17', importance: 2, definition: 'Authentication of sender.', definition_zh: '發送者的驗證。' },
+  { term: 'firewall', chinese: '防火牆', category: 'Security', chapter: '17', importance: 3, definition: 'Network security device.', definition_zh: '網路安全設備。' },
+  { term: 'integrity', chinese: '完整性', category: 'Security', chapter: '17', importance: 2, definition: 'Data is accurate.', definition_zh: '資料準確。' },
+  { term: 'message digest', chinese: '訊息摘要', category: 'Security', chapter: '17', importance: 2, definition: 'Fixed-size hash of message.', definition_zh: '訊息的固定大小雜湊。' },
+  { term: 'public key', chinese: '公鑰', category: 'Security', chapter: '17', importance: 2, definition: 'Key shared with everyone.', definition_zh: '與每個人共享的金鑰。' },
+  { term: 'private key', chinese: '私鑰', category: 'Security', chapter: '17', importance: 2, definition: 'Key kept secret.', definition_zh: '保密的金鑰。' },
+  { term: 'RSA', chinese: 'RSA', category: 'Security', chapter: '17', importance: 2, definition: 'Public-key cryptosystem.', definition_zh: '公鑰密碼系統。' },
+  { term: 'symmetric-key', chinese: '對稱金鑰', category: 'Security', chapter: '17', importance: 2, definition: 'Same key for enc/dec.', definition_zh: '加密/解密使用相同的金鑰。' },
 
-  // Chapter 17: Theory of Computation
-  { term: 'big-O notation', chinese: '大 O 符號', category: 'Theory of Computation', chapter: '17', importance: 2, definition: 'Complexity measure.', definition_zh: '複雜度度量。' },
-  { term: 'halting problem', chinese: '停機問題', category: 'Theory of Computation', chapter: '17', importance: 3, definition: 'Determining if a program stops.', definition_zh: '確定程式是否停止。' },
-  { term: 'solvable problem', chinese: '可解問題', category: 'Theory of Computation', chapter: '17', importance: 2, definition: 'Problem with an algorithmic solution.', definition_zh: '有演算法解決方案的問題。' },
+  // Chapter 18: Theory of Computation (Was 17)
+  { term: 'big-O notation', chinese: '大 O 符號', category: 'Theory of Computation', chapter: '18', importance: 2, definition: 'Complexity measure.', definition_zh: '複雜度度量。' },
+  { term: 'halting problem', chinese: '停機問題', category: 'Theory of Computation', chapter: '18', importance: 3, definition: 'Determining if a program stops.', definition_zh: '確定程式是否停止。' },
+  { term: 'solvable problem', chinese: '可解問題', category: 'Theory of Computation', chapter: '18', importance: 2, definition: 'Problem with an algorithmic solution.', definition_zh: '有演算法解決方案的問題。' },
 
-  // Chapter 18: AI
-  { term: 'AI', chinese: '人工智慧 (AI)', category: 'Artificial Intelligence', chapter: '18', importance: 3, definition: 'Artificial Intelligence.', definition_zh: '人工智慧。' },
-  { term: 'expert system', chinese: '專家系統', category: 'Artificial Intelligence', chapter: '18', importance: 2, definition: 'System simulating human expert.', definition_zh: '模擬人類專家的系統。' },
-  { term: 'neural network', chinese: '神經網路', category: 'Artificial Intelligence', chapter: '18', importance: 2, definition: 'Network simulating brain neurons.', definition_zh: '模擬大腦神經元的網路。' },
-  { term: 'Turing test', chinese: '圖靈測試', category: 'Artificial Intelligence', chapter: '18', importance: 2, definition: 'Test for intelligence.', definition_zh: '智慧測試。' },
+  // Chapter 20: AI (Was 18)
+  { term: 'AI', chinese: '人工智慧 (AI)', category: 'Artificial Intelligence', chapter: '20', importance: 3, definition: 'Artificial Intelligence.', definition_zh: '人工智慧。' },
+  { term: 'expert system', chinese: '專家系統', category: 'Artificial Intelligence', chapter: '20', importance: 2, definition: 'System simulating human expert.', definition_zh: '模擬人類專家的系統。' },
+  { term: 'neural network', chinese: '神經網路', category: 'Artificial Intelligence', chapter: '20', importance: 2, definition: 'Network simulating brain neurons.', definition_zh: '模擬大腦神經元的網路。' },
+  { term: 'Turing test', chinese: '圖靈測試', category: 'Artificial Intelligence', chapter: '20', importance: 2, definition: 'Test for intelligence.', definition_zh: '智慧測試。' },
 
-  // Chapter 19: Social Media
-  { term: 'social media', chinese: '社群媒體', category: 'Social Media', chapter: '19', importance: 3, definition: 'Online communities.', definition_zh: '線上社群。' },
-  { term: 'Facebook', chinese: 'Facebook', category: 'Social Media', chapter: '19', importance: 2, definition: 'Social networking site.', definition_zh: '社群網路網站。' },
-  { term: 'Twitter', chinese: 'Twitter', category: 'Social Media', chapter: '19', importance: 2, definition: 'Microblogging site.', definition_zh: '微網誌網站。' },
+  // Chapter 21: Social Media (Was 19)
+  { term: 'social media', chinese: '社群媒體', category: 'Social Media', chapter: '21', importance: 3, definition: 'Online communities.', definition_zh: '線上社群。' },
+  { term: 'Facebook', chinese: 'Facebook', category: 'Social Media', chapter: '21', importance: 2, definition: 'Social networking site.', definition_zh: '社群網路網站。' },
+  { term: 'Twitter', chinese: 'Twitter', category: 'Social Media', chapter: '21', importance: 2, definition: 'Microblogging site.', definition_zh: '微網誌網站。' },
 
-  // Chapter 20: Social/Ethical
-  { term: 'copyright', chinese: '版權', category: 'Social & Ethical Issues', chapter: '20', importance: 2, definition: 'Rights to creative work.', definition_zh: '創作作品的權利。' },
-  { term: 'ethics', chinese: '倫理', category: 'Social & Ethical Issues', chapter: '20', importance: 3, definition: 'Moral principles.', definition_zh: '道德原則。' },
-  { term: 'hacker', chinese: '駭客', category: 'Social & Ethical Issues', chapter: '20', importance: 2, definition: 'Someone who exploits systems.', definition_zh: '利用系統漏洞的人。' },
-  { term: 'privacy', chinese: '隱私權', category: 'Social & Ethical Issues', chapter: '20', importance: 3, definition: 'Right to keep info secret.', definition_zh: '保持資訊秘密的權利。' },
-  { term: 'virus', chinese: '病毒', category: 'Social & Ethical Issues', chapter: '20', importance: 2, definition: 'Self-replicating malware.', definition_zh: '自我複製的惡意軟體。' }
+  // Chapter 22: Social/Ethical (Was 20)
+  { term: 'copyright', chinese: '版權', category: 'Social & Ethical Issues', chapter: '22', importance: 2, definition: 'Rights to creative work.', definition_zh: '創作作品的權利。' },
+  { term: 'ethics', chinese: '倫理', category: 'Social & Ethical Issues', chapter: '22', importance: 3, definition: 'Moral principles.', definition_zh: '道德原則。' },
+  { term: 'hacker', chinese: '駭客', category: 'Social & Ethical Issues', chapter: '22', importance: 2, definition: 'Someone who exploits systems.', definition_zh: '利用系統漏洞的人。' },
+  { term: 'privacy', chinese: '隱私權', category: 'Social & Ethical Issues', chapter: '22', importance: 3, definition: 'Right to keep info secret.', definition_zh: '保持資訊秘密的權利。' },
+  { term: 'virus', chinese: '病毒', category: 'Social & Ethical Issues', chapter: '22', importance: 2, definition: 'Self-replicating malware.', definition_zh: '自我複製的惡意軟體。' }
 ];

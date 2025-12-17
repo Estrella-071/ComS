@@ -34,21 +34,15 @@ export const QuizView: React.FC<QuizViewProps> = ({
   const animatedScore = useSpring(0, { stiffness: 150, damping: 30 });
   const displayScore = useTransform(animatedScore, latest => Math.round(latest));
 
-  const problems = quizState?.problems || [];
-  const title = quizState?.title || '';
-
-  const score = useMemo(() => {
-    return Array.from(answers).reduce((count: number, [id, answer]) => {
-        const problem = problems.find(p => p.id === id);
-        return problem && problem.answer === answer ? count + 1 : count;
-    }, 0);
-  }, [problems, answers]);
-
   useEffect(() => {
-    if (isFinished) {
-      animatedScore.set(score);
+    if (isFinished && quizState) {
+        const score = Array.from(answers).reduce((count: number, [id, answer]) => {
+            const problem = quizState.problems.find(p => p.id === id);
+            return problem && problem.answer === answer ? count + 1 : count;
+        }, 0);
+        animatedScore.set(score);
     }
-  }, [isFinished, score, animatedScore]);
+  }, [isFinished, answers, animatedScore, quizState]);
   
   const handleFinish = useCallback(() => {
     finishQuiz();
@@ -59,26 +53,24 @@ export const QuizView: React.FC<QuizViewProps> = ({
         clearTimeout(autoAdvanceTimer.current);
         autoAdvanceTimer.current = null;
     }
-    if (isFinished) return;
+    if (isFinished || !quizState) return;
     setJustAnswered(false);
     const newIndex = currentIndex + newDirection;
-    if (newIndex >= 0 && newIndex < problems.length) {
+    if (newIndex >= 0 && newIndex < quizState.problems.length) {
         setDirection(newDirection);
         goToProblem(newIndex);
-    } else if (newIndex >= problems.length) {
+    } else if (newIndex >= quizState.problems.length) {
         handleFinish();
     }
-  }, [currentIndex, problems.length, isFinished, goToProblem, handleFinish]);
+  }, [currentIndex, isFinished, goToProblem, handleFinish, quizState]);
 
   const handleAnswer = useCallback((problemId: string, answer: string) => {
     answerQuestion(problemId, answer);
     setJustAnswered(true);
   }, [answerQuestion]);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-        // Prevent triggering answers if typing in an input field (e.g. Search)
         const target = e.target as HTMLElement;
         if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
             return;
@@ -88,17 +80,15 @@ export const QuizView: React.FC<QuizViewProps> = ({
             paginate(1);
         } else if (e.key === 'ArrowLeft') {
             paginate(-1);
-        } else if (!isFinished) {
-            // Map 1-4 and a-d to options
+        } else if (!isFinished && quizState && quizState.problems.length > 0) {
             const keyMap: Record<string, string> = {
                 '1': 'a', '2': 'b', '3': 'c', '4': 'd',
                 'a': 'a', 'b': 'b', 'c': 'c', 'd': 'd',
                 'A': 'a', 'B': 'b', 'C': 'c', 'D': 'd'
             };
             if (keyMap[e.key]) {
-                const currentProblem = problems[currentIndex];
-                // Only answer if not already answered
-                if (!answers.has(currentProblem.id)) {
+                const currentProblem = quizState.problems[currentIndex];
+                if (currentProblem && !answers.has(currentProblem.id)) {
                      handleAnswer(currentProblem.id, keyMap[e.key]);
                 }
             }
@@ -106,12 +96,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [paginate, isFinished, problems, currentIndex, answers, handleAnswer]);
+  }, [paginate, isFinished, quizState, currentIndex, answers, handleAnswer]);
 
   
   useEffect(() => {
     if (justAnswered && autoAdvance) {
-      // Reduced delay to 800ms
       autoAdvanceTimer.current = window.setTimeout(() => {
         paginate(1);
       }, 800);
@@ -133,6 +122,17 @@ export const QuizView: React.FC<QuizViewProps> = ({
       zIndex: 0, x: direction < 0 ? 50 : -50, opacity: 0, scale: 0.98
     }),
   };
+
+  if (!quizState) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full text-center p-4">
+             <div className="text-[var(--text-secondary)] animate-pulse font-mono text-sm tracking-widest">LOADING QUIZ...</div>
+        </div>
+      );
+  }
+
+  const problems = quizState.problems;
+  const title = quizState.title;
 
   if (problems.length === 0) {
     return (
@@ -167,6 +167,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
       hidden: { y: 15, opacity: 0 },
       visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 400, damping: 30 } }
   } as const;
+  
+  const currentScore = Array.from(answers).reduce((count: number, [id, answer]) => {
+      const problem = problems.find(p => p.id === id);
+      return problem && problem.answer === answer ? count + 1 : count;
+  }, 0);
 
   if (isFinished) {
     return (
@@ -184,7 +189,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                     <motion.div variants={resultItemVariants} className="text-2xl font-bold text-[var(--text-subtle)] font-mono">/ {problems.length}</motion.div>
                 </div>
                 <motion.div variants={resultItemVariants} className="text-sm font-medium text-[var(--text-secondary)] mb-10 font-mono">
-                    ACCURACY: {problems.length > 0 ? ((score / problems.length) * 100).toFixed(1) : 0}%
+                    ACCURACY: {problems.length > 0 ? ((currentScore / problems.length) * 100).toFixed(1) : 0}%
                 </motion.div>
                 <motion.div className="space-y-3" variants={resultContainerVariants}>
                     <motion.button 
@@ -209,7 +214,6 @@ export const QuizView: React.FC<QuizViewProps> = ({
 
   return (
     <div className="max-w-5xl mx-auto h-full flex flex-col p-2 sm:p-4 lg:p-8 relative pt-20 lg:pt-8">
-      {/* Header Section: Minimalist & Tech-oriented */}
       <div className="flex-shrink-0 mb-2 sm:mb-6 relative z-10">
          <div className="flex flex-col md:flex-row justify-between md:items-start gap-2 sm:gap-4">
             <div className="flex-1 min-w-0">
@@ -242,7 +246,6 @@ export const QuizView: React.FC<QuizViewProps> = ({
             </div>
         </div>
         
-        {/* Ultra-thin Progress Bar */}
         <div className="absolute bottom-0 left-0 right-0 h-px bg-[var(--ui-border)] mt-2 hidden md:block">
             <motion.div
                 className="h-[2px] bg-[var(--accent-solid)] origin-left"
@@ -250,7 +253,6 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 transition={{ type: 'spring', stiffness: 200, damping: 30 }}
             />
         </div>
-         {/* Mobile Progress Bar */}
          <div className="w-full h-1 bg-[var(--ui-bg)] mt-2 rounded-full overflow-hidden md:hidden">
              <motion.div
                 className="h-full bg-[var(--accent-solid)] origin-left"
@@ -295,7 +297,6 @@ export const QuizView: React.FC<QuizViewProps> = ({
         </AnimatePresence>
       </div>
 
-      {/* Floating Control Deck */}
       <div className="flex justify-between items-center mt-4 sm:mt-6 flex-shrink-0 gap-4 pointer-events-none">
         <motion.button
           onClick={() => paginate(-1)}

@@ -27,7 +27,6 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
     const [isChapterMenuOpen, setIsChapterMenuOpen] = useState(false);
     const [activeChapter, setActiveChapter] = useState<string | null>(null);
     
-    // Accordion state
     const [expandedProblemId, setExpandedProblemId] = useState<string | null>(null);
     const [showFlagToast, setShowFlagToast] = useState(false);
 
@@ -103,7 +102,6 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
         return null;
     };
 
-    // Observe active chapter on scroll
     useEffect(() => {
         if (!scrollRef.current) return;
         
@@ -138,7 +136,6 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
             </AnimatePresence>
 
             <div className="flex-1 flex overflow-hidden w-full">
-                {/* Desktop Sidebar Navigation - Transparent & Minimal */}
                 <aside className="hidden lg:flex flex-col w-72 flex-shrink-0 border-r border-[var(--ui-border)] bg-transparent backdrop-blur-sm">
                      <div className="p-6 border-b border-[var(--ui-border)]">
                         <div className="flex items-center gap-2 mb-2 text-[var(--accent-solid)]">
@@ -152,7 +149,6 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                      
                      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-1">
                          <div className="relative pl-2">
-                            {/* Timeline Line */}
                             <div className="absolute left-[19px] top-4 bottom-4 w-px bg-[var(--ui-border)]" />
                             
                             {chapters.map(chapter => {
@@ -169,7 +165,6 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                                         : 'hover:bg-[var(--ui-bg)]/30'
                                     }`}
                                  >
-                                    {/* Dot Indicator */}
                                     <div className={`absolute left-[16px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border transition-all z-10 ${
                                         isActive 
                                         ? 'bg-[var(--accent-solid)] border-[var(--accent-solid)] scale-125' 
@@ -186,10 +181,8 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                      </div>
                 </aside>
 
-                {/* Content Area */}
                 <main ref={scrollRef} className="flex-1 overflow-y-auto relative custom-scrollbar scroll-smooth bg-transparent">
                     
-                    {/* Floating Search Bar & Mobile Header - 0% opacity / minimal bg */}
                     <div className="sticky top-0 z-[var(--z-sticky-l1)] pt-20 lg:pt-6 px-4 sm:px-8 pb-6 bg-[var(--bg-color)]/10 backdrop-blur-lg border-b border-transparent">
                         <div className="max-w-4xl mx-auto flex gap-4 items-center">
                             <div className="relative w-full">
@@ -203,7 +196,6 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                                 <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-subtle)] pointer-events-none" />
                             </div>
 
-                            {/* Mobile Chapter Menu */}
                             <div className="lg:hidden relative">
                                 <button 
                                     onClick={() => setIsChapterMenuOpen(!isChapterMenuOpen)}
@@ -262,7 +254,6 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                                                         key={p.id}
                                                         className={`group relative py-8 border-b border-[var(--ui-border)]/30 transition-all duration-500`}
                                                     >
-                                                        {/* Question Header / Trigger */}
                                                         <div 
                                                             onClick={() => handleProblemToggle(p.id)}
                                                             className="cursor-pointer flex gap-5 items-start"
@@ -292,7 +283,6 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                                                             </div>
                                                         </div>
 
-                                                        {/* Expanded Content (Accordion) - Transparent Background */}
                                                         <AnimatePresence>
                                                             {isExpanded && (
                                                                 <motion.div
@@ -303,7 +293,6 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                                                                     className="overflow-hidden"
                                                                 >
                                                                     <div className="pt-8 pl-0 sm:pl-14">
-                                                                        {/* No background container, just content */}
                                                                         <div className="border-l-2 border-[var(--ui-border)] pl-6 space-y-8">
                                                                             <div className="space-y-4">
                                                                                 <h3 className="text-xs font-bold text-[var(--text-subtle)] uppercase tracking-widest">{t('options')}</h3>

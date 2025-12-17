@@ -10,6 +10,7 @@ import { allData } from '../data/subjects';
 import { useAppContext } from '../contexts/AppContext';
 import { BackToTopButton } from './common/BackToTopButton';
 import { EdgeProgressBar } from './common/EdgeProgressBar';
+import { safeStorage } from '../utils/storage';
 
 interface QuizHistoryProps {
   setView: (view: View) => void;
@@ -37,13 +38,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ setView }) => {
 
   useEffect(() => {
     try {
-      // Safe LocalStorage Access
-      let storedHistory: string | null = null;
-      try {
-          if (typeof window !== 'undefined' && window.localStorage) {
-            storedHistory = window.localStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY);
-          }
-      } catch (e) { /* ignore */ }
+      const storedHistory = safeStorage.getItem(LOCAL_STORAGE_KEYS.QUIZ_HISTORY);
 
       if (storedHistory) {
         const allHistory: QuizResult[] = JSON.parse(storedHistory);

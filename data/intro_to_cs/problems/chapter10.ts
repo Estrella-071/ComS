@@ -1,8 +1,9 @@
-import type { Problem } from '../types';
+
+import type { Problem } from '../../../types';
 
 export const problems: Problem[] = [
   {
-    id: '10.1', chapter: '10', number: '10-1',
+    id: '10.1', chapter: '11', number: '11-1',
     text_en: "One phase in system development is ________.",
     text_zh: "系統開發中的一個階段是 ________。",
     options: [
@@ -15,7 +16,7 @@ export const problems: Problem[] = [
     explanation_zh: "傳統的軟體開發生命週期（SDLC）通常包括幾個階段，如需求分析（analysis）、設計（design）、實作（implementation）、測試（testing）和維護（maintenance）。",
   },
   {
-    id: '10.2', chapter: '10', number: '10-2',
+    id: '10.2', chapter: '11', number: '11-2',
     text_en: "Defining the users, requirements, and methods is part of the ________ phase.",
     text_zh: "定義使用者、需求和方法是 ________ 階段的一部分。",
     options: [
@@ -28,7 +29,7 @@ export const problems: Problem[] = [
     explanation_zh: "在需求分析（Analysis）階段，開發團隊會與利害關係人溝通，以確定系統的使用者、功能需求和非功能需求。",
   },
   {
-    id: '10.3', chapter: '10', number: '10-3',
+    id: '10.3', chapter: '11', number: '11-3',
     text_en: "In the system development process, writing the program is part of the ________ phase.",
     text_zh: "在系統開發過程中，編寫程式是 ________ 階段的一部分。",
     options: [
@@ -41,7 +42,7 @@ export const problems: Problem[] = [
     explanation_zh: "在實作（Implementation）階段，開發人員會根據設計文件開始編寫實際的程式碼。",
   },
   {
-    id: '10.4', chapter: '10', number: '10-4',
+    id: '10.4', chapter: '11', number: '11-4',
     text_en: "In the system development process, structure charts are tools used in the ________ phase.",
     text_zh: "在系統開發過程中，結構圖是在 ________ 階段使用的工具。",
     options: [
@@ -54,7 +55,7 @@ export const problems: Problem[] = [
     explanation_zh: "結構圖（Structure charts）是一種用於描繪系統模組結構和模組之間關係的圖表，常用於軟體設計（Design）階段。",
   },
   {
-    id: '10.5', chapter: '10', number: '10-5',
+    id: '10.5', chapter: '11', number: '11-5',
     text_en: "Testing a software system can involve ________ testing.",
     text_zh: "測試軟體系統可以涉及 ________ 測試。",
     options: [
@@ -67,7 +68,7 @@ export const problems: Problem[] = [
     explanation_zh: "軟體測試包含多種類型，其中黑箱測試（Black-box testing）專注於功能，不關心內部實現；而白箱測試（White-box/glass-box testing）則基於程式的內部結構進行測試。完整的測試策略通常兩者都會包含。",
   },
   {
-    id: '10.6', chapter: '10', number: '10-6',
+    id: '10.6', chapter: '11', number: '11-6',
     text_en: "________ is the breaking up of a large project into smaller parts.",
     text_zh: "________ 是將一個大型專案分解成較小部分的过程。",
     options: [
@@ -80,7 +81,7 @@ export const problems: Problem[] = [
     explanation_zh: "模組化（Modularization）是一種軟體設計原則，旨在將複雜的系統分解為獨立、可互換的模組，每個模組負責一項特定的功能。",
   },
   {
-    id: '10.7', chapter: '10', number: '10-7',
+    id: '10.7', chapter: '11', number: '11-7',
     text_en: "________ is a measure of how tightly two modules are bound to each other.",
     text_zh: "________ 是衡量兩個模組之間緊密程度的指標。",
     options: [
@@ -93,7 +94,7 @@ export const problems: Problem[] = [
     explanation_zh: "耦合（Coupling）描述了軟體模組之間的相互依賴程度。良好的軟體設計追求低耦合，即模組之間應盡可能獨立。",
   },
   {
-    id: '10.8', chapter: '10', number: '10-8',
+    id: '10.8', chapter: '11', number: '11-8',
     text_en: "________ between modules in a software system must be minimized.",
     text_zh: "軟體系統中模組之間的 ________ 必須最小化。",
     options: [
@@ -106,7 +107,7 @@ export const problems: Problem[] = [
     explanation_zh: "低耦合（Low coupling）是軟體設計的一個重要目標。它意味著模組之間的依賴性較低，修改一個模組對其他模組的影響較小，從而提高系統的可維護性和可重用性。",
   },
   {
-    id: '10.9', chapter: '10', number: '10-9',
+    id: '10.9', chapter: '11', number: '11-9',
     text_en: "________ between modules in a software system must be maximized.",
     text_zh: "軟體系統中模組之間的 ________ 必須最大化。",
     options: [

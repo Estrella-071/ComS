@@ -9,10 +9,10 @@ export const zh = {
   home: '首頁',
   table_of_contents: '目錄',
   practice_modes: '練習模式',
-  question_bank: '題庫', // Renamed from all_questions
-  start_quiz_session: '開始測驗', // Renamed from question_bank_quiz
+  question_bank: '題庫',
+  start_quiz_session: '開始測驗',
   programming_exercises: '程式設計習題',
-  starred_items: '已加星號', // Renamed from flagged_for_review
+  starred_items: '已加星號',
   tools: '工具',
   quiz_history: '測驗紀錄',
   by_chapter: '章節',

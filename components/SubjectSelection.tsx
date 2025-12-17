@@ -5,8 +5,6 @@ import { useAppContext } from '../contexts/AppContext';
 import { subjects } from '../data/subjects';
 import { BookOpenIcon, CodeBracketIcon, ChevronRightIcon } from './icons';
 
-// --- Visual Assets ---
-
 const CornerData = () => {
   const [time, setTime] = useState(new Date());
   
@@ -25,24 +23,6 @@ const CornerData = () => {
       <div className="absolute top-6 right-6 z-20 font-mono text-xs text-[var(--text-secondary)] opacity-70 gap-6 hidden sm:flex">
         <span className="border border-[var(--ui-border)] px-3 py-1 rounded-full hover:bg-[var(--text-primary)] hover:text-[var(--bg-color)] transition-colors cursor-pointer pointer-events-auto">About</span>
         <span className="border border-[var(--ui-border)] px-3 py-1 rounded-full hover:bg-[var(--text-primary)] hover:text-[var(--bg-color)] transition-colors cursor-pointer pointer-events-auto">Contact</span>
-      </div>
-
-      <div className="absolute bottom-6 left-6 z-20 font-mono text-[10px] text-[var(--text-subtle)] opacity-50 leading-tight hidden md:block pointer-events-none">
-        <div className="flex gap-4 border-t border-[var(--ui-border)] pt-2 w-64 justify-between">
-           <span>roughness</span>
-           <div className="flex-1 mx-2 h-px bg-[var(--ui-border)] self-center"></div>
-           <span>0.10</span>
-        </div>
-        <div className="flex gap-4 w-64 justify-between">
-           <span>metalness</span>
-           <div className="flex-1 mx-2 h-px bg-[var(--ui-border)] self-center"></div>
-           <span>0.85</span>
-        </div>
-        <div className="flex gap-4 w-64 justify-between">
-           <span>transmission</span>
-           <div className="flex-1 mx-2 h-px bg-[var(--ui-border)] self-center"></div>
-           <span>1.00</span>
-        </div>
       </div>
 
       <div className="absolute bottom-6 right-6 z-20 font-mono text-xs text-[var(--text-secondary)] opacity-70 text-right pointer-events-none">
@@ -143,16 +123,12 @@ const PrismCard: React.FC<PrismCardProps> = ({ subject, onClick, index, onHoverS
   );
 };
 
-// --- Dynamic Background Text Component ---
-
 const BackgroundText: React.FC<{ control: any }> = ({ control }) => {
-    // Parallax logic
     const mouseX = useMotionValue(0.5);
     const mouseY = useMotionValue(0.5);
     const smoothX = useSpring(mouseX, { damping: 40, stiffness: 300 });
     const smoothY = useSpring(mouseY, { damping: 40, stiffness: 300 });
     
-    // Weakened parallax effect
     const textX = useTransform(smoothX, [0, 1], [-5, 5]);
     const textY = useTransform(smoothY, [0, 1], [-5, 5]);
 
@@ -167,7 +143,6 @@ const BackgroundText: React.FC<{ control: any }> = ({ control }) => {
         return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
 
-    // Animation Variants
     const variants: Variants = {
         idle: { 
             opacity: 1, 
@@ -176,7 +151,6 @@ const BackgroundText: React.FC<{ control: any }> = ({ control }) => {
             transition: { duration: 0.5, ease: "easeInOut" }
         },
         glitch: {
-            // Weakened glitch effect
             opacity: [1, 0.8, 1, 0.9, 1],
             filter: ["blur(0px)", "blur(1px)", "blur(0px)", "blur(0.5px)", "blur(0px)"],
             scale: 1,
@@ -209,13 +183,10 @@ const BackgroundText: React.FC<{ control: any }> = ({ control }) => {
     );
 };
 
-// --- Main Component ---
-
 export const SubjectSelection: React.FC = () => {
     const { setSubject } = useAppContext();
     const textControls = useAnimation();
     
-    // Track if the background is in "active" (dimmed) state
     const isDimmedRef = useRef(false);
     const returnToIdleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     
@@ -260,7 +231,6 @@ export const SubjectSelection: React.FC = () => {
             <BackgroundText control={textControls} />
             <CornerData />
             
-            {/* Scrollable Container */}
             <div className="absolute inset-0 z-10 overflow-y-auto md:overflow-hidden custom-scrollbar">
                 <div className="min-h-full w-full flex flex-col md:flex-row items-center justify-center gap-8 p-6 pt-24 pb-24 md:p-8">
                     {subjects.map((subject, index) => (

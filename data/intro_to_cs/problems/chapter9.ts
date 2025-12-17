@@ -1,8 +1,9 @@
-import type { Problem } from '../types';
+
+import type { Problem } from '../../../types';
 
 export const problems: Problem[] = [
   {
-    id: '9.1', chapter: '9', number: '9-1',
+    id: '9.1', chapter: '10', number: '10-1',
     text_en: "The only language understood by computer hardware is a ________ language.",
     text_zh: "電腦硬體唯一能理解的語言是 ________ 語言。",
     options: [
@@ -15,7 +16,7 @@ export const problems: Problem[] = [
     explanation_zh: "機器語言（Machine language）是由二進位代碼組成的指令集，是電腦 CPU 可以直接執行的唯一語言。",
   },
   {
-    id: '9.2', chapter: '9', number: '9-2',
+    id: '9.2', chapter: '10', number: '10-2',
     text_en: "C, C++, and Java can be classified as ________ languages.",
     text_zh: "C、C++ 和 Java 可以歸類為 ________ 語言。",
     options: [
@@ -28,7 +29,7 @@ export const problems: Problem[] = [
     explanation_zh: "高階語言（High-level languages）使用更接近人類語言的語法，使程式設計更容易，並且需要透過編譯器或直譯器轉換成機器語言才能執行。",
   },
   {
-    id: '9.3', chapter: '9', number: '9-3',
+    id: '9.3', chapter: '10', number: '10-3',
     text_en: "FORTRAN is a(n) ________ language.",
     text_zh: "FORTRAN 是一種 ________ 語言。",
     options: [
@@ -41,7 +42,7 @@ export const problems: Problem[] = [
     explanation_zh: "FORTRAN 是一種早期的程序化語言（Procedural language），程式由一系列的程序或副程式（subroutines）組成。",
   },
   {
-    id: '9.4', chapter: '9', number: '9-4',
+    id: '9.4', chapter: '10', number: '10-4',
     text_en: "Pascal is a(n) ________ language.",
     text_zh: "Pascal 是一種 ________ 語言。",
     options: [
@@ -54,7 +55,7 @@ export const problems: Problem[] = [
     explanation_zh: "Pascal 是一種結構化的程序化語言（Procedural language），強調清晰的程式結構和資料結構。",
   },
   {
-    id: '9.5', chapter: '9', number: '9-5',
+    id: '9.5', chapter: '10', number: '10-5',
     text_en: "Java is a(n) ________ language.",
     text_zh: "Java 是一種 ________ 語言。",
     options: [
@@ -67,7 +68,7 @@ export const problems: Problem[] = [
     explanation_zh: "Java 是一種典型的物件導向（Object-oriented）程式語言，其核心思想是將所有事物都視為「物件」。",
   },
   {
-    id: '9.6', chapter: '9', number: '9-6',
+    id: '9.6', chapter: '10', number: '10-6',
     text_en: "LISP is a(n) ________ language.",
     text_zh: "LISP 是一種 ________ 語言。",
     options: [
@@ -80,7 +81,7 @@ export const problems: Problem[] = [
     explanation_zh: "LISP 是最早的函數式程式語言（Functional language）之一，它將計算視為數學函式的求值。",
   },
   {
-    id: '9.7', chapter: '9', number: '9-7',
+    id: '9.7', chapter: '10', number: '10-7',
     text_en: "________ is a common language in the business-environment.",
     text_zh: "________ 是商業環境中常用的語言。",
     options: [
@@ -93,7 +94,7 @@ export const problems: Problem[] = [
     explanation_zh: "COBOL（Common Business-Oriented Language）是專為商業資料處理而設計的程式語言，在金融和政府等領域有著悠久的歷史。",
   },
   {
-    id: '9.8', chapter: '9', number: '9-8',
+    id: '9.8', chapter: '10', number: '10-8',
     text_en: "________ is a popular object-oriented language.",
     text_zh: "________ 是一種流行的物件導向語言。",
     options: [
@@ -106,7 +107,7 @@ export const problems: Problem[] = [
     explanation_zh: "Java 是世界上最流行和廣泛使用的物件導向程式語言之一，其他流行的還有 C++, Python, C# 等。",
   },
   {
-    id: '9.9', chapter: '9', number: '9-9',
+    id: '9.9', chapter: '10', number: '10-9',
     text_en: "A ________ program can be either an application or an applet.",
     text_zh: "一個 ________ 程式可以是一個應用程式（application）或一個小程式（applet）。",
     options: [
@@ -119,7 +120,7 @@ export const problems: Problem[] = [
     explanation_zh: "Java Applet 是一種早期技術，允許 Java 程式在網頁瀏覽器中執行。因此，Java 程式可以編寫為獨立的應用程式（application）或嵌入式的 Applet。",
   },
   {
-    id: '9.10', chapter: '9', number: '9-10',
+    id: '9.10', chapter: '10', number: '10-10',
     text_en: "LISP and Scheme are both ________ languages.",
     text_zh: "LISP 和 Scheme 都是 ________ 語言。",
     options: [
@@ -132,7 +133,7 @@ export const problems: Problem[] = [
     explanation_zh: "Scheme 是 LISP 的一個方言，兩者都是著名且有影響力的函數式程式語言（Functional language）。",
   },
   {
-    id: '9.11', chapter: '9', number: '9-11',
+    id: '9.11', chapter: '10', number: '10-11',
     text_en: "Prolog is an example of a(n) ________ language.",
     text_zh: "Prolog 是 ________ 語言的一個例子。",
     options: [

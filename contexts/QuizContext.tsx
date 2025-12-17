@@ -1,12 +1,16 @@
+
 import React, { createContext, useState, useContext, useCallback, ReactNode } from 'react';
 import type { Problem, View, AnsweredQuestion, QuizResult } from '../types';
 import { LOCAL_STORAGE_KEYS } from '../types';
 import { useAppContext } from './AppContext';
+import { safeStorage } from '../utils/storage';
 
 interface QuizConfig {
   problems: Problem[];
   title: string;
   startIndex?: number;
+  chapterId?: string;
+  id?: string;
 }
 
 interface QuizState extends QuizConfig {
@@ -19,6 +23,7 @@ interface QuizContextType {
   currentIndex: number;
   isFinished: boolean;
   startQuiz: (quizInfo: QuizConfig) => void;
+  updateQuiz: (newProblems: Problem[], newTitle?: string) => void;
   answerQuestion: (problemId: string, answer: string) => void;
   goToProblem: (index: number) => void;
   finishQuiz: () => void;
@@ -28,25 +33,6 @@ interface QuizContextType {
 
 const QuizContext = createContext<QuizContextType | undefined>(undefined);
 
-// Safe Storage Helper (Duplicated to avoid circular deps or complex refactoring, simple enough)
-const safeStorage = {
-    getItem: (key: string) => {
-      try {
-        if (typeof window !== 'undefined' && window.localStorage) {
-          return window.localStorage.getItem(key);
-        }
-      } catch (e) { return null; }
-      return null;
-    },
-    setItem: (key: string, value: string) => {
-      try {
-        if (typeof window !== 'undefined' && window.localStorage) {
-          window.localStorage.setItem(key, value);
-        }
-      } catch (e) { /* ignore */ }
-    }
-  };
-
 export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [quizState, setQuizState] = useState<QuizState | null>(null);
   const [answers, setAnswers] = useState<Map<string, string>>(new Map());
@@ -55,7 +41,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { subject } = useAppContext();
 
   const startQuiz = useCallback((quizInfo: QuizConfig) => {
-    const newQuizId = `${quizInfo.title.replace(/\s+/g, '-')}-${Date.now()}`;
+    const newQuizId = quizInfo.id || `${quizInfo.title.replace(/\s+/g, '-')}-${Date.now()}`;
     const newQuizState = { ...quizInfo, id: newQuizId };
 
     if (quizState?.id !== newQuizId) {
@@ -65,6 +51,24 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsFinished(false);
     }
   }, [quizState]);
+
+  const updateQuiz = useCallback((newProblems: Problem[], newTitle?: string) => {
+    if (!quizState) return;
+    
+    setQuizState(prev => {
+        if (!prev) return null;
+        return {
+            ...prev,
+            problems: newProblems,
+            title: newTitle || prev.title
+        };
+    });
+    
+    // Adjust currentIndex if it's now out of bounds
+    if (currentIndex >= newProblems.length) {
+        setCurrentIndex(Math.max(0, newProblems.length - 1));
+    }
+  }, [quizState, currentIndex]);
   
   const endQuiz = useCallback(() => {
     setQuizState(null);
@@ -130,6 +134,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     currentIndex,
     isFinished,
     startQuiz,
+    updateQuiz,
     answerQuestion,
     goToProblem,
     finishQuiz,

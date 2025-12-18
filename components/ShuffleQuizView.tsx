@@ -29,14 +29,12 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
   const [count, setCount] = useState<number>(20);
   const [quizMode, setQuizMode] = useState<'shuffled' | 'sequential'>('shuffled');
 
-  // Pre-fill from active quiz if available (Change Scope feature)
+  // Pre-fill from active quiz if available
   useEffect(() => {
     if (quizState && quizState.problems.length > 0) {
-        // Infer chapters from current problems
         const currentChapters = new Set(quizState.problems.map(p => p.chapter));
         setSelectedChapters(Array.from(currentChapters));
         setCount(quizState.problems.length);
-        // Note: Detecting 'shuffled' vs 'sequential' from problems list is hard, defaulting to shuffled is safer or keeping user state
     }
   }, [quizState]);
 
@@ -70,9 +68,8 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
       if (!subjectData?.chapterList) return [];
       return subjectData.chapterList
           .filter(c => c.highlight)
-          .map(c => c.id.replace(/\D/g, '')); // Extract number
+          .map(c => c.id.replace(/\D/g, ''));
   }, [subjectData]);
-
 
   const handleToggleChapter = (chapter: string) => {
     setSelectedChapters(prev =>
@@ -210,12 +207,12 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
                             <div className="flex-shrink-0 space-x-2 flex flex-wrap gap-y-2">
                                 <button onClick={handleSelectAll} className="text-sm font-semibold bg-[var(--ui-bg)] hover:bg-[var(--ui-bg-hover)] text-[var(--text-secondary)] px-3 py-1.5 rounded-md transition-colors">{t('select_all')}</button>
                                 {finalsChapters.length > 0 && (
-                                     <button onClick={handleSelectFinals} className="text-sm font-semibold bg-[var(--warning-bg)]/30 hover:bg-[var(--warning-bg)] text-[var(--warning-text)] px-3 py-1.5 rounded-md transition-colors border border-[var(--warning-text)]/20">{t('select_finals')}</button>
+                                     <button onClick={handleSelectFinals} className="text-sm font-semibold bg-[var(--warning-bg)]/30 hover:bg-[var(--warning-bg)] text-[var(--warning-text)] px-3 py-1.5 rounded-md transition-colors border border-[var(--warning-text)]/20 shadow-sm">{t('select_finals')}</button>
                                 )}
                                 <button onClick={handleDeselectAll} className="text-sm font-semibold bg-[var(--ui-bg)] hover:bg-[var(--ui-bg-hover)] text-[var(--text-secondary)] px-3 py-1.5 rounded-md transition-colors">{t('deselect_all')}</button>
                             </div>
                         </div>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 max-h-56 overflow-y-auto p-3 bg-black/5 dark:bg-white/5 rounded-lg overscroll-contain custom-scrollbar">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 max-h-56 overflow-y-auto p-3 bg-black/5 dark:bg-white/5 rounded-lg overscroll-contain custom-scrollbar border border-[var(--ui-border)]">
                         {chapters.map(chapter => {
                             const isFinals = finalsChapters.includes(chapter);
                             const isSelected = selectedChapters.includes(chapter);
@@ -225,23 +222,23 @@ export const ShuffleQuizView: React.FC<ShuffleQuizViewProps> = ({ setView }) => 
                                 key={chapter}
                                 onClick={() => handleToggleChapter(chapter)}
                                 className={`
-                                    relative p-3 rounded-lg text-sm font-semibold transition-all border
+                                    relative p-3 rounded-lg text-sm font-semibold transition-all border flex items-center justify-center min-h-[50px]
                                     ${isSelected
                                     ? (isFinals 
-                                        ? 'bg-[var(--warning-solid-bg)] text-[var(--warning-solid-text)] border-[var(--warning-solid-bg)]' 
-                                        : 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]'
+                                        ? 'bg-[var(--warning-solid-bg)] text-[var(--warning-solid-text)] border-[var(--warning-solid-bg)] shadow-md' 
+                                        : 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)] shadow-md'
                                       )
-                                    : 'bg-[var(--bg-translucent)] text-[var(--text-secondary)] hover:bg-[var(--ui-bg-hover)] border-transparent hover:border-[var(--ui-border)]'
+                                    : 'bg-[var(--bg-translucent)] text-[var(--text-secondary)] hover:bg-[var(--ui-bg-hover)] border-[var(--ui-border)]'
                                     }
-                                    ${!isSelected && isFinals ? 'border-[var(--warning-text)]/30 bg-[var(--warning-bg)]/10 text-[var(--warning-text)]' : ''}
+                                    ${!isSelected && isFinals ? 'border-[var(--warning-text)]/40 bg-[var(--warning-bg)]/10 text-[var(--warning-text)]' : ''}
                                 `}
                                 >
                                 {isFinals && (
                                     <div className="absolute -top-1 -right-1">
-                                        <StarSolidIcon className={`w-3 h-3 ${isSelected ? 'text-white' : 'text-[var(--warning-text)]'}`} />
+                                        <StarSolidIcon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-[var(--warning-text)]'}`} />
                                     </div>
                                 )}
-                                {`${t('chapter')} ${chapter}${t('chapter_unit')}`}
+                                {`${t('chapter_short')}${chapter}${t('chapter_unit')}`}
                                 </button>
                             );
                         })}

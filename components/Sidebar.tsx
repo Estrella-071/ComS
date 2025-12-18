@@ -88,7 +88,6 @@ const NavItem = memo<NavItemProps>(({ icon, label, subLabel, active, onClick, ba
         </div>
     </div>
 
-    {/* Right side indicators */}
     <div className="flex items-center gap-2 relative z-10">
         {highlight && (
             <div className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-[var(--bg-color)]' : 'bg-[var(--warning-solid-bg)]'}`} />
@@ -129,15 +128,12 @@ SectionHeader.displayName = 'SectionHeader';
 export const Sidebar: React.FC<SidebarProps> = (props) => {
   const { view, onNavigate, onResetNavigate, isOpen, setIsOpen, onOpenSearch, onOpenSettings } = props;
   const { t } = useTranslation();
-  const { flaggedItems, subjectData, subject, language, lastActiveChapterId } = useAppContext();
-  const { quizState, currentIndex } = useQuiz();
+  const { flaggedItems, subjectData, subject, language } = useAppContext();
+  const { quizState } = useQuiz();
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1024 : true);
   
-  // Decoupled state for the sidebar tab. 
-  // This allows users to browse the "Practice" menu even while in "Reading" mode.
   const [activeTab, setActiveTab] = useState<'reading' | 'practice'>('reading');
   
-  // Sync activeTab with view type intelligently
   useEffect(() => {
     switch (view.type) {
         case 'textbook':
@@ -153,7 +149,6 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
         case 'programming':
             setActiveTab('practice');
             break;
-        // For 'home' or 'overview', we preserve the user's last choice
         default:
             break;
     }
@@ -161,12 +156,10 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
 
   const chapterListData = subjectData?.chapterList || [];
 
-  // Pre-calculate problem counts per chapter to disable empty chapters in Practice mode
   const problemsByChapter = useMemo(() => {
     if (!subjectData) return {};
     const counts: Record<string, number> = {};
     subjectData.problems.forEach(p => {
-        // Matches the chapter ID format used in handleStartChapterQuiz
         counts[p.chapter] = (counts[p.chapter] || 0) + 1;
     });
     return counts;
@@ -188,16 +181,13 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   const isQuizSubject = subject?.type === 'quiz';
   const isProgrammingSubject = subject?.type === 'programming';
 
-  // Helper to determine which chapter should be highlighted in the list
   const activeChapterId = useMemo(() => {
     if (view.type === 'textbook') return view.chapterId;
-    if (view.type === 'quiz') return view.chapterId; // Only if it's a chapter quiz
+    if (view.type === 'quiz') return view.chapterId;
     
-    // If viewing a single problem, highlight its chapter
     if (view.type === 'problem' && subjectData) {
          const problem = subjectData.problems.find(p => p.id === view.id);
          if (problem) return `chapter${problem.chapter}`;
-         if (problem) return problem.chapter; // Fallback depending on ID format
     }
     return null;
   }, [view, subjectData]);
@@ -207,7 +197,6 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
       if (!subjectData) return;
       const problems = subjectData.problems.filter(p => p.chapter === chapterNum);
       
-      // If somehow clicked despite being disabled, prevent action
       if (problems.length === 0) return;
 
       const chapterInfo = subjectData.chapterList.find(c => c.id === chapterId);
@@ -238,7 +227,8 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
         `}
         style={{ willChange: 'transform' }}
       >
-            <div className="flex-shrink-0 px-4 pt-5 pb-3 space-y-4 z-20 relative">
+            {/* Added pt-16 for clearing top floating action buttons */}
+            <div className="flex-shrink-0 px-4 pt-16 lg:pt-5 pb-3 space-y-4 z-20 relative">
                 <button 
                     onClick={onOpenSearch}
                     className="w-full group relative flex items-center justify-between px-4 py-2.5 bg-[var(--ui-bg)] hover:bg-[var(--ui-bg-hover)] border border-[var(--ui-border)] rounded-xl transition-all duration-200 shadow-sm"
@@ -281,7 +271,6 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                             exit={{ opacity: 0, transition: { duration: 0.1 } }}
                             className="space-y-1"
                         >
-                            {/* Resources Section */}
                             <div className="mb-2 space-y-1">
                                 <SectionHeader>{t('quick_actions')}</SectionHeader>
                                 <NavItem 
@@ -298,7 +287,6 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                                 />
                             </div>
 
-                            {/* Chapter List (Navigates to Textbook) */}
                             <SectionHeader>{t('table_of_contents')}</SectionHeader>
                             {chapterListData.map((chapter, index) => (
                                 <NavItem
@@ -323,7 +311,6 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                             exit={{ opacity: 0, transition: { duration: 0.1 } }}
                             className="space-y-1"
                         >
-                             {/* Tools Section */}
                              <div className="mb-2 space-y-1">
                                 <SectionHeader>{t('tools')}</SectionHeader>
                                 
@@ -369,7 +356,6 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                                 )}
                              </div>
 
-                             {/* Chapter List (Navigates to Quiz for Chapter) */}
                              {isQuizSubject && (
                                  <>
                                     <SectionHeader>{t('practice_questions_for_chapter')}</SectionHeader>
@@ -408,7 +394,6 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                  
                  <div className="h-8" />
             </div>
-            
       </motion.aside>
   );
 };

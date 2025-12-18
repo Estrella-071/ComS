@@ -89,12 +89,10 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
     
     const getChapterInfo = (chapterNum: string) => {
         if (!subjectData?.chapterList) return null;
-        // Search by ID first (e.g., 'chapter1') then by matching index logic if needed
         const chapterData = subjectData.chapterList.find(c => c.id === `chapter${chapterNum}` || c.id === chapterNum);
         
         if (chapterData) return { title: chapterData.title[language], isHighlighted: chapterData.highlight };
         
-        // Fallback: Check if chapterList is array and index matches
         const idx = parseInt(chapterNum) - 1;
         if (idx >= 0 && idx < subjectData.chapterList.length) {
             const fallbackData = subjectData.chapterList[idx];
@@ -116,7 +114,7 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
             });
         }, { 
             root: scrollRef.current,
-            rootMargin: '-20% 0px -60% 0px', // Trigger when near top
+            rootMargin: '-20% 0px -60% 0px', 
             threshold: 0
         });
 
@@ -139,7 +137,7 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
 
             <div className="flex-1 flex overflow-hidden w-full">
                 <aside className="hidden lg:flex flex-col w-72 flex-shrink-0 border-r border-[var(--ui-border)] bg-transparent backdrop-blur-sm">
-                     <div className="p-6 border-b border-[var(--ui-border)]">
+                     <div className="p-6 border-b border-[var(--ui-border)] pt-20">
                         <div className="flex items-center gap-2 mb-2 text-[var(--accent-solid)]">
                             <ListBulletIcon className="w-5 h-5" />
                             <span className="text-xs font-bold uppercase tracking-widest">{t('question_bank')}</span>
@@ -330,7 +328,6 @@ export const Overview: React.FC<OverviewProps> = ({ setView }) => {
                                                                             <div className="space-y-4">
                                                                                 <h3 className="text-xs font-bold text-[var(--text-subtle)] uppercase tracking-widest">{t('explanation')}</h3>
                                                                                 <div className="prose prose-sm dark:prose-invert max-w-none text-[var(--text-secondary)]">
-                                                                                     {/* Render directly to avoid double wrapping if ProblemExplanation adds margin/border */}
                                                                                      <ProblemExplanation 
                                                                                         explanation={p.explanation_zh} 
                                                                                         isVisible={true} 

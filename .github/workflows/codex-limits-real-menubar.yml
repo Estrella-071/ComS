@@ -1,4 +1,4 @@
-name: Capture real Codex Limits menu bar popover
+name: Capture Codex Limits with rich synthetic activity
 
 on:
   pull_request:
@@ -13,13 +13,25 @@ permissions:
 
 jobs:
   capture:
-    name: Capture ${{ matrix.section }} on macOS 26
+    name: Capture ${{ matrix.capture }} on macOS 26
     runs-on: macos-26
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        section: [Graphs, Facts, Insights]
+        include:
+          - capture: token-activity
+            section: Graphs
+            graph: Token activity
+          - capture: concurrency
+            section: Graphs
+            graph: Concurrency
+          - capture: facts
+            section: Facts
+            graph: Token activity
+          - capture: insights
+            section: Insights
+            graph: Token activity
 
     steps:
       - uses: actions/checkout@v4
@@ -29,15 +41,25 @@ jobs:
           git clone --depth 1 https://github.com/thrr87/codex-limits.git /tmp/codex-limits
           git -C /tmp/codex-limits rev-parse HEAD | tee /tmp/upstream-commit.txt
 
-      - name: Install fictional Codex CLI fixture
+      - name: Seed fictional Codex sessions and install mock CLI
         run: |
+          python3 .github/codex-capture/codex-mock.py --seed-fixtures
           sudo mkdir -p /usr/local/bin
           sudo cp .github/codex-capture/codex-mock.py /usr/local/bin/codex
           sudo chmod +x /usr/local/bin/codex
+          /usr/local/bin/codex --version
+          find "$HOME/.codex/sessions" -name 'rollout-*.jsonl' -print | sort
+          python3 - <<'PY'
+          import json, pathlib
+          manifest = json.loads((pathlib.Path.home()/'.codex/synthetic-threads.json').read_text())
+          print(f"Synthetic tasks: {len(manifest)}")
+          print(f"Projects: {sorted({pathlib.Path(item['cwd']).name for item in manifest})}")
+          PY
 
-      - name: Enable actual system dark mode and select page
+      - name: Enable system dark mode and select workspace view
         env:
           SECTION: ${{ matrix.section }}
+          GRAPH: ${{ matrix.graph }}
         run: |
           osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'
           defaults write NSGlobalDomain AppleInterfaceStyle -string Dark
@@ -46,13 +68,12 @@ jobs:
           killall SystemUIServer 2>/dev/null || true
           killall Dock 2>/dev/null || true
           sleep 5
-          defaults read NSGlobalDomain AppleInterfaceStyle
 
           defaults write com.github.thrr87.CodexLimits analyticsWorkspaceExploration -data "$(python3 - <<'PY'
           import json, os
           state = {
               "section": os.environ["SECTION"],
-              "graph": "Usage remaining",
+              "graph": os.environ["GRAPH"],
               "timeRange": "Current window",
               "filters": {"projectID": None, "taskTreeID": None, "model": None, "reasoning": None},
               "visibleRange": None,
@@ -67,14 +88,15 @@ jobs:
         working-directory: /tmp/codex-limits
         run: Scripts/build-app.sh
 
-      - name: Launch and capture the real Liquid Glass popover
+      - name: Launch and capture populated Liquid Glass popover
         env:
           SECTION: ${{ matrix.section }}
+          GRAPH: ${{ matrix.graph }}
+          CAPTURE: ${{ matrix.capture }}
         run: |
           set -euo pipefail
           mkdir -p /tmp/capture
-          slug=$(printf '%s' "$SECTION" | tr '[:upper:]' '[:lower:]')
-          image="/tmp/capture/${slug}-macos26-real-menubar.png"
+          image="/tmp/capture/${CAPTURE}-macos26-rich-data.png"
           helper="$GITHUB_WORKSPACE/.github/codex-capture/menubar.swift"
           app="/tmp/codex-limits/.build/release/Codex Limits.app"
           open -n "$app"
@@ -93,23 +115,27 @@ jobs:
             sleep 1
           done
           [[ -n "$window_id" ]]
-          sleep 8
+
+          sleep 20
           window_id=$(swift "$helper" popover)
           swift "$helper" dump | tee /tmp/capture/windows.txt
           screencapture -x -l"$window_id" "$image"
 
           {
+            echo "Capture: $CAPTURE"
             echo "Section: $SECTION"
+            echo "Graph: $GRAPH"
             echo "Upstream commit: $(cat /tmp/upstream-commit.txt)"
+            echo "Synthetic task count: $(find "$HOME/.codex/sessions" -name 'rollout-*.jsonl' | wc -l | tr -d ' ')"
             sw_vers
             echo "Popover window id: $window_id"
             sips -g pixelWidth -g pixelHeight "$image"
           } | tee /tmp/capture/capture-info.txt
 
-      - name: Upload the macOS 26 menu bar popover
+      - name: Upload populated macOS 26 popover
         uses: actions/upload-artifact@v4
         with:
-          name: codex-limits-${{ matrix.section }}-macos26-real-menubar
+          name: codex-limits-${{ matrix.capture }}-rich-data
           path: /tmp/capture
           if-no-files-found: error
           retention-days: 7

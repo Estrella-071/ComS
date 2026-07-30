@@ -24,22 +24,10 @@ jobs:
             section: Graphs
             graph: Usage remaining
             scroll: 0
-          - capture: token-activity
-            section: Graphs
-            graph: Token activity
-            scroll: 0
           - capture: token-activity-local
             section: Graphs
             graph: Token activity
             scroll: -9
-          - capture: concurrency
-            section: Graphs
-            graph: Concurrency
-            scroll: 0
-          - capture: facts
-            section: Facts
-            graph: Token activity
-            scroll: 0
           - capture: facts-local
             section: Facts
             graph: Token activity
@@ -62,7 +50,6 @@ jobs:
           python3 .github/codex-capture/codex-mock.py --seed-fixtures
           python3 .github/codex-capture/seed-usage-history.py
 
-          # Keep the server's weekly reset byte-identical to the history samples.
           python3 - <<'PY'
           from pathlib import Path
           path = Path('.github/codex-capture/codex-mock.py')
@@ -148,6 +135,7 @@ jobs:
           mkdir -p /tmp/capture
           image="/tmp/capture/${CAPTURE}-macos26-rich-data.png"
           helper="$GITHUB_WORKSPACE/.github/codex-capture/menubar.swift"
+          scroller="$GITHUB_WORKSPACE/.github/codex-capture/scroll-popover.swift"
           app="/tmp/codex-limits/.build/release/Codex Limits.app"
           open -n "$app"
 
@@ -168,33 +156,7 @@ jobs:
           sleep 30
 
           if [[ "$SCROLL" != "0" ]]; then
-            cat > /tmp/scroll-popover.swift <<'SWIFT'
-            import CoreGraphics
-            import Foundation
-            import Darwin
-
-            let amount = Int32(CommandLine.arguments.dropFirst().first ?? "0") ?? 0
-            let options: CGWindowListOption = [.optionOnScreenOnly, .excludeDesktopElements]
-            guard let raw = CGWindowListCopyWindowInfo(options, kCGNullWindowID)
-                as? [[String: Any]] else { exit(1) }
-            for item in raw {
-                let owner = item[kCGWindowOwnerName as String] as? String ?? ""
-                guard owner.localizedCaseInsensitiveContains("Codex Limits"),
-                      let bounds = item[kCGWindowBounds as String] as? NSDictionary,
-                      let rect = CGRect(dictionaryRepresentation: bounds as CFDictionary),
-                      rect.width >= 340, rect.height >= 400 else { continue }
-                let point = CGPoint(x: rect.midX, y: rect.midY)
-                let source = CGEventSource(stateID: .combinedSessionState)
-                CGEvent(mouseEventSource: source, mouseType: .mouseMoved,
-                        mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
-                usleep(120_000)
-                CGEvent(scrollWheelEvent2Source: source, units: .line,
-                        wheelCount: 1, wheel1: amount, wheel2: 0, wheel3: 0)?.post(tap: .cghidEventTap)
-                exit(0)
-            }
-            exit(2)
-            SWIFT
-            swift /tmp/scroll-popover.swift "$SCROLL"
+            swift "$scroller" "$SCROLL"
             sleep 3
           fi
 

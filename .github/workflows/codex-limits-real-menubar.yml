@@ -41,9 +41,10 @@ jobs:
           git clone --depth 1 https://github.com/thrr87/codex-limits.git /tmp/codex-limits
           git -C /tmp/codex-limits rev-parse HEAD | tee /tmp/upstream-commit.txt
 
-      - name: Seed fictional Codex sessions and install mock CLI
+      - name: Seed fictional Codex sessions, quota history, and mock CLI
         run: |
           python3 .github/codex-capture/codex-mock.py --seed-fixtures
+          python3 .github/codex-capture/seed-usage-history.py
           sudo mkdir -p /usr/local/bin
           sudo cp .github/codex-capture/codex-mock.py /usr/local/bin/codex
           sudo chmod +x /usr/local/bin/codex
@@ -116,7 +117,7 @@ jobs:
           done
           [[ -n "$window_id" ]]
 
-          sleep 20
+          sleep 30
           window_id=$(swift "$helper" popover)
           swift "$helper" dump | tee /tmp/capture/windows.txt
           screencapture -x -l"$window_id" "$image"

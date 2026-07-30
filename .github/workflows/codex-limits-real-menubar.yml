@@ -67,33 +67,18 @@ jobs:
                   codex = {
                       "limitId": "codex",
                       "limitName": "Codex",
-                      "primary": {
-                          "usedPercent": 41,
-                          "windowDurationMins": 300,
-                          "resetsAt": short_reset
-                      },
-                      "secondary": {
-                          "usedPercent": 27,
-                          "windowDurationMins": 10080,
-                          "resetsAt": weekly_reset
-                      },
+                      "primary": {"usedPercent": 41, "windowDurationMins": 300, "resetsAt": short_reset},
+                      "secondary": {"usedPercent": 27, "windowDurationMins": 10080, "resetsAt": weekly_reset},
                       "credits": {"hasCredits": True, "unlimited": False, "balance": "18.50"},
                       "individualLimit": {
-                          "limit": "50.00",
-                          "used": "13.50",
-                          "remainingPercent": 73,
+                          "limit": "50.00", "used": "13.50", "remainingPercent": 73,
                           "resetsAt": weekly_reset
                       },
                       "spendControlReached": False
                   }
                   luna = {
-                      "limitId": "gpt-5.6-luna",
-                      "limitName": "GPT-5.6 Luna",
-                      "primary": {
-                          "usedPercent": 36,
-                          "windowDurationMins": 10080,
-                          "resetsAt": weekly_reset
-                      }
+                      "limitId": "gpt-5.6-luna", "limitName": "GPT-5.6 Luna",
+                      "primary": {"usedPercent": 36, "windowDurationMins": 10080, "resetsAt": weekly_reset}
                   }
                   send(request_id, {
                       "rateLimits": codex,
@@ -102,22 +87,14 @@ jobs:
                           "availableCount": 2,
                           "credits": [
                               {
-                                  "id": "banked-reset-1",
-                                  "resetType": "codexRateLimits",
-                                  "status": "available",
-                                  "grantedAt": now - 2 * 24 * 3600,
-                                  "expiresAt": now + 36 * 3600,
-                                  "title": "Full reset",
-                                  "description": "Ready"
+                                  "id": "banked-reset-1", "resetType": "codexRateLimits",
+                                  "status": "available", "grantedAt": now - 172800,
+                                  "expiresAt": now + 129600, "title": "Full reset", "description": "Ready"
                               },
                               {
-                                  "id": "banked-reset-2",
-                                  "resetType": "codexRateLimits",
-                                  "status": "available",
-                                  "grantedAt": now - 24 * 3600,
-                                  "expiresAt": now + 5 * 24 * 3600,
-                                  "title": "Full reset",
-                                  "description": "Ready"
+                                  "id": "banked-reset-2", "resetType": "codexRateLimits",
+                                  "status": "available", "grantedAt": now - 86400,
+                                  "expiresAt": now + 432000, "title": "Full reset", "description": "Ready"
                               }
                           ]
                       }
@@ -139,37 +116,33 @@ jobs:
               elif method == "account/read":
                   send(request_id, {
                       "account": {
-                          "type": "chatgpt",
-                          "email": "macos-capture@example.invalid",
-                          "planType": "pro"
+                          "type": "chatgpt", "email": "macos-capture@example.invalid", "planType": "pro"
                       },
                       "requiresOpenaiAuth": True
                   })
               elif method == "thread/list":
-                  projects = ["atlas", "codex-limits", "ui-redesign", "research-notes"]
-                  data = []
-                  for index, project in enumerate(projects):
-                      created = now - (index + 1) * 5400
-                      data.append({
-                          "id": f"task-{index + 1}",
-                          "parentThreadId": None if index % 2 == 0 else "task-1",
-                          "cliVersion": "0.999.0",
-                          "cwd": f"/Users/runner/work/{project}",
-                          "createdAt": created,
-                          "updatedAt": created + 2700
-                      })
-                  send(request_id, {"data": data, "nextCursor": None})
+                  send(request_id, {
+                      "data": [
+                          {
+                              "id": "task-1", "parentThreadId": None, "cliVersion": "0.999.0",
+                              "cwd": "/Users/runner/work/codex-limits", "createdAt": now - 7200,
+                              "updatedAt": now - 1800
+                          },
+                          {
+                              "id": "task-2", "parentThreadId": "task-1", "cliVersion": "0.999.0",
+                              "cwd": "/Users/runner/work/ui-redesign", "createdAt": now - 5400,
+                              "updatedAt": now - 1200
+                          }
+                      ],
+                      "nextCursor": None
+                  })
               elif method == "thread/read":
                   thread_id = request.get("params", {}).get("threadId", "task-1")
                   send(request_id, {
                       "thread": {
-                          "id": thread_id,
-                          "parentThreadId": None,
-                          "cliVersion": "0.999.0",
-                          "cwd": "/Users/runner/work/codex-limits",
-                          "createdAt": now - 7200,
-                          "updatedAt": now - 1800,
-                          "turns": []
+                          "id": thread_id, "parentThreadId": None, "cliVersion": "0.999.0",
+                          "cwd": "/Users/runner/work/codex-limits", "createdAt": now - 7200,
+                          "updatedAt": now - 1800, "turns": []
                       }
                   })
               else:
@@ -193,12 +166,7 @@ jobs:
               "section": os.environ["SECTION"],
               "graph": "Usage remaining",
               "timeRange": "Current window",
-              "filters": {
-                  "projectID": None,
-                  "taskTreeID": None,
-                  "model": None,
-                  "reasoning": None
-              },
+              "filters": {"projectID": None, "taskTreeID": None, "model": None, "reasoning": None},
               "visibleRange": None,
               "pinnedUsageBaselineID": None,
               "pinnedUsageBaselineAccountPartitionID": None
@@ -231,15 +199,12 @@ jobs:
           }
 
           func allWindows() -> [Window] {
-              let options: CGWindowListOption = [.optionAll, .excludeDesktopElements]
-              guard let raw = CGWindowListCopyWindowInfo(options, kCGNullWindowID)
+              guard let raw = CGWindowListCopyWindowInfo([.optionAll, .excludeDesktopElements], kCGNullWindowID)
                   as? [[String: Any]] else { return [] }
               return raw.compactMap { item in
                   guard let number = item[kCGWindowNumber as String] as? NSNumber,
                         let bounds = item[kCGWindowBounds as String] as? NSDictionary,
-                        let rect = CGRect(dictionaryRepresentation: bounds as CFDictionary) else {
-                      return nil
-                  }
+                        let rect = CGRect(dictionaryRepresentation: bounds as CFDictionary) else { return nil }
                   return Window(
                       id: CGWindowID(number.uint32Value),
                       owner: item[kCGWindowOwnerName as String] as? String ?? "",
@@ -251,62 +216,46 @@ jobs:
               }
           }
 
-          func isCodex(_ window: Window) -> Bool {
-              window.owner.localizedCaseInsensitiveContains("Codex Limits")
-                  || window.owner.localizedCaseInsensitiveContains("CodexLimits")
-                  || window.title.localizedCaseInsensitiveContains("Codex Limits")
+          func isCodex(_ w: Window) -> Bool {
+              w.owner.localizedCaseInsensitiveContains("Codex Limits")
+                  || w.owner.localizedCaseInsensitiveContains("CodexLimits")
+                  || w.title.localizedCaseInsensitiveContains("Codex Limits")
           }
 
           func statusCandidate() -> Window? {
-              allWindows()
-                  .filter {
-                      isCodex($0)
-                          && $0.rect.height <= 40
-                          && $0.rect.width >= 12
-                          && $0.rect.width <= 240
-                          && $0.rect.minY <= 40
-                          && $0.alpha > 0
-                  }
-                  .sorted { $0.rect.maxX > $1.rect.maxX }
-                  .first
+              allWindows().filter {
+                  isCodex($0) && $0.rect.height <= 40 && $0.rect.width >= 12
+                      && $0.rect.width <= 240 && $0.rect.minY <= 40 && $0.alpha > 0
+              }.sorted { $0.rect.maxX > $1.rect.maxX }.first
           }
 
           func popoverCandidate() -> Window? {
-              allWindows()
-                  .filter {
-                      isCodex($0)
-                          && $0.rect.width >= 360
-                          && $0.rect.height >= 420
-                          && $0.alpha > 0
-                  }
-                  .max { ($0.rect.width * $0.rect.height) < ($1.rect.width * $1.rect.height) }
+              allWindows().filter {
+                  isCodex($0) && $0.rect.width >= 360 && $0.rect.height >= 420 && $0.alpha > 0
+              }.max { ($0.rect.width * $0.rect.height) < ($1.rect.width * $1.rect.height) }
           }
 
-          func click(_ point: CGPoint) {
+          func click(_ p: CGPoint) {
               let source = CGEventSource(stateID: .combinedSessionState)
-              CGEvent(mouseEventSource: source, mouseType: .mouseMoved, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+              CGEvent(mouseEventSource: source, mouseType: .mouseMoved, mouseCursorPosition: p, mouseButton: .left)?.post(tap: .cghidEventTap)
               usleep(150_000)
-              CGEvent(mouseEventSource: source, mouseType: .leftMouseDown, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+              CGEvent(mouseEventSource: source, mouseType: .leftMouseDown, mouseCursorPosition: p, mouseButton: .left)?.post(tap: .cghidEventTap)
               usleep(100_000)
-              CGEvent(mouseEventSource: source, mouseType: .leftMouseUp, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+              CGEvent(mouseEventSource: source, mouseType: .leftMouseUp, mouseCursorPosition: p, mouseButton: .left)?.post(tap: .cghidEventTap)
           }
 
-          let command = CommandLine.arguments.dropFirst().first ?? "dump"
-          switch command {
+          switch CommandLine.arguments.dropFirst().first ?? "dump" {
           case "dump":
-              for window in allWindows().filter(isCodex) {
-                  print("id=\(window.id) owner=\(window.owner) title=\(window.title) layer=\(window.layer) alpha=\(window.alpha) rect=\(window.rect)")
+              for w in allWindows().filter(isCodex) {
+                  print("id=\(w.id) owner=\(w.owner) title=\(w.title) layer=\(w.layer) alpha=\(w.alpha) rect=\(w.rect)")
               }
           case "click":
-              guard let status = statusCandidate() else {
-                  fputs("status item window not found\n", stderr)
-                  exit(2)
-              }
-              print("clicking id=\(status.id) rect=\(status.rect)")
-              click(CGPoint(x: status.rect.midX, y: status.rect.midY))
+              guard let w = statusCandidate() else { exit(2) }
+              print("clicking id=\(w.id) rect=\(w.rect)")
+              click(CGPoint(x: w.rect.midX, y: w.rect.midY))
           case "popover":
-              guard let popover = popoverCandidate() else { exit(3) }
-              print(popover.id)
+              guard let w = popoverCandidate() else { exit(3) }
+              print(w.id)
           default:
               exit(64)
           }
@@ -318,13 +267,13 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/capture
+          slug=$(printf '%s' "$SECTION" | tr '[:upper:]' '[:lower:]')
+          image="/tmp/capture/${slug}-real-menubar.png"
           app="/tmp/codex-limits/.build/release/Codex Limits.app"
           open -n "$app"
 
           for _ in {1..30}; do
-            if swift /tmp/menubar.swift click >/tmp/click.log 2>/tmp/click.err; then
-              break
-            fi
+            if swift /tmp/menubar.swift click >/tmp/click.log 2>/tmp/click.err; then break; fi
             sleep 1
           done
           cat /tmp/click.log || true
@@ -341,14 +290,14 @@ jobs:
           sleep 8
           window_id=$(swift /tmp/menubar.swift popover)
           swift /tmp/menubar.swift dump | tee /tmp/capture/windows-after-popover.txt
-          screencapture -x -l"$window_id" "/tmp/capture/${SECTION,,}-real-menubar.png"
+          screencapture -x -l"$window_id" "$image"
 
           {
             echo "Section: $SECTION"
             echo "Upstream commit: $(cat /tmp/upstream-commit.txt)"
             sw_vers
             echo "Popover window id: $window_id"
-            sips -g pixelWidth -g pixelHeight "/tmp/capture/${SECTION,,}-real-menubar.png"
+            sips -g pixelWidth -g pixelHeight "$image"
           } | tee /tmp/capture/capture-info.txt
 
       - name: Upload the actual menu bar popover

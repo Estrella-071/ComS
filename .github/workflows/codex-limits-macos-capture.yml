@@ -264,10 +264,6 @@ jobs:
             sleep 8
             rect=$(swift /tmp/windowrect.swift)
             screencapture -x -R"$rect" "/tmp/captures/$filename"
-
-            if [[ "$section" == "Graphs" ]]; then
-              screencapture -x /tmp/captures/00-macos-desktop-proof.png
-            fi
           }
 
           capture_section Graphs 01-graphs.png
@@ -288,7 +284,7 @@ jobs:
       - name: Upload raw macOS screenshots
         uses: actions/upload-artifact@v4
         with:
-          name: codex-limits-latest-macos-screenshots
+          name: codex-limits-latest-macos-screenshots-clean
           path: /tmp/captures
           if-no-files-found: error
           retention-days: 7

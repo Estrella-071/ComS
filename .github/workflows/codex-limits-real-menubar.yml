@@ -20,18 +20,34 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - capture: usage-remaining
+            section: Graphs
+            graph: Usage remaining
+            scroll: 0
           - capture: token-activity
             section: Graphs
             graph: Token activity
+            scroll: 0
+          - capture: token-activity-local
+            section: Graphs
+            graph: Token activity
+            scroll: -9
           - capture: concurrency
             section: Graphs
             graph: Concurrency
+            scroll: 0
           - capture: facts
             section: Facts
             graph: Token activity
+            scroll: 0
+          - capture: facts-local
+            section: Facts
+            graph: Token activity
+            scroll: -9
           - capture: insights
             section: Insights
             graph: Token activity
+            scroll: 0
 
     steps:
       - uses: actions/checkout@v4
@@ -45,17 +61,49 @@ jobs:
         run: |
           python3 .github/codex-capture/codex-mock.py --seed-fixtures
           python3 .github/codex-capture/seed-usage-history.py
+
+          # Keep the server's weekly reset byte-identical to the history samples.
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('.github/codex-capture/codex-mock.py')
+          source = path.read_text()
+          source = source.replace(
+              'weekly_reset = now + 24 * 3600',
+              'weekly_reset = int((dt.datetime.now(dt.timezone.utc) + dt.timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0).timestamp())'
+          )
+          path.write_text(source)
+          PY
+
           sudo mkdir -p /usr/local/bin
           sudo cp .github/codex-capture/codex-mock.py /usr/local/bin/codex
           sudo chmod +x /usr/local/bin/codex
           /usr/local/bin/codex --version
           find "$HOME/.codex/sessions" -name 'rollout-*.jsonl' -print | sort
-          python3 - <<'PY'
-          import json, pathlib
-          manifest = json.loads((pathlib.Path.home()/'.codex/synthetic-threads.json').read_text())
-          print(f"Synthetic tasks: {len(manifest)}")
-          print(f"Projects: {sorted({pathlib.Path(item['cwd']).name for item in manifest})}")
-          PY
+
+          cat > /tmp/validate-history.swift <<'SWIFT'
+          import Foundation
+
+          struct UsageSample: Codable {
+              let observedAt: Date
+              let remainingPercent: Double
+              let resetsAt: Date
+              let lifetimeTokens: Int64?
+              let comparisonBreak: Bool?
+          }
+          struct StoredState: Codable {
+              let samples: [UsageSample]
+          }
+          guard let defaults = UserDefaults(suiteName: "com.github.thrr87.CodexLimits"),
+                let data = defaults.data(forKey: "usageState") else {
+              fatalError("usageState missing")
+          }
+          let state = try JSONDecoder().decode(StoredState.self, from: data)
+          guard state.samples.count > 400 else { fatalError("too few samples") }
+          print("Validated \(state.samples.count) legacy quota samples")
+          print("Boundary: \(state.samples.first!.observedAt) -> \(state.samples.last!.observedAt)")
+          print("Reset: \(state.samples.first!.resetsAt)")
+          SWIFT
+          swift /tmp/validate-history.swift
 
       - name: Enable system dark mode and select workspace view
         env:
@@ -94,6 +142,7 @@ jobs:
           SECTION: ${{ matrix.section }}
           GRAPH: ${{ matrix.graph }}
           CAPTURE: ${{ matrix.capture }}
+          SCROLL: ${{ matrix.scroll }}
         run: |
           set -euo pipefail
           mkdir -p /tmp/capture
@@ -116,16 +165,53 @@ jobs:
             sleep 1
           done
           [[ -n "$window_id" ]]
-
           sleep 30
+
+          if [[ "$SCROLL" != "0" ]]; then
+            cat > /tmp/scroll-popover.swift <<'SWIFT'
+            import CoreGraphics
+            import Foundation
+            import Darwin
+
+            let amount = Int32(CommandLine.arguments.dropFirst().first ?? "0") ?? 0
+            let options: CGWindowListOption = [.optionOnScreenOnly, .excludeDesktopElements]
+            guard let raw = CGWindowListCopyWindowInfo(options, kCGNullWindowID)
+                as? [[String: Any]] else { exit(1) }
+            for item in raw {
+                let owner = item[kCGWindowOwnerName as String] as? String ?? ""
+                guard owner.localizedCaseInsensitiveContains("Codex Limits"),
+                      let bounds = item[kCGWindowBounds as String] as? NSDictionary,
+                      let rect = CGRect(dictionaryRepresentation: bounds as CFDictionary),
+                      rect.width >= 340, rect.height >= 400 else { continue }
+                let point = CGPoint(x: rect.midX, y: rect.midY)
+                let source = CGEventSource(stateID: .combinedSessionState)
+                CGEvent(mouseEventSource: source, mouseType: .mouseMoved,
+                        mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+                usleep(120_000)
+                CGEvent(scrollWheelEvent2Source: source, units: .line,
+                        wheelCount: 1, wheel1: amount, wheel2: 0, wheel3: 0)?.post(tap: .cghidEventTap)
+                exit(0)
+            }
+            exit(2)
+            SWIFT
+            swift /tmp/scroll-popover.swift "$SCROLL"
+            sleep 3
+          fi
+
           window_id=$(swift "$helper" popover)
           swift "$helper" dump | tee /tmp/capture/windows.txt
           screencapture -x -l"$window_id" "$image"
+
+          defaults read com.github.thrr87.CodexLimits historyAccountEpochStartedAt \
+            > /tmp/capture/history-epoch.txt 2>&1 || true
+          find "$HOME/Library/Application Support/com.github.thrr87.CodexLimits/History" \
+            -type f -maxdepth 6 -print > /tmp/capture/history-files.txt 2>&1 || true
 
           {
             echo "Capture: $CAPTURE"
             echo "Section: $SECTION"
             echo "Graph: $GRAPH"
+            echo "Scroll: $SCROLL"
             echo "Upstream commit: $(cat /tmp/upstream-commit.txt)"
             echo "Synthetic task count: $(find "$HOME/.codex/sessions" -name 'rollout-*.jsonl' | wc -l | tr -d ' ')"
             sw_vers

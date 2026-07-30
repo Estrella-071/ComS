@@ -1,4 +1,4 @@
-name: Capture Codex Limits with rich synthetic activity
+name: Capture Codex Limits token activity detail
 
 on:
   pull_request:
@@ -13,29 +13,9 @@ permissions:
 
 jobs:
   capture:
-    name: Capture ${{ matrix.capture }} on macOS 26
+    name: Capture token activity local detail on macOS 26
     runs-on: macos-26
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - capture: usage-remaining
-            section: Graphs
-            graph: Usage remaining
-            scroll: 0
-          - capture: token-activity-local
-            section: Graphs
-            graph: Token activity
-            scroll: -9
-          - capture: facts-local
-            section: Facts
-            graph: Token activity
-            scroll: -9
-          - capture: insights
-            section: Insights
-            graph: Token activity
-            scroll: 0
 
     steps:
       - uses: actions/checkout@v4
@@ -49,53 +29,21 @@ jobs:
         run: |
           python3 .github/codex-capture/codex-mock.py --seed-fixtures
           python3 .github/codex-capture/seed-usage-history.py
-
           python3 - <<'PY'
           from pathlib import Path
           path = Path('.github/codex-capture/codex-mock.py')
-          source = path.read_text()
-          source = source.replace(
+          source = path.read_text().replace(
               'weekly_reset = now + 24 * 3600',
               'weekly_reset = int((dt.datetime.now(dt.timezone.utc) + dt.timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0).timestamp())'
           )
           path.write_text(source)
           PY
-
           sudo mkdir -p /usr/local/bin
           sudo cp .github/codex-capture/codex-mock.py /usr/local/bin/codex
           sudo chmod +x /usr/local/bin/codex
           /usr/local/bin/codex --version
-          find "$HOME/.codex/sessions" -name 'rollout-*.jsonl' -print | sort
 
-          cat > /tmp/validate-history.swift <<'SWIFT'
-          import Foundation
-
-          struct UsageSample: Codable {
-              let observedAt: Date
-              let remainingPercent: Double
-              let resetsAt: Date
-              let lifetimeTokens: Int64?
-              let comparisonBreak: Bool?
-          }
-          struct StoredState: Codable {
-              let samples: [UsageSample]
-          }
-          guard let defaults = UserDefaults(suiteName: "com.github.thrr87.CodexLimits"),
-                let data = defaults.data(forKey: "usageState") else {
-              fatalError("usageState missing")
-          }
-          let state = try JSONDecoder().decode(StoredState.self, from: data)
-          guard state.samples.count > 400 else { fatalError("too few samples") }
-          print("Validated \(state.samples.count) legacy quota samples")
-          print("Boundary: \(state.samples.first!.observedAt) -> \(state.samples.last!.observedAt)")
-          print("Reset: \(state.samples.first!.resetsAt)")
-          SWIFT
-          swift /tmp/validate-history.swift
-
-      - name: Enable system dark mode and select workspace view
-        env:
-          SECTION: ${{ matrix.section }}
-          GRAPH: ${{ matrix.graph }}
+      - name: Enable dark mode and select Token activity
         run: |
           osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'
           defaults write NSGlobalDomain AppleInterfaceStyle -string Dark
@@ -104,12 +52,11 @@ jobs:
           killall SystemUIServer 2>/dev/null || true
           killall Dock 2>/dev/null || true
           sleep 5
-
           defaults write com.github.thrr87.CodexLimits analyticsWorkspaceExploration -data "$(python3 - <<'PY'
-          import json, os
+          import json
           state = {
-              "section": os.environ["SECTION"],
-              "graph": os.environ["GRAPH"],
+              "section": "Graphs",
+              "graph": "Token activity",
               "timeRange": "Current window",
               "filters": {"projectID": None, "taskTreeID": None, "model": None, "reasoning": None},
               "visibleRange": None,
@@ -120,27 +67,22 @@ jobs:
           PY
           )"
 
-      - name: Build the production MenuBarExtra app
+      - name: Build production MenuBarExtra app
         working-directory: /tmp/codex-limits
         run: Scripts/build-app.sh
 
-      - name: Launch and capture populated Liquid Glass popover
-        env:
-          SECTION: ${{ matrix.section }}
-          GRAPH: ${{ matrix.graph }}
-          CAPTURE: ${{ matrix.capture }}
-          SCROLL: ${{ matrix.scroll }}
+      - name: Launch, scroll exact popover, and capture
         run: |
           set -euo pipefail
           mkdir -p /tmp/capture
-          image="/tmp/capture/${CAPTURE}-macos26-rich-data.png"
+          image="/tmp/capture/token-activity-local-macos26-rich-data.png"
           helper="$GITHUB_WORKSPACE/.github/codex-capture/menubar.swift"
           scroller="$GITHUB_WORKSPACE/.github/codex-capture/scroll-popover.swift"
           app="/tmp/codex-limits/.build/release/Codex Limits.app"
           open -n "$app"
 
           for _ in {1..30}; do
-            if swift "$helper" click > /tmp/click.log 2>/tmp/click.err; then break; fi
+            if swift "$helper" click >/tmp/click.log 2>/tmp/click.err; then break; fi
             sleep 1
           done
           cat /tmp/click.log || true
@@ -154,26 +96,13 @@ jobs:
           done
           [[ -n "$window_id" ]]
           sleep 30
-
-          if [[ "$SCROLL" != "0" ]]; then
-            swift "$scroller" "$SCROLL"
-            sleep 3
-          fi
+          swift "$scroller" -9 "$window_id"
+          sleep 3
 
           window_id=$(swift "$helper" popover)
           swift "$helper" dump | tee /tmp/capture/windows.txt
           screencapture -x -l"$window_id" "$image"
-
-          defaults read com.github.thrr87.CodexLimits historyAccountEpochStartedAt \
-            > /tmp/capture/history-epoch.txt 2>&1 || true
-          find "$HOME/Library/Application Support/com.github.thrr87.CodexLimits/History" \
-            -type f -maxdepth 6 -print > /tmp/capture/history-files.txt 2>&1 || true
-
           {
-            echo "Capture: $CAPTURE"
-            echo "Section: $SECTION"
-            echo "Graph: $GRAPH"
-            echo "Scroll: $SCROLL"
             echo "Upstream commit: $(cat /tmp/upstream-commit.txt)"
             echo "Synthetic task count: $(find "$HOME/.codex/sessions" -name 'rollout-*.jsonl' | wc -l | tr -d ' ')"
             sw_vers
@@ -181,10 +110,10 @@ jobs:
             sips -g pixelWidth -g pixelHeight "$image"
           } | tee /tmp/capture/capture-info.txt
 
-      - name: Upload populated macOS 26 popover
+      - name: Upload Token activity local detail
         uses: actions/upload-artifact@v4
         with:
-          name: codex-limits-${{ matrix.capture }}-rich-data
+          name: codex-limits-token-activity-local-rich-data
           path: /tmp/capture
           if-no-files-found: error
           retention-days: 7

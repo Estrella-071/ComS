@@ -1,0 +1,294 @@
+name: Capture latest Codex Limits macOS UI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/codex-limits-macos-capture.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out current repository
+        uses: actions/checkout@v4
+
+      - name: Check out latest Codex Limits
+        run: |
+          git clone --depth 1 https://github.com/thrr87/codex-limits.git /tmp/codex-limits
+          git -C /tmp/codex-limits rev-parse HEAD | tee /tmp/upstream-commit.txt
+
+      - name: Install deterministic mock Codex CLI
+        run: |
+          cat > /tmp/codex-mock.py <<'PY'
+          #!/usr/bin/env python3
+          import datetime as dt
+          import json
+          import sys
+          import time
+
+          if "--version" in sys.argv:
+              print("codex-cli 0.999.0")
+              raise SystemExit(0)
+
+          now = int(time.time())
+          weekly_reset = now + 4 * 24 * 3600 + 6 * 3600
+          short_reset = now + 2 * 3600 + 20 * 60
+          dates = [dt.date.today() - dt.timedelta(days=i) for i in range(13, -1, -1)]
+          tokens = [4200000, 6100000, 3800000, 8200000, 7400000, 9900000, 5300000,
+                    12600000, 8700000, 11200000, 6800000, 14300000, 9200000, 11800000]
+
+          def send(request_id, result):
+              print(json.dumps({"id": request_id, "result": result}, separators=(",", ":")), flush=True)
+
+          for raw in sys.stdin:
+              try:
+                  request = json.loads(raw)
+              except Exception:
+                  continue
+              request_id = request.get("id")
+              method = request.get("method")
+              if request_id is None:
+                  continue
+
+              if method == "initialize":
+                  send(request_id, {"userAgent": "Codex CLI/0.999.0 (Mac OS 15)"})
+              elif method == "account/rateLimits/read":
+                  codex = {
+                      "limitId": "codex",
+                      "limitName": "Codex",
+                      "primary": {
+                          "usedPercent": 41,
+                          "windowDurationMins": 300,
+                          "resetsAt": short_reset
+                      },
+                      "secondary": {
+                          "usedPercent": 27,
+                          "windowDurationMins": 10080,
+                          "resetsAt": weekly_reset
+                      },
+                      "credits": {"hasCredits": True, "unlimited": False, "balance": "18.50"},
+                      "individualLimit": {
+                          "limit": "50.00",
+                          "used": "13.50",
+                          "remainingPercent": 73,
+                          "resetsAt": weekly_reset
+                      },
+                      "spendControlReached": False
+                  }
+                  luna = {
+                      "limitId": "gpt-5.6-luna",
+                      "limitName": "GPT-5.6 Luna",
+                      "primary": {
+                          "usedPercent": 36,
+                          "windowDurationMins": 10080,
+                          "resetsAt": weekly_reset
+                      }
+                  }
+                  send(request_id, {
+                      "rateLimits": codex,
+                      "rateLimitsByLimitId": {"codex": codex, "gpt-5.6-luna": luna},
+                      "rateLimitResetCredits": {
+                          "availableCount": 2,
+                          "credits": [
+                              {
+                                  "id": "banked-reset-1",
+                                  "resetType": "codexRateLimits",
+                                  "status": "available",
+                                  "grantedAt": now - 2 * 24 * 3600,
+                                  "expiresAt": now + 36 * 3600,
+                                  "title": "Full reset",
+                                  "description": "Ready"
+                              },
+                              {
+                                  "id": "banked-reset-2",
+                                  "resetType": "codexRateLimits",
+                                  "status": "available",
+                                  "grantedAt": now - 24 * 3600,
+                                  "expiresAt": now + 5 * 24 * 3600,
+                                  "title": "Full reset",
+                                  "description": "Ready"
+                              }
+                          ]
+                      }
+                  })
+              elif method == "account/usage/read":
+                  send(request_id, {
+                      "summary": {
+                          "lifetimeTokens": 43820000000,
+                          "peakDailyTokens": 2300000000,
+                          "longestRunningTurnSec": 83820,
+                          "currentStreakDays": 43,
+                          "longestStreakDays": 51
+                      },
+                      "dailyUsageBuckets": [
+                          {"startDate": day.isoformat(), "tokens": value}
+                          for day, value in zip(dates, tokens)
+                      ]
+                  })
+              elif method == "account/read":
+                  send(request_id, {
+                      "account": {
+                          "type": "chatgpt",
+                          "email": "macos-capture@example.invalid",
+                          "planType": "pro"
+                      },
+                      "requiresOpenaiAuth": True
+                  })
+              elif method == "thread/list":
+                  projects = ["atlas", "codex-limits", "ui-redesign", "research-notes"]
+                  data = []
+                  for index, project in enumerate(projects):
+                      created = now - (index + 1) * 5400
+                      data.append({
+                          "id": f"task-{index + 1}",
+                          "parentThreadId": None if index % 2 == 0 else "task-1",
+                          "cliVersion": "0.999.0",
+                          "cwd": f"/Users/runner/work/{project}",
+                          "createdAt": created,
+                          "updatedAt": created + 2700
+                      })
+                  send(request_id, {"data": data, "nextCursor": None})
+              elif method == "thread/read":
+                  thread_id = request.get("params", {}).get("threadId", "task-1")
+                  send(request_id, {
+                      "thread": {
+                          "id": thread_id,
+                          "parentThreadId": None,
+                          "cliVersion": "0.999.0",
+                          "cwd": "/Users/runner/work/codex-limits",
+                          "createdAt": now - 7200,
+                          "updatedAt": now - 1800,
+                          "turns": []
+                      }
+                  })
+              else:
+                  send(request_id, {})
+          PY
+          chmod +x /tmp/codex-mock.py
+          sudo mkdir -p /usr/local/bin
+          sudo cp /tmp/codex-mock.py /usr/local/bin/codex
+          sudo chmod +x /usr/local/bin/codex
+
+      - name: Build latest app in its built-in QA window mode
+        working-directory: /tmp/codex-limits
+        run: |
+          CODEX_LIMITS_QA=1 Scripts/build-app.sh
+
+      - name: Prepare window capture helper
+        run: |
+          cat > /tmp/windowrect.swift <<'SWIFT'
+          import CoreGraphics
+          import Darwin
+          import Foundation
+
+          let options: CGWindowListOption = [.optionOnScreenOnly, .excludeDesktopElements]
+          guard let windows = CGWindowListCopyWindowInfo(options, kCGNullWindowID)
+              as? [[String: Any]] else {
+              exit(1)
+          }
+
+          for window in windows {
+              let owner = window[kCGWindowOwnerName as String] as? String ?? ""
+              let title = window[kCGWindowName as String] as? String ?? ""
+              let layer = window[kCGWindowLayer as String] as? Int ?? -1
+              guard layer == 0,
+                    owner.localizedCaseInsensitiveContains("Codex")
+                      || title.localizedCaseInsensitiveContains("Codex Limits") else {
+                  continue
+              }
+              guard let dictionary = window[kCGWindowBounds as String] as? NSDictionary,
+                    let rect = CGRect(dictionaryRepresentation: dictionary as CFDictionary) else {
+                  continue
+              }
+              print("\(Int(rect.origin.x.rounded())),\(Int(rect.origin.y.rounded())),\(Int(rect.width.rounded())),\(Int(rect.height.rounded()))")
+              exit(0)
+          }
+          exit(2)
+          SWIFT
+
+      - name: Launch and capture Graphs, Facts, and Insights
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/captures
+          domain="com.github.thrr87.CodexLimits.QA.defaults"
+          app="/tmp/codex-limits/.build/release/Codex Limits.app"
+
+          write_section() {
+            local section="$1"
+            local hex
+            hex=$(python3 - "$section" <<'PY'
+          import json
+          import sys
+          section = sys.argv[1]
+          state = {
+              "section": section,
+              "graph": "Usage remaining",
+              "timeRange": "Current window",
+              "filters": {
+                  "projectID": None,
+                  "taskTreeID": None,
+                  "model": None,
+                  "reasoning": None
+              },
+              "visibleRange": None,
+              "pinnedUsageBaselineID": None,
+              "pinnedUsageBaselineAccountPartitionID": None
+          }
+          print(json.dumps(state, separators=(",", ":")).encode().hex())
+          PY
+          )
+            defaults write "$domain" analyticsWorkspaceExploration -data "$hex"
+          }
+
+          capture_section() {
+            local section="$1"
+            local filename="$2"
+            write_section "$section"
+            pkill -f '/Codex Limits.app/Contents/MacOS/CodexLimits' 2>/dev/null || true
+            open -n "$app"
+
+            local rect=""
+            for _ in {1..45}; do
+              rect=$(swift /tmp/windowrect.swift 2>/dev/null || true)
+              [[ -n "$rect" ]] && break
+              sleep 1
+            done
+            [[ -n "$rect" ]]
+            sleep 8
+            rect=$(swift /tmp/windowrect.swift)
+            screencapture -x -R"$rect" "/tmp/captures/$filename"
+
+            if [[ "$section" == "Graphs" ]]; then
+              screencapture -x /tmp/captures/00-macos-desktop-proof.png
+            fi
+          }
+
+          capture_section Graphs 01-graphs.png
+          capture_section Facts 02-facts.png
+          capture_section Insights 03-insights.png
+          pkill -f '/Codex Limits.app/Contents/MacOS/CodexLimits' 2>/dev/null || true
+
+          {
+            echo "Upstream commit: $(cat /tmp/upstream-commit.txt)"
+            sw_vers
+            echo
+            for image in /tmp/captures/*.png; do
+              echo "$(basename "$image")"
+              sips -g pixelWidth -g pixelHeight "$image" | tail -n 2
+            done
+          } | tee /tmp/captures/capture-info.txt
+
+      - name: Upload raw macOS screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-limits-latest-macos-screenshots
+          path: /tmp/captures
+          if-no-files-found: error
+          retention-days: 7
